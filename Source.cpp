@@ -2,7 +2,7 @@
 
 using namespace sf;
 
-int main() //da
+int main()
 {
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
