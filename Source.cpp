@@ -1,85 +1,20 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <string>
 #include <thread>
-#include <Windows.h>
+#include "World.h"
 using namespace std;
 using namespace sf;
 
+const Clock cl;
+
 Shader rgbShader;
-
-class animatedSprite : public Sprite {
-private:
-	unsigned int animFrames = 0;
-	unsigned int currFrame = 0;
-
-	RenderWindow* _window=nullptr;
-	bool _ifDraw = true;
-
-	bool mirrored;
-public:
-	unsigned int width;
-	unsigned int height;
-	void move(const Vector2f& v2f) {
-		sf::Sprite::move(v2f);
-		_ifDraw = true;
-	}
-	bool ifDraw() {
-		return _ifDraw;
-	}
-
-	animatedSprite& drawn() {
-		_ifDraw = false;
-		return *this;
-	}
-
-	void setWindow(sf::RenderWindow& w) {
-		_window = &w;
-	}
-
-	unsigned int getAnimFrames() {
-		return animFrames;
-	}
-	void setAnimFrames(unsigned int af) {
-		animFrames = af;
-	}
-	void setCurrFrame(unsigned int cf) {
-		currFrame = cf;
-		setTextureRect(IntRect(currFrame * width, 0, width, height));
-		_ifDraw = true;
-	}
-	void nextFrame() {
-		if (currFrame < animFrames - 1)currFrame++;
-		else currFrame = 0;
-		setTextureRect(IntRect(currFrame * width, 0, width, height));
-		_ifDraw = true;
-	}
-
-	unsigned int getCurrFrame() {
-		return currFrame;
-	}
-
-	void mirror() {
-		if (!mirrored) {
-			setOrigin(getLocalBounds().width, 0);
-			setScale(-1, 1);
-		}
-		else {
-			setOrigin(0, 0);
-			setScale(1, 1);
-		}
-		mirrored = !mirrored;
-	}
-};
-
-
-
 // Если мышка находится внутри прямоугольника
 template <typename T>
 bool mouseIntersects(const Rect<T>& rs, const RenderWindow& window) {
 	return rs.contains(Mouse::getPosition(window).x, Mouse::getPosition(window).y);
 }
-
 
 // Если мышка находится внутри текстуры спрайта
 bool mouseIntersects(const Sprite& sprite, const RenderWindow& window) {
@@ -87,7 +22,7 @@ bool mouseIntersects(const Sprite& sprite, const RenderWindow& window) {
 		.contains(Mouse::getPosition(window).x, Mouse::getPosition(window).y);
 }
 // Если мышка находится внутри текстуры спрайта
-bool mouseIntersects(const animatedSprite& sprite, const RenderWindow& window) {
+bool mouseIntersects(const AnimatedSprite& sprite, const RenderWindow& window) {
 	int x = sprite.getTextureRect().width * sprite.getScale().y;
 	return Rect<float>(sprite.getPosition().x, sprite.getPosition().y, sprite.getTextureRect().width * sprite.getScale().y, sprite.getTextureRect().height * sprite.getScale().y).contains(Mouse::getPosition(window).x, Mouse::getPosition(window).y);
 }
@@ -118,92 +53,55 @@ void drawWithOutline(const Sprite& sprite, RenderWindow& window, unsigned int th
 	Sprite newSprite = sprite;
 	
 	fillSprite(color.r, color.g, color.b);
-
-	//float sss = thickness / (sprite.getTextureRect().width * sprite.getScale().x);
-
 	newSprite.setScale({ sprite.getScale().x + (thickness*2) / (sprite.getTextureRect().width * sprite.getScale().x), sprite.getScale().y + (thickness * 2) / (sprite.getTextureRect().height * sprite.getScale().y) });
 	newSprite.move(Vector2f(-int(thickness), -int(thickness)));
 	window.draw(newSprite, &rgbShader);
 	window.draw(sprite);
 }
 
-void animationCycle(animatedSprite& sprite) {
-	Clock clock;
-	while (true) {
-		if (int(clock.getElapsedTime().asSeconds() / 0.5) == clock.getElapsedTime().asSeconds() / 0.5) {
-			cout << clock.getElapsedTime().asSeconds() << endl;
-			sprite.nextFrame();
-		}
-	}
-}
+//void animationCycle(AnimatedSprite& sprite) {
+//	Clock clock;
+//	while (true) {
+//		if (int(clock.getElapsedTime().asSeconds() / 0.5) == clock.getElapsedTime().asSeconds() / 0.5) {
+//			cout << clock.getElapsedTime().asSeconds() << endl;
+//			sprite.nextFrame();
+//		}
+//	}
+//}
 
-class World {
-private:
-	RenderWindow* _window;
-	float acceleration = 1; //
-public:
-	float gq;// gravity quatient
-	World(RenderWindow& window, float _gq = 0.2) {
-		_window = &window;
-		gq = _gq;
-	}
 
-	void gravity(animatedSprite& s) {
-		while (true) {
-			if (_window->isOpen()) {
-				if (gq > 0) {
-					if (s.getPosition().y + s.getTextureRect().height * abs(s.getScale().y) <= _window->getSize().y) {
-						s.move(Vector2f(0, gq* acceleration));
-						acceleration += 0.098;
-						Sleep(10);
-					}
-					else acceleration = 0;
-				}
-				else if (gq < 0) {
-					
-					if (s.getPosition().y >= 0) {
-						s.move(Vector2f(0, gq * acceleration));
-						acceleration += 0.098;
-						Sleep(10);
-					}
-					else acceleration = 0;
-				}
-			}
-		}
-	}
-
-	
-};
 
 int main()
 {
 	fillSprite(255, 255, 255);
 	
+
 	ContextSettings settings;
 	settings.antialiasingLevel = 8;
 
 	sf::RenderWindow window(sf::VideoMode(1366, 768), "", sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close, settings);
 	window.setVerticalSyncEnabled(true);
 
-	animatedSprite sprite;
 
-	World main(window);
-
-	Color spriteColor = sprite.getColor();
+	AnimatedSprite sprite;
+	World mainWorld(window);
 	{
-		Texture* van = new Texture();
-		van->loadFromFile("RatAnim.png");
+		Texture* texture = new Texture();
+		texture->loadFromFile("RatAnim.png");
 		
-		sprite.setTexture(*van);
+		sprite.setTexture(*texture);
 		sprite.setTextureRect(IntRect(0, 0, 191, 192));
-		sprite.setAnimFrames(3);
+		sprite.setAnimFrames(4);
 		sprite.setWindow(window);
 		sprite.width = 191;
 		sprite.height = 192;
-		//sprite.setScale({ 0.3, 0.3 });
 	}
+	Player player(sprite);
+	player.setLegHitbox(IntRect(sprite.getTextureRect().width * sprite.getScale().x / 1.5, sprite.getTextureRect().height * sprite.getScale().y * 0.8, sprite.getTextureRect().width * sprite.getScale().x / 3, sprite.getTextureRect().height * sprite.getScale().y * 0.2));
+	player.moveSpeed = 5;
+	player.setWindow(window);
 
-	thread gravity(&World::gravity, &main, ref(sprite));
+	thread gravity(&World::gravity, &mainWorld, ref(player));
 	gravity.detach();
 
 	bool fullscreen = false;
@@ -215,16 +113,15 @@ int main()
 
 	bool ratPressed = false;
 
-	Clock cl;
-	float lastAnimTime = 0;
 	
 
-	window.draw(sprite);
+	window.draw(sprite.drawn());
 
 	while (window.isOpen())
 	{
 		if (sprite.ifDraw()) {
 			window.clear();
+			mainWorld.drawObstacles();
 			window.draw(sprite.drawn());
 			window.display();
 		}
@@ -250,46 +147,20 @@ int main()
 
 				// Стрелочки
 				
-				float offset = 6;
 				if (event.key.code >= 71 && event.key.code <= 74) {
-					if (cl.getElapsedTime().asSeconds() - lastAnimTime >= 0.1) {
-						lastAnimTime = cl.getElapsedTime().asSeconds();
-						sprite.nextFrame();
-					}
-
-					if (event.key.code == Keyboard::Right) {
-						if (sprite.getScale().x == -1) sprite.mirror();
-						if (sprite.getPosition().x < window.getSize().x - sprite.getTextureRect().width * sprite.getScale().x) {
-							sprite.move({ offset, 0 });
-						}
-					}
-					if (event.key.code == Keyboard::Left) {
-						if (sprite.getScale().x != -1) sprite.mirror();
-						if (sprite.getPosition().x > 0) {
-							sprite.move({ -offset, 0 });
-						}
-					}
-					if (event.key.code == Keyboard::Up) {
-						if (sprite.getPosition().y > 0) {
-							sprite.move({ 0, -offset });
-						}
-					}
-					if (event.key.code == Keyboard::Down) {
-						if (sprite.getPosition().y < window.getSize().y - sprite.getTextureRect().height * sprite.getScale().y) {
-							sprite.move({ 0, offset });
-						}
-					}
+					player.move(event.key.code);
 					window.clear();
-					window.draw(sprite);
+					mainWorld.drawObstacles();
+					window.draw(sprite.drawn());
 					window.display();
 				}
 
 
-				if (event.key.code == 56) {
-					main.gq++;
+				if (event.key.code == 55) {
+					mainWorld.gq+=0.1;
 				}
-				else if (event.key.code == 55) {
-					main.gq--;
+				else if (event.key.code == 56) {
+					mainWorld.gq-=0.1;
 				}
 				break;
 			}
@@ -321,6 +192,7 @@ int main()
 
 			if (ratPressed) {
 				window.clear();
+				mainWorld.drawObstacles();
 				drawWithOutline(sprite, window, 5, Color::Yellow);
 				window.setTitle(L"Меня зовут Ван. Я артист, исполняющий артист. Нанимаемый людьми, чтобы исполнить их глубокие, тёмные фантазии");
 			}
@@ -330,4 +202,5 @@ int main()
 		window.display();
 	}
 	return 0;
+	
 }
