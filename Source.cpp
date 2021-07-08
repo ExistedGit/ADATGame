@@ -6,7 +6,7 @@
 using namespace std;
 using namespace sf;
 
-Shader rgbShader;
+Shader rgbShader; //dankozz1
 
 class animatedSprite : public Sprite {
 private:
