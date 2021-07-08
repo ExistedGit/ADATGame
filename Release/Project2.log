@@ -1,0 +1,7 @@
+﻿  Files.cpp
+  SoundMatrix.cpp
+  The contents of <filesystem> are available only with C++17 or later.
+C:\Users\alexd\source\repos\ExistedGit\ADATGame\SoundMatrix.h(10,10): fatal error C1083: Не удается открыть файл включение: SFML/Audio.hpp: No such file or directory,
+  oldSource.cpp
+  Source.cpp
+C:\Users\alexd\source\repos\ExistedGit\ADATGame\Source.cpp(1,10): fatal error C1083: Не удается открыть файл включение: SFML/Graphics.hpp: No such file or directory,

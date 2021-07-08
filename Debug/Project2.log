@@ -1,0 +1,6 @@
+﻿  Source.cpp
+c:\users\alexd\source\repos\existedgit\adatgame\source.cpp(68): warning C4305: аргумент: усечение из "double" в "float"
+c:\users\alexd\source\repos\existedgit\adatgame\source.cpp(74): warning C4305: аргумент: усечение из "double" в "float"
+c:\users\alexd\source\repos\existedgit\adatgame\source.cpp(79): warning C4305: аргумент: усечение из "double" в "float"
+c:\users\alexd\source\repos\existedgit\adatgame\source.cpp(84): warning C4305: аргумент: усечение из "double" в "float"
+sfml-graphics-d.lib(sfml-graphics-d-2.dll) : fatal error LNK1112: тип компьютера модуля "x64" противоречит типу целевого компьютера "x86"

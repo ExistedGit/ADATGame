@@ -1,55 +1,6 @@
 ﻿  Source.cpp
-G:\VS Repo\Project2\Project2\Source.cpp(87,69): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
-          with
-          [
-              T=int
-          ]
-          and
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\Source.cpp(87,39): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
-          with
-          [
-              T=int
-          ]
-          and
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\Source.cpp(91,8): warning C4244: инициализация: преобразование "T" в "int", возможна потеря данных
-          with
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\Source.cpp(92,241): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
-          with
-          [
-              T=int
-          ]
-          and
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\Source.cpp(92,211): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
-          with
-          [
-              T=int
-          ]
-          and
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\Source.cpp(125,43): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
-          with
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\Source.cpp(125,26): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
-          with
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\Source.cpp(157,1): warning C4305: +=: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\Source.cpp(166,1): warning C4305: +=: усечение из "double" в "float"
-  Project2.vcxproj -> G:\VS Repo\Project2\x64\Debug\Project2.exe
+c:\users\alexd\source\repos\existedgit\adatgame\source.cpp(68): warning C4305: аргумент: усечение из "double" в "float"
+c:\users\alexd\source\repos\existedgit\adatgame\source.cpp(74): warning C4305: аргумент: усечение из "double" в "float"
+c:\users\alexd\source\repos\existedgit\adatgame\source.cpp(79): warning C4305: аргумент: усечение из "double" в "float"
+c:\users\alexd\source\repos\existedgit\adatgame\source.cpp(84): warning C4305: аргумент: усечение из "double" в "float"
+  Project2.vcxproj -> C:\Users\alexd\source\repos\ExistedGit\ADATGame\x64\Debug\Project2.exe
