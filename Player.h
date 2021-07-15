@@ -1,32 +1,29 @@
 #pragma once
-#include "AnimatedSprite.h"
+#include <SFML/Graphics.hpp>
+#include "Animation.h"
+#include "Collider.h"
 
-enum Direction {
-	UP,
-	RIGHT,
-	DOWN,
-	LEFT
-};
-
+using namespace sf;
 
 class Player
 {
-private:
-	AnimatedSprite* _sprite;
-	IntRect legHitbox;
-	RenderWindow* _window;
-
 public:
-	int moveSpeed = 0;
-	Player();
-	Player(AnimatedSprite& sprite);
+	Player(Texture* text, Vector2u frameCount, float switchTime, float speed = 0, float jumpHeight = 0, Vector2f spawn = Vector2f(0, 0));
+	Collider getCollider();
+	void Update(float deltaTime);
 
-	void setWindow(RenderWindow& w);
+	void onCollision(const Vector2f& direction);
 
-	IntRect getLegHitbox();;
-	void setLegHitbox(const IntRect& rect);
-	AnimatedSprite& getSprite();
+	void Draw(RenderWindow& wnd);
+private:
+	RectangleShape body;
+	Animation animation;
+	unsigned int row;
+	float speed;
+	float jumpHeight;
+	bool turned;
+	bool canJump = false;
 
-	void move(Keyboard::Key key);
+	Vector2f velocity;
 };
 

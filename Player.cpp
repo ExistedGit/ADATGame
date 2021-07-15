@@ -1,56 +1,60 @@
 #include "Player.h"
 
-Player::Player() {
-	_sprite = nullptr;
-	legHitbox = IntRect(0, 0, 0, 0);
+Player::Player(Texture* text, Vector2u frameCount, float switchTime, float speed, float jumpHeight, Vector2f spawn) : animation(text, frameCount, switchTime) {
+	this->speed = speed;
+	this->jumpHeight = jumpHeight;
+	row = 0;
+	turned = false;
+	body.setSize(Vector2f(animation.uvRect.width, animation.uvRect.height));
+	body.setPosition(spawn);
+	body.setTexture(text);
+	body.setOrigin(body.getSize() / 2.0f);
 }
 
-Player::Player(AnimatedSprite& sprite) {
-	_sprite = &sprite;
-	legHitbox = sprite.getTextureRect();
+Collider Player::getCollider() {
+	return Collider(body);
 }
 
-void Player::setWindow(RenderWindow& w) {
-	_window = &w;
-}
+void Player::Update(float deltaTime) {
+	velocity.x = 0;
 
-IntRect Player::getLegHitbox() {
-	return legHitbox;
-}
+	if (Keyboard::isKeyPressed(Keyboard::Left)) {
+		velocity.x -= speed;
+	}
+	if (Keyboard::isKeyPressed(Keyboard::Right)) {
+		velocity.x += speed;
+	}
+	if (Keyboard::isKeyPressed(Keyboard::Up) && canJump) {
+		canJump = false;
 
-void Player::setLegHitbox(const IntRect& rect) {
-	legHitbox = rect;
-}
-
-AnimatedSprite& Player::getSprite() {
-	return*_sprite;
-}
-
-void Player::move(Keyboard::Key key) {
-	if (cl.getElapsedTime().asSeconds() - _sprite->getLastAnimTime() >= 0.1) {
-		_sprite->nextFrame();
+		velocity.y = -sqrtf(2 * 981.0f * jumpHeight);
 	}
 
-	if (key == Keyboard::Right) {
-		if (_sprite->getScale().x == -1) _sprite->mirror();
-		if (_sprite->getPosition().x < _window->getSize().x - _sprite->getTextureRect().width * _sprite->getScale().x) {
-			_sprite->move(Vector2f(moveSpeed, 0));
-		}
+	velocity.y += 981.0f * deltaTime;
+
+	if (velocity.x == 0) {
+		row = 0;
 	}
-	if (key == Keyboard::Left) {
-		if (_sprite->getScale().x != -1) _sprite->mirror();
-		if (_sprite->getPosition().x > 0) {
-			_sprite->move(Vector2f(-moveSpeed, 0));
-		}
+	else {
+		row = 1;
+
+		turned = velocity.x < 0;
 	}
-	if (key == Keyboard::Up) {
-		if (_sprite->getPosition().y > 0) {
-			_sprite->move(Vector2f(0, -moveSpeed));
-		}
+
+	animation.Update(row, deltaTime, turned);
+	body.setTextureRect(animation.uvRect);
+	body.move(velocity * deltaTime);
+}
+
+void Player::onCollision(const Vector2f& direction) {
+
+	if (direction.x != 0) velocity.x = 0; // Горизонтальная коллизия
+	if (direction.y != 0) {
+		velocity.y = 0; // Вертикальная коллизия
+		if (direction.y < 0)canJump = true;
 	}
-	if (key == Keyboard::Down) {
-		if (_sprite->getPosition().y < _window->getSize().y - _sprite->getTextureRect().height * _sprite->getScale().y) {
-			_sprite->move(Vector2f(0, moveSpeed));
-		}
-	}
+}
+
+void Player::Draw(RenderWindow& wnd) {
+	wnd.draw(body);
 }

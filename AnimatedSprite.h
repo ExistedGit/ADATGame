@@ -5,32 +5,50 @@ using namespace sf;
 
 extern const Clock cl;
 
-class AnimatedSprite : public Sprite {
-private:
-	unsigned int animFrames = 0;
-	unsigned int currFrame = 0;
+class AnimatedSprite : public Sprite
+{
+protected:
+	unsigned int currentFrame;
+	unsigned int totalFrames;
+	unsigned int frameWidth;
+	unsigned int frameHeight;
 	float lastAnimTime = 0;
 
-	RenderWindow* _window = nullptr;
-	bool _ifDraw = true;
+	bool _mirrored = false;
 
-	bool mirrored = false;
+	Texture* texture = nullptr;
+	Texture* mirrorTexture = nullptr;
 public:
-	unsigned int width;
-	unsigned int height;
-	void move(const Vector2f& v2f);
-	bool ifDraw();
+	AnimatedSprite(Texture* t, Texture* mirrorTexture, unsigned int frames);
+	
+	void setMirrorTexture(Texture* t) {
+		mirrorTexture = t;
+	}
 
-	AnimatedSprite& drawn();
-
-	void setWindow(sf::RenderWindow& w);
-
-	unsigned int getAnimFrames();
-	void setAnimFrames(unsigned int af);
-	void setCurrFrame(unsigned int cf);
+	float getLastAnimTime();;
+	void setFrame(unsigned int frame);
 	void nextFrame();
-	float getLastAnimTime();
-	unsigned int getCurrFrame();
 
-	void mirror();
+	bool mirrored() {
+		return _mirrored;
+	}
+
+	void mirror() {
+		if (!_mirrored) {
+			if (mirrorTexture != nullptr) {
+				setTexture(*mirrorTexture);
+				setFrame(currentFrame);
+			}
+			else {
+				setScale(-1, 1);
+				move(frameWidth,0);
+			}
+		}
+		else {
+			setTexture(*texture);
+			setFrame(currentFrame);
+		}
+		_mirrored = !_mirrored;
+	}
 };
+
