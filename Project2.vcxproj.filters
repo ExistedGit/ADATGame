@@ -42,6 +42,9 @@
     <ClInclude Include="TileMap.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project2.rc">
@@ -85,6 +88,9 @@
       <Filter>TinyXML</Filter>
     </ClCompile>
     <ClCompile Include="TileMap.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
