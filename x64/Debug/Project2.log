@@ -1,4 +1,120 @@
-﻿  Source.cpp
-G:\VS Repo\Project2\Project2\Source.cpp(32,84): warning C4305: аргумент: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\Source.cpp(60,24): warning C4305: =: усечение из "double" в "float"
+﻿  InteractiveArray.cpp
+  Level.cpp
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(35,77): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(35,136): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(35,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(36,77): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(36,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(37,80): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(37,117): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(38,80): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(38,139): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(38,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(93,54): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(93,47): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(93,89): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(93,74): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+  Object.cpp
+  Source.cpp
+G:\VS Repo\Project2\Project2\SDK\Button.h(74,1): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+G:\VS Repo\Project2\Project2\Source.cpp(29,84): warning C4305: аргумент: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\Source.cpp(79,49): warning C4305: =: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\Source.cpp(99,27): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+  Создание кода...
   Project2.vcxproj -> G:\VS Repo\Project2\x64\Debug\Project2.exe

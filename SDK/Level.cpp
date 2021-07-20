@@ -18,6 +18,10 @@ void Level::insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, Til
 	layers.push_back(tmap);
 }
 
+bool Level::bordered() const {
+	return _bordered;
+}
+
 vector<Object>& Level::getObjects() {
 	return objects;
 }
@@ -26,7 +30,8 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 	tileLayers.clear();
 	objects.clear();
 
-	if (window != nullptr) {
+	_bordered = window != nullptr;
+	if (_bordered) {
 		objects.insert(objects.begin(), Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, window->getSize().y))); // Снизу окна
 		objects.insert(objects.begin(), Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, 0))); // Сверху
 		objects.insert(objects.begin(), Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(0, window->getSize().y / 2))); // Слева
@@ -68,7 +73,7 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 			//	if (k % width == 0) cout << endl;
 			//	cout << tileArray[k] << " ";
 			//}
-			cout << endl;
+			//cout << endl;
 		}
 		TileMap tmap;
 		tmap.load("TileMap/tileset.png", { 32, 32 }, tileArray, width, height);
@@ -102,7 +107,7 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 	return *this;
 }
 
-void Level::Draw(RenderWindow& wnd, Player* player) {
+void Level::Draw(RenderWindow& wnd, Player* player) const {
 	// Отрисовка заднего плана
 	for (auto& it : tileLayers) {
 		if (it.first < 0)
@@ -115,6 +120,12 @@ void Level::Draw(RenderWindow& wnd, Player* player) {
 	for (auto& it : tileLayers) {
 		if (it.first > 0)
 			wnd.draw(it.second);
+	}
+
+	if (_bordered) {
+		for (int i = 0; i < 4; i++) {
+			objects[i].Draw(wnd);
+		}
 	}
 
 }

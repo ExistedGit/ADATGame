@@ -122,7 +122,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SDK;G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
@@ -140,7 +140,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SDK;G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,35 +151,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
-    <ClInclude Include="Collider.h" />
-    <ClInclude Include="Level.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Object.h" />
+    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
+    <ClInclude Include="InteractiveArray.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="TileMap.h" />
-    <ClInclude Include="tinystr.h" />
-    <ClInclude Include="tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project2.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\LuityFroopsLogo.ico" />
+    <Image Include="Icons\rat-looking-right.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Collider.cpp" />
-    <ClCompile Include="Level.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Shit.cpp" />
+    <ClCompile Include="InteractiveArray.cpp" />
+    <ClCompile Include="SDK\Animation.cpp" />
+    <ClCompile Include="SDK\Button.cpp" />
+    <ClCompile Include="SDK\Collider.cpp" />
+    <ClCompile Include="SDK\Level.cpp" />
+    <ClCompile Include="SDK\Object.cpp" />
+    <ClCompile Include="SDK\Player.cpp" />
+    <ClCompile Include="SDK\TileMap.cpp" />
+    <ClCompile Include="SDK\tinystr.cpp" />
+    <ClCompile Include="SDK\tinyxml.cpp" />
+    <ClCompile Include="SDK\tinyxmlerror.cpp" />
+    <ClCompile Include="SDK\tinyxmlparser.cpp" />
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="TileMap.cpp" />
-    <ClCompile Include="tinystr.cpp" />
-    <ClCompile Include="tinyxml.cpp" />
-    <ClCompile Include="tinyxmlerror.cpp" />
-    <ClCompile Include="tinyxmlparser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

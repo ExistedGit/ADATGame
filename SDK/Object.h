@@ -18,6 +18,6 @@ public:
 
 	void Update(float deltaTime);
 
-	void Draw(RenderWindow& wnd);
+	void Draw(RenderWindow& wnd) const;
 };
 

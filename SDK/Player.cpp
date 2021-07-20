@@ -20,13 +20,13 @@ Collider Player::getCollider() {
 void Player::Update(float deltaTime) {
 	velocity.x *= 0;
 
-	if (Keyboard::isKeyPressed(Keyboard::Left)) {
+	if (Keyboard::isKeyPressed(Keyboard::A)) {
 		velocity.x -= speed;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Right)) {
+	if (Keyboard::isKeyPressed(Keyboard::D)) {
 		velocity.x += speed;
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Up)) {
+	if (Keyboard::isKeyPressed(Keyboard::Space)) {
 		if (canJump) {
 			canJump = false;
 			row = 0;

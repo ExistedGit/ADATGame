@@ -19,6 +19,6 @@ void Object::Update(float deltaTime) {
 	if (gravity) Collider(body).Move(0, 981.0f * deltaTime * weight);
 }
 
-void Object::Draw(RenderWindow& wnd) {
+void Object::Draw(RenderWindow& wnd) const {
 	wnd.draw(body);
 }

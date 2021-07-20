@@ -13,12 +13,14 @@ private:
 	vector<Object> objects;
 
 	void insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, TileMap> tmap);
+	bool _bordered = false;
 public:
+	bool bordered() const;
 
 	vector<Object>& getObjects();
 
 	Level& load(const string& filename, Vector2f offset = Vector2f(0, 0), const RenderWindow* window = nullptr);
 
-	void Draw(RenderWindow& wnd, Player* player = nullptr);
+	void Draw(RenderWindow& wnd, Player* player = nullptr) const;
 };
 

@@ -13,36 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="TinyXML">
-      <UniqueIdentifier>{f8878256-2b52-4f72-9555-bb37b5713702}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\SDK">
+      <UniqueIdentifier>{136d5cd7-488d-4550-8fd8-7a3619ee9a00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
+    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="tinystr.h">
-      <Filter>TinyXML</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml.h">
-      <Filter>TinyXML</Filter>
-    </ClInclude>
-    <ClInclude Include="TileMap.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Level.h">
+    <ClInclude Include="InteractiveArray.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
@@ -52,7 +34,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\LuityFroopsLogo.ico">
+    <Image Include="Icons\rat-looking-right.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>
@@ -60,37 +42,40 @@
     <ClCompile Include="Source.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Shit.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="SDK\Animation.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="SDK\Button.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="SDK\Collider.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="SDK\Level.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="SDK\Object.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxmlparser.cpp">
-      <Filter>TinyXML</Filter>
+    <ClCompile Include="SDK\Player.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="tinystr.cpp">
-      <Filter>TinyXML</Filter>
+    <ClCompile Include="SDK\TileMap.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxml.cpp">
-      <Filter>TinyXML</Filter>
+    <ClCompile Include="SDK\tinystr.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxmlerror.cpp">
-      <Filter>TinyXML</Filter>
+    <ClCompile Include="SDK\tinyxml.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="TileMap.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="SDK\tinyxmlerror.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="Level.cpp">
+    <ClCompile Include="SDK\tinyxmlparser.cpp">
+      <Filter>Файлы заголовков\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="InteractiveArray.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
