@@ -1,6 +1,6 @@
 #include "Button.h"
 
-Button::Button(Texture* text, const Vector2f& size, const Vector2f& pos) {
+ClickButton::ClickButton(Texture* text, const Vector2f& size, const Vector2f& pos) {
 
 	body = RectangleShape(size);
 	body.setPosition(pos);
@@ -8,11 +8,11 @@ Button::Button(Texture* text, const Vector2f& size, const Vector2f& pos) {
 	
 }
 
-bool Button::intersects(const Vector2f& pos) const {
+bool ClickButton::intersects(const Vector2f& pos) const {
 	return FloatRect(body.getPosition(), body.getSize()).contains(pos);
 }
 
-void Button::draw(RenderWindow& wnd) {
+void ClickButton::draw(RenderWindow& wnd) {
 	wnd.draw(body);
 }
 
@@ -20,18 +20,18 @@ void IButtonArray::draw(RenderWindow& wnd) {
 	for (auto& it : buttons) it.draw(wnd);
 }
 
-void IButtonArray::addButton(const Button& button) {
+void IButtonArray::addButton(const ClickButton& button) {
 	buttons.push_back(button);
 }
 
-IButtonArray::IButtonArray(const std::initializer_list<Button>& il) : buttons(il) {}
+IButtonArray::IButtonArray(const std::initializer_list<ClickButton>& il) : buttons(il) {}
 
 MusicPlayer::MusicPlayer(const std::vector<pair<std::string, std::string>>& src) : sources(src) {
 	
 	vector<Texture*> buttonTextures = {new Texture()};
 	buttonTextures[0]->loadFromFile("Textures/button.png");
 
-	addButton(Button(buttonTextures[0], Vector2f(64, 64), Vector2f(400, 400)));
+	addButton(ClickButton(buttonTextures[0], Vector2f(64, 64), Vector2f(400, 400)));
 
 	if (!src.empty()) {
 		music.openFromFile(src[0].second);

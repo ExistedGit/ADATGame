@@ -3,10 +3,10 @@
 Collider::Collider(RectangleShape& body) : body(body) {
 
 }
-void Collider::Move(float x, float y) {
+void Collider::Move(float x, float y){
 	body.move(x, y);
 }
-Vector2f Collider::getHS() {
+Vector2f Collider::getHS() const {
 	return body.getSize() / 2.0f;
 }
 
@@ -67,6 +67,6 @@ bool Collider::CheckCollision(Collider other, Vector2f& direction, float push, b
 	return false;
 }
 
-Vector2f Collider::getPosition() {
+Vector2f Collider::getPosition() const {
 	return body.getPosition();
 };

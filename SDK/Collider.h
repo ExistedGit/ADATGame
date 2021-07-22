@@ -14,8 +14,8 @@ public:
 
 	void Move(float x, float y);
 
-	Vector2f getPosition();
-	Vector2f getHS();
+	Vector2f getPosition() const ;
+	Vector2f getHS() const;
 
 	bool CheckCollision(Collider other, Vector2f& direction, float push = 1, bool pushable = true);;
 

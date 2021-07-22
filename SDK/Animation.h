@@ -10,15 +10,20 @@ protected:
 	Vector2u currFrame;
 	Texture* texture;
 	
-	float switchTime;
+	float switchTime = 0;
 	float totalTime = 0;
-	RenderTexture* r = new RenderTexture();
+	
+	unsigned int _row = 0;
 public:
 	IntRect uvRect;
 
 	Animation(Texture* text, Vector2u frameCount, float switchTime);;
 
 	void Update(unsigned int row, float deltaTime, bool mirrored);
+	
+	unsigned int getRow() const {
+		return _row;
+	}
 	//void setScale(Vector2f scale) {
 	//	Sprite* sp = new Sprite();
 	//	sp->setTexture(*texture);

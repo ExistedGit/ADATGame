@@ -82,15 +82,18 @@ int main() {
 		while (mainWindow.pollEvent(ev)) {
 			switch (ev.type) {
 			case Event::Closed:
-				
+
 				mainWindow.close();
 				return 0;
 				break;
 			case Event::Resized:
 				view.setSize(Vector2f(mainWindow.getSize()));//VIEW_HEIGHT * (float(mainWindow.getSize().x) / float(mainWindow.getSize().y)), VIEW_HEIGHT);
 				break;
-			case Event::KeyReleased:
-				switch(ev.key.code) {
+			case Event::KeyPressed:
+				levels[switched].checkInteraction(ev, player);
+				break;
+			case Event::KeyReleased: {
+				switch (ev.key.code) {
 				case Keyboard::X:
 					switched = !switched;
 					mp.next();
@@ -102,6 +105,20 @@ int main() {
 					mp.setPosition(0);
 					break;
 				}
+
+				InteractiveObject* objPointer = levels[switched].checkInteraction(ev, player);
+				
+				if (objPointer != nullptr) 
+					if (objPointer->getType() == IntObjType::Button) {
+						auto* button = (InteractiveButton*)objPointer;
+						if (button->pressed)
+							if (button->getName() == "playButton") {
+								if (mp.getStatus() == Music::Playing) mp.pause();
+								else mp.play();
+							}
+						button->pressed = false;
+					}
+			}
 				break;
 			case Event::MouseButtonReleased:
 				if (ev.mouseButton.button == Mouse::Button::Left) {
@@ -130,11 +147,12 @@ int main() {
 		//		levels[switched].getObjects()[i].Draw(mainWindow);
 		//	}
 		//}
-
+		levels[switched].Update(player);
 		levels[switched].Draw(mainWindow, &player);
 
 		view.setCenter(player.getPos());
 		mainWindow.setView(view);
+
 
 		mp.draw(mainWindow);
 		mainWindow.draw(songText);

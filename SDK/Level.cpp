@@ -30,6 +30,9 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 	tileLayers.clear();
 	objects.clear();
 
+#pragma region Генерация границ окна
+
+
 	_bordered = window != nullptr;
 	if (_bordered) {
 		objects.insert(objects.begin(), Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, window->getSize().y))); // Снизу окна
@@ -37,8 +40,8 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 		objects.insert(objects.begin(), Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(0, window->getSize().y / 2))); // Слева
 		objects.insert(objects.begin(), Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(window->getSize().x + 1, window->getSize().y / 2))); // Справа
 	}
+#pragma endregion
 
-	system("cls");
 
 	TiXmlDocument doc(filename.c_str());
 	doc.LoadFile();
@@ -84,13 +87,37 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 #pragma endregion
 
 #pragma region Обработка объектов
+	
+
 	TiXmlElement* objGroup = map->FirstChildElement("objectgroup");
+	std::map<string, vector<string>> knownInteractives;
 	for (TiXmlElement* child = objGroup->FirstChildElement("object"); child != NULL; child = child->NextSiblingElement())
 	{
-		if (string(child->Attribute("name")) == "solid") {
+		string objName = string(child->Attribute("name"));
+		if (objName == "solid") {
 			int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
 			int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
 			objects.push_back(Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), true));
+		}
+		else {
+			istringstream ss(objName);
+			string specifier, interactiveName;
+			ss >> specifier >> interactiveName;
+
+			if (specifier == "button") {
+				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя кнопки");
+				
+				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
+				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
+				Texture* buttonTexture = new Texture();
+				if (!buttonTexture->loadFromFile("Textures/" + interactiveName + ".png")) {
+					delete buttonTexture;
+					buttonTexture = nullptr;
+				}
+
+				interactives.push_back(new InteractiveButton(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), Keyboard::E, interactiveName));
+			}
+			else throw runtime_error("Level.load(): недопустимое имя объекта(интерактивные объекты)");
 		}
 	}
 #pragma endregion
@@ -103,29 +130,50 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 	for (auto& it : tileLayers) {
 		it.second.move(offset.x, offset.y - 32 * height);
 	}
+	for (auto& it : interactives) {
+		it->move(Vector2f(offset.x, offset.y - 32 * height));
+	}
 #pragma endregion
 	return *this;
 }
 
 void Level::Draw(RenderWindow& wnd, Player* player) const {
 	// Отрисовка заднего плана
-	for (auto& it : tileLayers) {
+	for (auto& it : tileLayers) 
 		if (it.first < 0)
 			wnd.draw(it.second);
-	}
 
-	if (player != nullptr)player->Draw(wnd);
+	// Отрисовка интерактивных объектов
+	for (auto& it : interactives)
+		if (it->getTexture() != nullptr) it->Draw(wnd);
+
+	if (player != nullptr)
+		player->Draw(wnd);
 
 	// Отрисовка переднего плана
-	for (auto& it : tileLayers) {
+	for (auto& it : tileLayers) 
 		if (it.first > 0)
 			wnd.draw(it.second);
-	}
+	
 
-	if (_bordered) {
-		for (int i = 0; i < 4; i++) {
+	
+
+	if (_bordered) 
+		for (int i = 0; i < 4; i++)
 			objects[i].Draw(wnd);
-		}
-	}
+		
+	
 
+}
+
+void Level::Update(Player& player) {
+	for (auto& obj : interactives)
+		if (obj->active)
+			if (!player.getCollider().collides(obj->getCollider()))
+				if (obj->getType() == IntObjType::Button)
+				{
+					auto& button = *(InteractiveButton*)obj;
+					if (button.getRow() == 1) button.Update();
+					button.pressed = false;
+				}
 }

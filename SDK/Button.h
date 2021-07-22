@@ -10,13 +10,13 @@ using namespace std;
 
 extern const Clock cl;
 
-class Button
+class ClickButton
 {
 private:
 	RectangleShape body;
 	
 public:
-	Button(Texture* text, const Vector2f& size, const Vector2f& pos);;
+	ClickButton(Texture* text, const Vector2f& size, const Vector2f& pos);;
 
 	bool intersects(const Vector2f& pos) const;;
 	void draw(RenderWindow& wnd);
@@ -24,16 +24,16 @@ public:
 
 class IButtonArray {
 protected:
-	std::vector<Button> buttons;
+	std::vector<ClickButton> buttons;
 public:
 	virtual void CheckClick(const Event& ev, RenderWindow& wnd, const View& view) = 0;
 	virtual void Click(int index) = 0;
 
 	void draw(RenderWindow& wnd);
 
-	void addButton(const Button& button);
+	void addButton(const ClickButton& button);
 
-	IButtonArray(const std::initializer_list<Button>& il = {});;
+	IButtonArray(const std::initializer_list<ClickButton>& il = {});;
 };
 
 class MusicPlayer : public IButtonArray {

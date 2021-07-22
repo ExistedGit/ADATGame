@@ -13,6 +13,7 @@ Animation::Animation(Texture* text, Vector2u frameCount, float switchTime) {
 
 void Animation::Update(unsigned int row, float deltaTime, bool mirrored) {
 	currFrame.y = row;
+	_row = row;
 	totalTime += deltaTime;
 
 	if (totalTime >= switchTime) {
