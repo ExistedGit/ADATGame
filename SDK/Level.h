@@ -16,6 +16,8 @@ private:
 	void insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, TileMap> tmap);
 	bool _bordered = false;
 public:
+	using InteractiveArray::InteractiveArray;
+
 	bool bordered() const;
 
 	vector<Object>& getObjects();

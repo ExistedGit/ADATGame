@@ -36,18 +36,23 @@ public:
 	IButtonArray(const std::initializer_list<ClickButton>& il = {});;
 };
 
+class Song : public Music {
+private:
+	string name;
+public:
+	Song(const string& songname, const string& filename);
+
+	const string& getName();
+};
+
 class MusicPlayer : public IButtonArray {
 private:  
-	std::vector<pair<std::string, std::string>> sources;
+	std::vector<Song*> songs;
 	int currentIndex = 0;
-
-	Music music;
-
-	bool _muted = false;
 
 	float lastSwitchTime =0;
 public:
-	MusicPlayer(const std::vector<pair<std::string, std::string>>& src);
+	MusicPlayer(const std::vector<Song*>& src);
 
 	void CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override;
 	void Click(int index) override;
@@ -61,51 +66,20 @@ public:
 
 	bool muted();
 
-	void next() {
-		if (currentIndex + 1 >= sources.size()) 
-			currentIndex = 0;
-		else 
-			currentIndex++;
-		music.openFromFile(sources[currentIndex].second);
-	};
+	void next();;
 
-	void prev() {
-		if (currentIndex - 1 < 0) 
-			currentIndex = sources.size();
-		else 
-			currentIndex--;
-		
-		music.openFromFile(sources[currentIndex].second);
-	};
+	void prev();;
 
-	void restart() {
-		setPosition(0);
-	}
+	void restart();
 
 	// Возвращает правду, если музыка ещё играет
-	bool pause() {
-		if (music.getStatus() == Music::Status::Playing) {
-			music.pause();
-			return true;
-		}
-		else return false;
-	}
+	bool pause();
 
 	// Возвращает правду, если музыку ещё не играет
-	bool play() {
-		if (music.getStatus() != Music::Status::Playing) {
-			music.play();
-			return true;
-		}
-		else return false;
-	}
+	bool play();
 
-	Music::Status getStatus() {
-		return music.getStatus();
-	}
+	Music::Status getStatus();
 
-	const string& getSongName() {
-		return sources[currentIndex].first;
-	}
-	bool setMusic(int index);
+	const string& getSongName();
+	bool setMusic(unsigned int index);
 };

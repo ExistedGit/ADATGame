@@ -34,6 +34,8 @@ int main() {
 
 	Font pixelFont;
 	pixelFont.loadFromFile("Fonts/kongtext.ttf");
+	Font hintFont;
+	hintFont.loadFromFile("Fonts/forward.ttf");
 #pragma endregion
 
 
@@ -48,14 +50,18 @@ int main() {
 	buttonTexture->loadFromFile("Textures/button.png");
 	
 	MusicPlayer mp({
-		{ "Never Gonna Give You Up", "Sounds/rickroll.ogg"},
-		{ "Gonna Give You Up",		 "Sounds/llorkcir.ogg"}
+		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
+		new Song("Gonna Give You Up",		 "Sounds/llorkcir.ogg")
 	});
 	Text songText("", pixelFont);
 	songText.setPosition(200, 200);
 
 	while (mainWindow.isOpen()) {
-		while (!mainWindow.hasFocus()) {}
+		while (!mainWindow.hasFocus()) {
+			if (mainWindow.pollEvent(ev)) {
+				if (ev.type == Event::GainedFocus) break;
+			}
+		}
 
 		songText.setString("Now playing " + mp.getSongName() + (mp.getStatus() == Music::Paused || mp.getStatus() == Music::Stopped ? " (Paused)" : ""));
 
@@ -77,7 +83,9 @@ int main() {
 
 		deltaTime = clock.restart().asSeconds();
 		if (deltaTime > 1. / 60.) deltaTime = 1. / 60.;
-		
+
+		view.setCenter(player.getPos());
+		mainWindow.setView(view);
 
 		while (mainWindow.pollEvent(ev)) {
 			switch (ev.type) {
@@ -147,11 +155,11 @@ int main() {
 		//		levels[switched].getObjects()[i].Draw(mainWindow);
 		//	}
 		//}
+
 		levels[switched].Update(player);
 		levels[switched].Draw(mainWindow, &player);
+		levels[switched].drawHint(player, mainWindow, pixelFont);
 
-		view.setCenter(player.getPos());
-		mainWindow.setView(view);
 
 
 		mp.draw(mainWindow);

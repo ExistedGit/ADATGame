@@ -115,7 +115,19 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 					buttonTexture = nullptr;
 				}
 
-				interactives.push_back(new InteractiveButton(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), Keyboard::E, interactiveName));
+				interactives.push_back(new InteractiveButton(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName));
+			} else if (specifier == "lever") {
+				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя рычага");
+
+				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
+				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
+				Texture* buttonTexture = new Texture();
+				if (!buttonTexture->loadFromFile("Textures/" + interactiveName + ".png")) {
+					delete buttonTexture;
+					buttonTexture = nullptr;
+				}
+
+				interactives.push_back(new InteractiveLever(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName));
 			}
 			else throw runtime_error("Level.load(): недопустимое имя объекта(интерактивные объекты)");
 		}
@@ -168,7 +180,7 @@ void Level::Draw(RenderWindow& wnd, Player* player) const {
 
 void Level::Update(Player& player) {
 	for (auto& obj : interactives)
-		if (obj->active)
+		if (obj->isActive())
 			if (!player.getCollider().collides(obj->getCollider()))
 				if (obj->getType() == IntObjType::Button)
 				{

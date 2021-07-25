@@ -19,6 +19,12 @@
     <Filter Include="Файлы заголовков\SDK\TinyXML">
       <UniqueIdentifier>{888c6918-b8b8-47b3-b461-f74870ab051e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\SDK\Objects">
+      <UniqueIdentifier>{0bb9c0d3-64f9-42f8-8e82-c6ce25691ec0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\SDK\Level">
+      <UniqueIdentifier>{89ad9764-09a4-4f36-9389-c17f2c305188}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -42,27 +48,6 @@
     <ClCompile Include="Source.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="SDK\Animation.cpp">
-      <Filter>Файлы заголовков\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Button.cpp">
-      <Filter>Файлы заголовков\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Collider.cpp">
-      <Filter>Файлы заголовков\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Level.cpp">
-      <Filter>Файлы заголовков\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Object.cpp">
-      <Filter>Файлы заголовков\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\Player.cpp">
-      <Filter>Файлы заголовков\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="SDK\TileMap.cpp">
-      <Filter>Файлы заголовков\SDK</Filter>
-    </ClCompile>
     <ClCompile Include="SDK\tinystr.cpp">
       <Filter>Файлы заголовков\SDK\TinyXML</Filter>
     </ClCompile>
@@ -75,8 +60,29 @@
     <ClCompile Include="SDK\tinyxmlparser.cpp">
       <Filter>Файлы заголовков\SDK\TinyXML</Filter>
     </ClCompile>
+    <ClCompile Include="SDK\Object.cpp">
+      <Filter>Файлы заголовков\SDK\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Player.cpp">
+      <Filter>Файлы заголовков\SDK\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Animation.cpp">
+      <Filter>Файлы заголовков\SDK\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\TileMap.cpp">
+      <Filter>Файлы заголовков\SDK\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Level.cpp">
+      <Filter>Файлы заголовков\SDK\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Collider.cpp">
+      <Filter>Файлы заголовков\SDK\Objects</Filter>
+    </ClCompile>
     <ClCompile Include="SDK\InteractiveArray.cpp">
-      <Filter>Файлы заголовков\SDK</Filter>
+      <Filter>Файлы заголовков\SDK\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Button.cpp">
+      <Filter>Файлы заголовков\SDK\Objects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
