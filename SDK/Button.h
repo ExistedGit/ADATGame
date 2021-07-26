@@ -19,9 +19,9 @@ public:
 	function<void()> use;
 	ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use = []() {});;
 
-	bool intersects(const Vector2f& pos) const;;
+	bool intersects(const Vector2f& pos) const noexcept;;
 	void draw(RenderWindow& wnd);
-	const string& getName() const;
+	const string& getName() const noexcept;
 	
 };
 
@@ -45,7 +45,7 @@ private:
 public:
 	Song(const string& songname, const string& filename);
 
-	const string& getName();
+	const string& getName() const noexcept;
 };
 
 class MusicPlayer : public IButtonArray {
@@ -71,29 +71,29 @@ public:
 	void CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override;
 	void Click(int index) override;
 
-	void setPosition(float pos);;
-	void setVolume(float volume);
-	float getVolume() const;
+	void setPosition(float pos) noexcept;;
+	void setVolume(float volume) noexcept;
+	float getVolume() const noexcept;
 
-	void mute();
-	void unmute();
+	void mute() noexcept;
+	void unmute() noexcept;
 
-	bool muted();
+	bool muted() const noexcept;
 
-	void next();;
+	void next() noexcept;;
 
-	void prev();;
+	void prev() noexcept;;
 
-	void restart();
+	void restart() noexcept;
 
 	// Возвращает правду, если музыка ещё играет
-	bool pause();
+	bool pause() noexcept;
 
 	// Возвращает правду, если музыку ещё не играет
-	bool play();
+	bool play() noexcept;
 
-	Music::Status getStatus();
+	Music::Status getStatus() const noexcept;
 
-	const string& getSongName();
+	const string& getSongName() const noexcept;
 	bool setMusic(unsigned int index);
 };

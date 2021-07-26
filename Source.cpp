@@ -8,6 +8,7 @@
 
 #include <SFML/Audio.hpp>
 #include <any>
+#include <ConfigManager.h>
 
 const Clock cl;
 
@@ -19,28 +20,37 @@ using namespace std;
 
 int main() {
 #pragma region Инициализация
-	vector<Level> levels = {};
+	cout.setf(ios::boolalpha);
+	
+	
 
 	View view(Vector2f(0, 0), Vector2f(1920, 1080));
 	RenderWindow mainWindow(sf::VideoMode(1920, 1080), L"ВЫ — КРЫСА!");
+	vector<Level> levels = ConfigManager::loadLevels(mainWindow);
+
+	Texture* playerTexture = new Texture();
+	playerTexture->loadFromFile("Textures/NewRatR.png");
+
+	Player player(playerTexture, Vector2u(4, 2), 0.15, 500, 150, 1, Vector2f(200, 200));
 
 	MusicPlayer mp({
 		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
 		new Song("Gonna Give You Up",		 "Sounds/llorkcir.ogg")
 		});
 	
-	Texture* playerTexture = new Texture();
-	playerTexture->loadFromFile("Textures/NewRatR.png");
-
-	Player player(playerTexture, Vector2u(4, 2), 0.15, 600, 150, 1, Vector2f(200, 200));
-
-	levels.push_back(Level().load("TileMap/untitled.tmx", Vector2f(1, 1079), &mainWindow, 
-		{
-			{"playButton", [mp]() mutable {
+	bool viewCentered = true;
+	levels[0].applyFuncMap({
+			{"playButton", [&mp]() mutable {
 				if (!mp.play()) mp.pause();
 			}
-		}}));
-	levels.push_back(Level().load("TileMap/other map.tmx", Vector2f(32 * 4 + 1, 1079), &mainWindow));
+		} });
+	levels[1].applyFuncMap({
+			{"lever", [&viewCentered]() mutable {
+				viewCentered = !viewCentered;
+				cout << viewCentered << endl;
+			}
+			}
+		});
 
 
 	Font pixelFont;
@@ -89,7 +99,7 @@ int main() {
 		if (deltaTime > 1. / 60.) deltaTime = 1. / 60.;
 
 		view.setCenter(player.getPos());
-		mainWindow.setView(view);
+		if(viewCentered) mainWindow.setView(view);
 
 		while (mainWindow.pollEvent(ev)) {
 

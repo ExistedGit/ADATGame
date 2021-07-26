@@ -154,11 +154,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
+    <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SDK\AnimatedSprite.h" />
     <ClInclude Include="SDK\Animation.h" />
     <ClInclude Include="SDK\Button.h" />
     <ClInclude Include="SDK\Collider.h" />
+    <ClInclude Include="SDK\ConfigManager.h" />
     <ClInclude Include="SDK\InteractiveArray.h" />
     <ClInclude Include="SDK\Level.h" />
     <ClInclude Include="SDK\Object.h" />
@@ -174,9 +176,11 @@
     <Image Include="Icons\rat-looking-right.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="SDK\Animation.cpp" />
     <ClCompile Include="SDK\Button.cpp" />
     <ClCompile Include="SDK\Collider.cpp" />
+    <ClCompile Include="SDK\ConfigManager.cpp" />
     <ClCompile Include="SDK\InteractiveArray.cpp" />
     <ClCompile Include="SDK\Level.cpp" />
     <ClCompile Include="SDK\Object.cpp" />

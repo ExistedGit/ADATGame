@@ -1,6 +1,6 @@
 #include "Button.h"
 
-const string& ClickButton::getName() const { return name; }
+const string& ClickButton::getName() const noexcept { return name; }
 
 ClickButton::ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use) : name(name), use(use) {
 
@@ -10,7 +10,7 @@ ClickButton::ClickButton(Texture* text, const string& name, const Vector2f& size
 	
 }
 
-bool ClickButton::intersects(const Vector2f& pos) const {
+bool ClickButton::intersects(const Vector2f& pos) const noexcept {
 	return FloatRect(body.getPosition(), body.getSize()).contains(pos);
 }
 
@@ -65,11 +65,11 @@ void MusicPlayer::Click(int index) {
 	}
 }
 
-void MusicPlayer::setPosition(float pos) {
+void MusicPlayer::setPosition(float pos) noexcept {
 	songs[currentIndex]->setPlayingOffset(seconds(0));
 }
 
-void MusicPlayer::setVolume(float volume) {
+void MusicPlayer::setVolume(float volume) noexcept {
 	if (volume >= 0) {
 		if (cl.getElapsedTime().asSeconds() - lastSwitchTime >= 0.02) {
 			songs[currentIndex]->setVolume(volume);
@@ -78,13 +78,13 @@ void MusicPlayer::setVolume(float volume) {
 	}
 }
 
-void MusicPlayer::mute() { songs[currentIndex]->setVolume(0); }
+void MusicPlayer::mute() noexcept { songs[currentIndex]->setVolume(0); }
 
-void MusicPlayer::unmute() { songs[currentIndex]->setVolume(100);}
+void MusicPlayer::unmute() noexcept { songs[currentIndex]->setVolume(100);}
 
-bool MusicPlayer::muted() { return songs[currentIndex]->getVolume() == 0; }
+bool MusicPlayer::muted() const noexcept { return songs[currentIndex]->getVolume() == 0; }
 
-void MusicPlayer::next() {
+void MusicPlayer::next()noexcept {
 	songs[currentIndex]->pause();
 	if (currentIndex + 1 >= songs.size())
 		currentIndex = 0;
@@ -93,7 +93,7 @@ void MusicPlayer::next() {
 
 }
 
-void MusicPlayer::prev() {
+void MusicPlayer::prev()noexcept {
 	songs[currentIndex]->pause();
 	if (currentIndex - 1 < 0)
 		currentIndex = songs.size();
@@ -102,13 +102,13 @@ void MusicPlayer::prev() {
 
 }
 
-void MusicPlayer::restart() {
+void MusicPlayer::restart()noexcept {
 	setPosition(0);
 }
 
 // Возвращает правду, если музыка ещё играет
 
-bool MusicPlayer::pause() {
+bool MusicPlayer::pause()noexcept {
 	if (songs[currentIndex]->getStatus() == Music::Status::Playing) {
 		songs[currentIndex]->pause();
 		return true;
@@ -118,7 +118,7 @@ bool MusicPlayer::pause() {
 
 // Возвращает правду, если музыку ещё не играет
 
-bool MusicPlayer::play() {
+bool MusicPlayer::play() noexcept {
 	if (songs[currentIndex]->getStatus() != Music::Status::Playing) {
 		songs[currentIndex]->play();
 		return true;
@@ -126,15 +126,15 @@ bool MusicPlayer::play() {
 	else return false;
 }
 
-Music::Status MusicPlayer::getStatus() {
+Music::Status MusicPlayer::getStatus() const noexcept  {
 	return songs[currentIndex]->getStatus();
 }
 
-float MusicPlayer::getVolume() const {
+float MusicPlayer::getVolume() const noexcept  {
 	return songs[currentIndex]->getVolume();
 }
 
-const string& MusicPlayer::getSongName() {
+const string& MusicPlayer::getSongName() const noexcept {
 	return songs[currentIndex]->getName();
 }
 
@@ -150,6 +150,6 @@ Song::Song(const string& songname, const string& filename) :
 	openFromFile(filename);
 }
 
-const string& Song::getName() {
+const string& Song::getName() const noexcept {
 	return name;
 }

@@ -63,15 +63,15 @@ void Player::onCollision(const Vector2f& direction) {
 	
 }
 
-void Player::Draw(RenderWindow& wnd) {
+void Player::Draw(RenderWindow& wnd) const {
 	wnd.draw(body);
 }
 
-Vector2f Player::getPos() {
+Vector2f Player::getPos() const {
 	return body.getPosition();
 }
 
-float Player::getWeight() {
+float Player::getWeight() const {
 	return weight;
 }
 

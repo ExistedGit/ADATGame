@@ -25,6 +25,14 @@ public:
 	Level& load(const string& filename, const Vector2f& offset = Vector2f(0, 0), const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
 
 	void Draw(RenderWindow& wnd, Player* player = nullptr) const;
+	
+	void applyFuncMap(map<string, function<void()>> map) {
+		for (auto& obj : interactives) {
+			if (map.count(obj->getName())) {
+				obj->use = map[obj->getName()];
+			}
+		}
+	}
 
 	void Update(Player& player) override;
 };

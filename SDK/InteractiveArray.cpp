@@ -16,6 +16,7 @@ void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 								&& button->getRow() == 0) {
 								button->Update();
 								button->pressed = true;
+								if (button->isOneTime()) button->use();
 							}
 							else if (ev.type == Event::KeyReleased
 								&& button->getRow() == 1)
@@ -24,14 +25,13 @@ void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 								button->use();
 						}
 			}
-			else if (obj->getType() == IntObjType::Lever) {
+			else if (obj->getType() == IntObjType::Lever
+				&& ev.type == Event::KeyReleased) {
 				auto* lever = (InteractiveLever*)obj;
 				if (lever->isActive())
 					if (ev.key.code == InteractiveObject::interactKey)
 						if (player.getCollider().collides(lever->getCollider())) {
-							if (ev.type == Event::KeyReleased)
-								lever->Update();
-
+							lever->Update();
 							lever->use();
 						}
 			}

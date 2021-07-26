@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Loader>
+	<Level id = "1" x="1" y="1079">
+	untitled.tmx
+	</Level>
+	<Level id = "2" x="129" y="1079">
+	other map.tmx
+	</Level>
+</Loader>

@@ -14,9 +14,9 @@ public:
 	
 	void onCollision(const Vector2f& direction);
 
-	void Draw(RenderWindow& wnd);
-	Vector2f getPos();
-	float getWeight();
+	void Draw(RenderWindow& wnd) const;
+	Vector2f getPos() const;
+	float getWeight() const;
 	void setWeight(float weight);
 private:
 	RectangleShape body;
