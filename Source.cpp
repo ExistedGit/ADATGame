@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include <SFML/Audio.hpp>
+#include <any>
 
 const Clock cl;
 
@@ -22,14 +23,24 @@ int main() {
 
 	View view(Vector2f(0, 0), Vector2f(1920, 1080));
 	RenderWindow mainWindow(sf::VideoMode(1920, 1080), L"ÂÛ — ÊÐÛÑÀ!");
+
+	MusicPlayer mp({
+		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
+		new Song("Gonna Give You Up",		 "Sounds/llorkcir.ogg")
+		});
 	
 	Texture* playerTexture = new Texture();
 	playerTexture->loadFromFile("Textures/NewRatR.png");
 
 	Player player(playerTexture, Vector2u(4, 2), 0.15, 600, 150, 1, Vector2f(200, 200));
-	
-	levels.push_back(Level().load("TileMap/untitled.tmx", Vector2f(1, 767), &mainWindow));
-	levels.push_back(Level().load("TileMap/other map.tmx", Vector2f(32 * 4 + 1, 767), &mainWindow));
+
+	levels.push_back(Level().load("TileMap/untitled.tmx", Vector2f(1, 1079), &mainWindow, 
+		{
+			{"playButton", [mp]() mutable {
+				if (!mp.play()) mp.pause();
+			}
+		}}));
+	levels.push_back(Level().load("TileMap/other map.tmx", Vector2f(32 * 4 + 1, 1079), &mainWindow));
 
 
 	Font pixelFont;
@@ -38,23 +49,16 @@ int main() {
 	hintFont.loadFromFile("Fonts/forward.ttf");
 #pragma endregion
 
+	
 
 	Clock clock;
 	float deltaTime = 0;
 	Event ev;
-	
+
 	bool switched = false;
-
-
-	Texture* buttonTexture = new Texture();
-	buttonTexture->loadFromFile("Textures/button.png");
 	
-	MusicPlayer mp({
-		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
-		new Song("Gonna Give You Up",		 "Sounds/llorkcir.ogg")
-	});
 	Text songText("", pixelFont);
-	songText.setPosition(200, 200);
+	songText.setPosition(200, 500);
 
 	while (mainWindow.isOpen()) {
 		while (!mainWindow.hasFocus()) {
@@ -77,7 +81,7 @@ int main() {
 		if (Keyboard::isKeyPressed((Keyboard::Key)55)) {
 			mp.setVolume(mp.getVolume() + 1);
 		}
-		
+
 
 		mainWindow.clear();
 
@@ -88,6 +92,7 @@ int main() {
 		mainWindow.setView(view);
 
 		while (mainWindow.pollEvent(ev)) {
+
 			switch (ev.type) {
 			case Event::Closed:
 
@@ -97,8 +102,7 @@ int main() {
 			case Event::Resized:
 				view.setSize(Vector2f(mainWindow.getSize()));//VIEW_HEIGHT * (float(mainWindow.getSize().x) / float(mainWindow.getSize().y)), VIEW_HEIGHT);
 				break;
-			case Event::KeyPressed:
-				levels[switched].checkInteraction(ev, player);
+			case Event::KeyPressed: {}
 				break;
 			case Event::KeyReleased: {
 				switch (ev.key.code) {
@@ -113,29 +117,16 @@ int main() {
 					mp.setPosition(0);
 					break;
 				}
-
-				InteractiveObject* objPointer = levels[switched].checkInteraction(ev, player);
-				
-				if (objPointer != nullptr) 
-					if (objPointer->getType() == IntObjType::Button) {
-						auto* button = (InteractiveButton*)objPointer;
-						if (button->pressed)
-							if (button->getName() == "playButton") {
-								if (mp.getStatus() == Music::Playing) mp.pause();
-								else mp.play();
-							}
-						button->pressed = false;
-					}
-			}
-				break;
+				}
 			case Event::MouseButtonReleased:
 				if (ev.mouseButton.button == Mouse::Button::Left) {
 					mp.CheckClick(ev, mainWindow, view);
 				}
 				break;
 			}
+			levels[switched].checkInteraction(ev, player);
 		}
-		
+
 		player.Update(deltaTime);
 
 		Vector2f direction;

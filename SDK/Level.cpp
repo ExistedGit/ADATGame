@@ -26,7 +26,7 @@ vector<Object>& Level::getObjects() {
 	return objects;
 }
 
-Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* window) {
+Level& Level::load(const string& filename, const Vector2f& offset, const RenderWindow* window, map<string, function<void()>> useMap) {
 	tileLayers.clear();
 	objects.clear();
 
@@ -103,6 +103,16 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 			istringstream ss(objName);
 			string specifier, interactiveName;
 			ss >> specifier >> interactiveName;
+			
+			bool oneTime = false;
+
+			if (child->Attribute("type")!=nullptr) {
+				string type;
+				istringstream typestream(child->Attribute("type"));
+				typestream >> type;
+				
+				oneTime = type == "oneTime";
+			}
 
 			if (specifier == "button") {
 				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя кнопки");
@@ -115,19 +125,20 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 					buttonTexture = nullptr;
 				}
 
-				interactives.push_back(new InteractiveButton(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName));
+
+				interactives.push_back(new InteractiveButton(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 			} else if (specifier == "lever") {
 				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя рычага");
 
 				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
 				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
-				Texture* buttonTexture = new Texture();
-				if (!buttonTexture->loadFromFile("Textures/" + interactiveName + ".png")) {
-					delete buttonTexture;
-					buttonTexture = nullptr;
+				Texture* leverTexture = new Texture();
+				if (!leverTexture->loadFromFile("Textures/" + interactiveName + ".png")) {
+					delete leverTexture;
+					leverTexture = nullptr;
 				}
 
-				interactives.push_back(new InteractiveLever(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName));
+				interactives.push_back(new InteractiveLever(leverTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 			}
 			else throw runtime_error("Level.load(): недопустимое имя объекта(интерактивные объекты)");
 		}

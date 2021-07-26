@@ -22,7 +22,7 @@ public:
 
 	vector<Object>& getObjects();
 
-	Level& load(const string& filename, Vector2f offset = Vector2f(0, 0), const RenderWindow* window = nullptr);
+	Level& load(const string& filename, const Vector2f& offset = Vector2f(0, 0), const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
 
 	void Draw(RenderWindow& wnd, Player* player = nullptr) const;
 

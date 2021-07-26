@@ -4,22 +4,25 @@
 #include <mutex>
 #include <vector>
 #include <map>
+#include <functional>
 
 using namespace sf;
 using namespace std;
 
 extern const Clock cl;
-
 class ClickButton
 {
 private:
 	RectangleShape body;
-	
+	string name;
 public:
-	ClickButton(Texture* text, const Vector2f& size, const Vector2f& pos);;
+	function<void()> use;
+	ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use = []() {});;
 
 	bool intersects(const Vector2f& pos) const;;
 	void draw(RenderWindow& wnd);
+	const string& getName() const;
+	
 };
 
 class IButtonArray {
@@ -49,10 +52,21 @@ class MusicPlayer : public IButtonArray {
 private:  
 	std::vector<Song*> songs;
 	int currentIndex = 0;
+	//std::map<string, any> mpMap = {
+	//{
+	//	"playButton",
+	//	std::function<void()>([this]()->void {
+	//		if (!this->play()) this->pause();
+	//	})
+	//}
+	//};;
 
 	float lastSwitchTime =0;
 public:
+	
+
 	MusicPlayer(const std::vector<Song*>& src);
+	
 
 	void CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override;
 	void Click(int index) override;

@@ -1,10 +1,12 @@
 #include "InteractiveArray.h"
 Keyboard::Key InteractiveObject::interactKey = Keyboard::Key::E;
 
-InteractiveObject* InteractiveArray::checkInteraction(Event& ev, Player& player) {
+
+
+void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 	if (ev.type == Event::KeyReleased ||
 		ev.type == Event::KeyPressed)
-		for (auto& obj : interactives) {
+		for (auto& obj : interactives) 
 			if (obj->getType() == IntObjType::Button) {
 				auto* button = (InteractiveButton*)obj;
 				if (button->isActive())
@@ -16,10 +18,10 @@ InteractiveObject* InteractiveArray::checkInteraction(Event& ev, Player& player)
 								button->pressed = true;
 							}
 							else if (ev.type == Event::KeyReleased
-								&& button->getRow() == 1) {
+								&& button->getRow() == 1)
 								button->Update();
-							}
-							return (InteractiveObject*)button;
+							if (ev.type == Event::KeyReleased)
+								button->use();
 						}
 			}
 			else if (obj->getType() == IntObjType::Lever) {
@@ -29,12 +31,11 @@ InteractiveObject* InteractiveArray::checkInteraction(Event& ev, Player& player)
 						if (player.getCollider().collides(lever->getCollider())) {
 							if (ev.type == Event::KeyReleased)
 								lever->Update();
-							
-							return (InteractiveObject*)lever;
+
+							lever->use();
 						}
 			}
-		}
-	return nullptr;
+		
 }
 
 void InteractiveArray::addObject(InteractiveObject* obj) {
@@ -42,7 +43,7 @@ void InteractiveArray::addObject(InteractiveObject* obj) {
 }
 
 void InteractiveArray::drawHint(Player& player, RenderWindow& wnd, Font& font) {
-	if(hintText.getFont() == nullptr || 
+	if (hintText.getFont() == nullptr ||
 		hintText.getFont()->getInfo().family != font.getInfo().family)
 		hintText.setFont(font);
 
@@ -51,17 +52,17 @@ void InteractiveArray::drawHint(Player& player, RenderWindow& wnd, Font& font) {
 		if (it->isActive())
 			if (it->getCollider().collides(player.getCollider())) {
 				collides = true;
-				if(hintOpacity + opacityOffset < 255)
+				if (hintOpacity + opacityOffset < 255)
 					hintOpacity += opacityOffset;
-				}
-
-	hintText.setPosition(player.getCollider().getPosition());
-	hintText.move(0, -player.getCollider().getHS().y - hintText.getCharacterSize());
-	wnd.draw(hintText);
-	
+			}
 	if (!collides)
 		if (hintOpacity - opacityOffset > 0)
 			hintOpacity -= opacityOffset;
+	if (hintOpacity != 0) {
+		hintText.setPosition(player.getCollider().getPosition());
+		hintText.move(0, -player.getCollider().getHS().y - hintText.getCharacterSize());
+		wnd.draw(hintText);
+	}
 
 	hintText.setColor(Color(hintText.getColor().r,
 		hintText.getColor().g,
@@ -69,11 +70,13 @@ void InteractiveArray::drawHint(Player& player, RenderWindow& wnd, Font& font) {
 		hintOpacity));
 }
 
-InteractiveObject::InteractiveObject(Texture* text, Vector2f size, Vector2f pos, string name, IntObjType type) :
+InteractiveObject::InteractiveObject(Texture* text, Vector2f size, Vector2f pos, string name, IntObjType type, function<void()> use, bool oneTime) :
 	Object(text, size, pos),
 	name(name),
 	type(type),
-	anim(text, Vector2u(1, 2), 0)
+	anim(text, Vector2u(1, 2), 0),
+	use(use),
+	oneTime(oneTime)
 {
 	body.setTextureRect(anim.uvRect);
 }
@@ -92,8 +95,8 @@ bool InteractiveObject::isOneTime() const { return oneTime; }
 
 bool InteractiveObject::isActive() const { return active; }
 
-InteractiveButton::InteractiveButton(Texture* text, Vector2f size, Vector2f pos, string name) :
-	InteractiveObject(text, size, pos, name, IntObjType::Button)
+InteractiveButton::InteractiveButton(Texture* text, Vector2f size, Vector2f pos, string name, function<void()> use, bool oneTime) :
+	InteractiveObject(text, size, pos, name, IntObjType::Button, use, oneTime)
 {}
 
 void InteractiveButton::Update() {
@@ -102,9 +105,9 @@ void InteractiveButton::Update() {
 	if (isOneTime()) active = false;
 }
 
-InteractiveLever::InteractiveLever(Texture* text, Vector2f size, Vector2f pos, string name) :
-	InteractiveObject(text, size, pos, name, IntObjType::Lever)
-{	}
+InteractiveLever::InteractiveLever(Texture* text, Vector2f size, Vector2f pos, string name, function<void()> use, bool oneTime) :
+	InteractiveObject(text, size, pos, name, IntObjType::Lever, use, oneTime)
+{}
 
 void InteractiveLever::Update() {
 	anim.Update((anim.getRow() == 0 ? 1 : 0), 0, false);

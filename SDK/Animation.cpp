@@ -36,3 +36,7 @@ void Animation::Update(unsigned int row, float deltaTime, bool mirrored) {
 		uvRect.width = -abs(uvRect.width);
 	}
 }
+
+unsigned int Animation::getRow() const {
+	return _row;
+}

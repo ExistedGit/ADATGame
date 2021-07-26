@@ -1,6 +1,8 @@
 #include "Button.h"
 
-ClickButton::ClickButton(Texture* text, const Vector2f& size, const Vector2f& pos) {
+const string& ClickButton::getName() const { return name; }
+
+ClickButton::ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use) : name(name), use(use) {
 
 	body = RectangleShape(size);
 	body.setPosition(pos);
@@ -31,7 +33,10 @@ MusicPlayer::MusicPlayer(const std::vector<Song*>& src) : songs(src) {
 	vector<Texture*> buttonTextures = {new Texture()};
 	buttonTextures[0]->loadFromFile("Textures/button.png");
 
-	addButton(ClickButton(buttonTextures[0], Vector2f(64, 64), Vector2f(400, 400)));
+	addButton(ClickButton(buttonTextures[0], "playButton", Vector2f(64, 64), Vector2f(400, 700), 
+		[this]() {
+			if (!this->play()) this->pause();
+		}));
 }
 
 void MusicPlayer::CheckClick(const Event& ev, RenderWindow& wnd, const View& view) {
@@ -40,22 +45,23 @@ void MusicPlayer::CheckClick(const Event& ev, RenderWindow& wnd, const View& vie
 			for (int i = 0; i < buttons.size(); i++) {
 				auto& button = buttons[i];
 				if (button.intersects
-						(Vector2f(ev.mouseButton.x - (wnd.getSize().x - (view.getCenter().x + wnd.getSize().x / 2)),
-								  ev.mouseButton.y - (wnd.getSize().y - (view.getCenter().y + wnd.getSize().y / 2))))
-					) 
-					Click(i);
+					// »з-за класса View графические представлени€ объектов смещаютс€
+					// ѕри этом их координаты остаютс€ прежними
+					
+					// Ёто вынуждает отн€ть от координат мыши разницу между
+					// координатами крайней стороны текущего вида
+					// и крайней стороны окна
+				(Vector2f(ev.mouseButton.x - (wnd.getSize().x - (view.getCenter().x + wnd.getSize().x / 2)),
+					ev.mouseButton.y - (wnd.getSize().y - (view.getCenter().y + wnd.getSize().y / 2))))
+					)
+					button.use();
 			}
 }
 
 void MusicPlayer::Click(int index) {
-	switch (index) {
-	case 0:
-		if (songs[currentIndex]->getStatus() == Music::Status::Stopped ||
-			songs[currentIndex]->getStatus() == Music::Status::Paused) {
-			songs[currentIndex]->play();
-		}
-		else songs[currentIndex]->pause();
-		break;
+	if (buttons[index].getName() == "playButton") {
+		//std::any_cast<std::function<void()>>(mpMap["playButton"])();
+		if (!this->play()) this->pause();
 	}
 }
 

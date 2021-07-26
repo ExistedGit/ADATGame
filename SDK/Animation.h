@@ -21,9 +21,7 @@ public:
 
 	void Update(unsigned int row, float deltaTime, bool mirrored);
 	
-	unsigned int getRow() const {
-		return _row;
-	}
+	unsigned int getRow() const;
 	//void setScale(Vector2f scale) {
 	//	Sprite* sp = new Sprite();
 	//	sp->setTexture(*texture);

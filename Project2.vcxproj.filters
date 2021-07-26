@@ -25,6 +25,9 @@
     <Filter Include="Файлы заголовков\SDK\Level">
       <UniqueIdentifier>{89ad9764-09a4-4f36-9389-c17f2c305188}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\SDK\Headers">
+      <UniqueIdentifier>{b3502230-b7d4-4bbb-994d-91ef5a672f43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -32,6 +35,39 @@
     </ClInclude>
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\TileMap.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\tinystr.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\tinyxml.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\AnimatedSprite.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Animation.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Button.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Collider.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\InteractiveArray.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Level.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Object.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Player.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

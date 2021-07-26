@@ -2,6 +2,7 @@
 #include "Object.h"
 #include <vector>
 #include <Player.h>
+#include <functional>
 
 using namespace std;
 
@@ -12,9 +13,6 @@ enum class IntObjType {
 };
 
 class InteractiveObject : public Object {
-private:
-	// На случай, если объект будет одноразовым
-	bool oneTime = false;
 protected:
 	string name;
 	IntObjType type;
@@ -24,8 +22,12 @@ protected:
 
 	bool active = true;
 
+	// На случай, если объект будет одноразовым
+	bool oneTime = false;
 public:
-	InteractiveObject(Texture* text, Vector2f size, Vector2f pos, string name = "InteractiveObject", IntObjType type = IntObjType::Button);
+	InteractiveObject(Texture* text, Vector2f size, Vector2f pos, string name, IntObjType type, function<void()> use = []() {}, bool oneTime = false);
+
+	function<void()> use;
 
 	static Keyboard::Key interactKey;
 
@@ -42,7 +44,7 @@ public:
 
 class InteractiveButton : public InteractiveObject {
 public:	
-	InteractiveButton(Texture* text, Vector2f size, Vector2f pos, string name = "InteractiveObject");
+	InteractiveButton(Texture* text, Vector2f size, Vector2f pos, string name, function<void()> use = []() {}, bool oneTime = false);
 
 	bool pressed = false;
 
@@ -52,7 +54,7 @@ public:
 class InteractiveLever : public InteractiveObject {
 
 public:
-	InteractiveLever(Texture* text, Vector2f size, Vector2f pos, string name = "InteractiveObject");;
+	InteractiveLever(Texture* text, Vector2f size, Vector2f pos, string name, function<void()> use = []() {}, bool oneTime = false);;
 
 	void Update() override;;
 	bool on = false;
@@ -72,7 +74,7 @@ public:
 		hintText.setOrigin(Vector2f(hintText.getCharacterSize(), hintText.getCharacterSize()/2) / 2.0f);
 		hintText.setColor(Color(255, 255, 255, hintOpacity));
 	}
-	InteractiveObject* checkInteraction(Event& ev, Player& player);
+	void checkInteraction(Event& ev, Player& player);
 
 	// Отвечает за отрисовку кнопки над головой игрока при контакте с интерактивным объектом 
 	void drawHint(Player& player, RenderWindow& wnd, Font& font);
