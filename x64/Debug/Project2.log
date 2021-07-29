@@ -1,4 +1,220 @@
-﻿A:\VS\Visual Studio\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(1091,5): warning MSB8027: два или более файлов с именем ConfigManager.cpp выводят результаты в одно и то же расположение. Это может стать причиной неверного результата сборки.  Включенные файлы — ConfigManager.cpp, SDK\ConfigManager.cpp.
+﻿  Menu.cpp
+  Animation.cpp
+  InteractiveArray.cpp
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(68,22): warning C4305: инициализация: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(74,87): warning C4244: аргумент: преобразование "unsigned int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(74,56): warning C4244: аргумент: преобразование "unsigned int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(75,42): warning C4244: аргумент: преобразование "float" в "sf::Uint8", возможна потеря данных
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(75,11): warning C4996: 'sf::Text::setColor': объявлен deprecate
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(70,3): warning C4244: аргумент: преобразование "float" в "sf::Uint8", возможна потеря данных
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(67,10): warning C4996: 'sf::Text::setColor': объявлен deprecate
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(68,11): warning C4996: 'sf::Text::getColor': объявлен deprecate
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(69,11): warning C4996: 'sf::Text::getColor': объявлен deprecate
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(77,6): error C2664: "Animation::Animation(sf::Texture *,const std::vector<sf::IntRect,std::allocator<sf::IntRect>> &,float)": невозможно преобразовать аргумент 2 из "sf::Vector2u" в "const std::vector<sf::IntRect,std::allocator<sf::IntRect>> &"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(80,1): message : Причина: невозможно преобразовать "sf::Vector2u" в "const std::vector<sf::IntRect,std::allocator<sf::IntRect>>"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(77,21): message : Для выполнения данного преобразования нет доступного оператора преобразования, определенного пользователем, или вызов оператора невозможен
+G:\VS Repo\Project2\Project2\SDK\Animation.h(22,2): message : см. объявление "Animation::Animation"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(91,14): error C2039: "getRow": не является членом "Animation".
+G:\VS Repo\Project2\Project2\SDK\Animation.h(8): message : см. объявление "Animation"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(103,20): error C2039: "getRow": не является членом "Animation".
+G:\VS Repo\Project2\Project2\SDK\Animation.h(8): message : см. объявление "Animation"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(103,52): error C2660: Animation::Update: функция не принимает 3 аргументов
+G:\VS Repo\Project2\Project2\SDK\Animation.h(24,7): message : см. объявление "Animation::Update"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(113,20): error C2039: "getRow": не является членом "Animation".
+G:\VS Repo\Project2\Project2\SDK\Animation.h(8): message : см. объявление "Animation"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.cpp(113,52): error C2660: Animation::Update: функция не принимает 3 аргументов
+G:\VS Repo\Project2\Project2\SDK\Animation.h(24,7): message : см. объявление "Animation::Update"
+  Level.cpp
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(68,22): warning C4305: инициализация: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(74,87): warning C4244: аргумент: преобразование "unsigned int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(74,56): warning C4244: аргумент: преобразование "unsigned int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(75,42): warning C4244: аргумент: преобразование "float" в "sf::Uint8", возможна потеря данных
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(75,11): warning C4996: 'sf::Text::setColor': объявлен deprecate
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(38,136): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(38,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(38,77): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(39,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(39,77): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(40,117): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(40,80): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(41,139): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(41,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(41,80): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(100,89): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(100,74): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(100,54): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(100,47): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(129,116): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(129,101): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(129,81): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(129,74): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(141,114): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(141,99): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(141,79): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(141,72): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+  Player.cpp
+G:\VS Repo\Project2\Project2\SDK\Player.cpp(14,82): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Player.cpp(14,49): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=int
+          ]
+          and
+          [
+              T=float
+          ]
   Source.cpp
 G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(68,22): warning C4305: инициализация: усечение из "double" в "float"
 G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(74,87): warning C4244: аргумент: преобразование "unsigned int" в "T", возможна потеря данных
@@ -13,7 +229,7 @@ G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(74,56): warning C4244: ар�
           ]
 G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(75,42): warning C4244: аргумент: преобразование "float" в "sf::Uint8", возможна потеря данных
 G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(75,11): warning C4996: 'sf::Text::setColor': объявлен deprecate
-G:\VS Repo\Project2\Project2\Source.cpp(34,84): warning C4305: аргумент: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\Source.cpp(99,49): warning C4305: =: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\Source.cpp(124,27): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
-  Project2.vcxproj -> G:\VS Repo\Project2\x64\Debug\Project2.exe
+G:\VS Repo\Project2\Project2\Source.cpp(32,84): error C2661: Player::Player: нет перегруженной функции, принимающей 7 аргументов
+G:\VS Repo\Project2\Project2\Source.cpp(96,49): warning C4305: =: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\Source.cpp(120,27): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+  Создание кода...

@@ -1,8 +1,10 @@
 #include "Button.h"
 
-const string& ClickButton::getName() const noexcept { return name; }
+const string& BaseButton::getName() const noexcept { return name; }
 
-ClickButton::ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use) : name(name), use(use) {
+BaseButton::BaseButton(const string& name, function<void()> use) : name(name), use(use) {}
+
+ClickButton::ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use) : BaseButton(name, use) {
 
 	body = RectangleShape(size);
 	body.setPosition(pos);
@@ -26,6 +28,14 @@ void IButtonArray::addButton(const ClickButton& button) {
 	buttons.push_back(button);
 }
 
+void IButtonArray::applyUseMap(map<string, function<void()>> useMap) {
+	for (auto& button : buttons) {
+		if (useMap.count(button.getName())) {
+			button.use = useMap[button.getName()];
+		}
+	}
+}
+
 IButtonArray::IButtonArray(const std::initializer_list<ClickButton>& il) : buttons(il) {}
 
 MusicPlayer::MusicPlayer(const std::vector<Song*>& src) : songs(src) {
@@ -39,7 +49,7 @@ MusicPlayer::MusicPlayer(const std::vector<Song*>& src) : songs(src) {
 		}));
 }
 
-void MusicPlayer::CheckClick(const Event& ev, RenderWindow& wnd, const View& view) {
+void IButtonArray::CheckClick(const Event& ev, RenderWindow& wnd, const View& view) {
 	if (ev.type == Event::MouseButtonReleased) 
 		if (ev.mouseButton.button == Mouse::Left) 
 			for (int i = 0; i < buttons.size(); i++) {
@@ -58,12 +68,6 @@ void MusicPlayer::CheckClick(const Event& ev, RenderWindow& wnd, const View& vie
 			}
 }
 
-void MusicPlayer::Click(int index) {
-	if (buttons[index].getName() == "playButton") {
-		//std::any_cast<std::function<void()>>(mpMap["playButton"])();
-		if (!this->play()) this->pause();
-	}
-}
 
 void MusicPlayer::setPosition(float pos) noexcept {
 	songs[currentIndex]->setPlayingOffset(seconds(0));

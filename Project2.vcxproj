@@ -123,7 +123,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SDK;G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -141,7 +141,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SDK;G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -154,7 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
-    <ClInclude Include="ConfigManager.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SDK\AnimatedSprite.h" />
     <ClInclude Include="SDK\Animation.h" />
@@ -176,7 +176,7 @@
     <Image Include="Icons\rat-looking-right.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ConfigManager.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="SDK\Animation.cpp" />
     <ClCompile Include="SDK\Button.cpp" />
     <ClCompile Include="SDK\Collider.cpp" />

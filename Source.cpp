@@ -7,8 +7,8 @@
 #include <iostream>
 
 #include <SFML/Audio.hpp>
-#include <any>
-#include <ConfigManager.h>
+#include "SDK/ConfigManager.h"
+
 
 const Clock cl;
 
@@ -22,16 +22,19 @@ int main() {
 #pragma region Инициализация
 	cout.setf(ios::boolalpha);
 	
-	
-
 	View view(Vector2f(0, 0), Vector2f(1920, 1080));
 	RenderWindow mainWindow(sf::VideoMode(1920, 1080), L"ВЫ — КРЫСА!");
 	vector<Level> levels = ConfigManager::loadLevels(mainWindow);
-
+	//vector<Level> levels = { Level().load("TileMap/untitled.tmx", "TileMap/tileset.png", {32, 32}, Vector2f(1, 1079), &mainWindow) };
 	Texture* playerTexture = new Texture();
 	playerTexture->loadFromFile("Textures/NewRatR.png");
 
-	Player player(playerTexture, Vector2u(4, 2), 0.15, 500, 150, 1, Vector2f(200, 200));
+	Player player(
+		{ 
+			{"idle", new Animation("Textures/NewRatR.png", "Models/NewRatR.xml", {} ,0.15)
+			} 
+		},
+		500, 150, 1, Vector2f(200, 200));
 
 	MusicPlayer mp({
 		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
@@ -39,12 +42,12 @@ int main() {
 		});
 	
 	bool viewCentered = true;
-	levels[0].applyFuncMap({
+	levels[0].applyUseMap({
 			{"playButton", [&mp]() mutable {
 				if (!mp.play()) mp.pause();
 			}
 		} });
-	levels[1].applyFuncMap({
+	levels[1].applyUseMap({
 			{"lever", [&viewCentered]() mutable {
 				viewCentered = !viewCentered;
 				cout << viewCentered << endl;
@@ -64,8 +67,7 @@ int main() {
 	Clock clock;
 	float deltaTime = 0;
 	Event ev;
-
-	bool switched = false;
+	int currLevel = 0;
 	
 	Text songText("", pixelFont);
 	songText.setPosition(200, 500);
@@ -117,8 +119,7 @@ int main() {
 			case Event::KeyReleased: {
 				switch (ev.key.code) {
 				case Keyboard::X:
-					switched = !switched;
-					mp.next();
+					currLevel = currLevel == levels.size() - 1 ? 0 : currLevel + 1;
 					break;
 				case Keyboard::M:
 					mp.setVolume(mp.muted() ? 100 : 0);
@@ -134,7 +135,7 @@ int main() {
 				}
 				break;
 			}
-			levels[switched].checkInteraction(ev, player);
+			levels[currLevel].checkInteraction(ev, player);
 		}
 
 		player.Update(deltaTime);
@@ -142,7 +143,7 @@ int main() {
 		Vector2f direction;
 
 		bool groundCollision = false;
-		for (auto& p : levels[switched].getObjects()) {
+		for (auto& p : levels[currLevel].getObjects()) {
 			if (p.getCollider().CheckCollision(player.getCollider(), direction, !p.push)) {
 				player.onCollision(direction);
 				if (direction.y == -1) groundCollision = true;
@@ -157,9 +158,9 @@ int main() {
 		//	}
 		//}
 
-		levels[switched].Update(player);
-		levels[switched].Draw(mainWindow, &player);
-		levels[switched].drawHint(player, mainWindow, pixelFont);
+		levels[currLevel].Update(player);
+		levels[currLevel].Draw(mainWindow, &player);
+		levels[currLevel].drawHint(player, mainWindow, pixelFont);
 
 
 

@@ -28,6 +28,9 @@
     <Filter Include="Файлы заголовков\SDK\Headers">
       <UniqueIdentifier>{b3502230-b7d4-4bbb-994d-91ef5a672f43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\SDK\Utility">
+      <UniqueIdentifier>{063cce79-5df2-410d-bea5-fb1322b79d7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -69,11 +72,11 @@
     <ClInclude Include="SDK\Player.h">
       <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigManager.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\ConfigManager.h">
       <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Menu.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -126,11 +129,11 @@
     <ClCompile Include="SDK\Button.cpp">
       <Filter>Файлы заголовков\SDK\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigManager.cpp">
+    <ClCompile Include="Menu.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="SDK\ConfigManager.cpp">
-      <Filter>Файлы заголовков\SDK\Objects</Filter>
+      <Filter>Файлы заголовков\SDK\Utility</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -26,7 +26,7 @@ vector<Object>& Level::getObjects() {
 	return objects;
 }
 
-Level& Level::load(const string& filename, const Vector2f& offset, const RenderWindow* window, map<string, function<void()>> useMap) {
+Level& Level::load(string xmlDoc, string tileset, const Vector2u& tileSize, const Vector2f& offset, const RenderWindow* window, map<string, function<void()>> useMap) {
 	tileLayers.clear();
 	objects.clear();
 
@@ -43,7 +43,7 @@ Level& Level::load(const string& filename, const Vector2f& offset, const RenderW
 #pragma endregion
 
 
-	TiXmlDocument doc(filename.c_str());
+	TiXmlDocument doc(xmlDoc.c_str());
 	doc.LoadFile();
 	// Загружаем карту
 	TiXmlElement* map = doc.FirstChildElement("map");
@@ -51,7 +51,7 @@ Level& Level::load(const string& filename, const Vector2f& offset, const RenderW
 
 	// Сохраняем размеры карты
 	int width = atoi(map->Attribute("width")), height = atoi(map->Attribute("height"));
-	for (TiXmlElement* child = map->FirstChildElement("layer"); child != NULL && string(child->Value()) == "layer"; child = child->NextSiblingElement())
+	for (TiXmlElement* child = map->FirstChildElement("layer"); child != NULL && (string(child->Value())) == "layer"; child = child->NextSiblingElement())
 	{
 		int* tileArray = new int[width * height];
 
@@ -69,7 +69,7 @@ Level& Level::load(const string& filename, const Vector2f& offset, const RenderW
 			while (ss >> value) {
 				ss >> comma;
 				// Для текущего тайлсета, если значение клетки 0, ставим на это место 141 клетку тайлсета(пустое пространство)
-				tileArray[i] = (value ? value - 1 : 141);
+				tileArray[i] = (value ? value - 1 : tileset == "TileMap/tileset.png" ?141: 131 );
 				i++;
 			}
 			//for (int k = 0; k < width * height; k++) {
@@ -79,7 +79,7 @@ Level& Level::load(const string& filename, const Vector2f& offset, const RenderW
 			//cout << endl;
 		}
 		TileMap tmap;
-		tmap.load("TileMap/tileset.png", { 32, 32 }, tileArray, width, height);
+		tmap.load(tileset, tileSize, tileArray, width, height);
 		insertWithPriority(tileLayers, pair<int, TileMap>(atoi(child->Attribute("name")), tmap));
 		delete tileArray;
 		tileArray = nullptr;
@@ -148,13 +148,13 @@ Level& Level::load(const string& filename, const Vector2f& offset, const RenderW
 #pragma region Перемещение объектов и тайлов к нужному месту
 	for (int i = 0; i < objects.size(); i++) {
 		if (objects[i].solid)
-			objects[i].getCollider().Move(offset.x, offset.y - 32 * height);
+			objects[i].getCollider().Move(offset.x, offset.y - tileSize.y * height);
 	}
 	for (auto& it : tileLayers) {
-		it.second.move(offset.x, offset.y - 32 * height);
+		it.second.move(offset.x, offset.y - tileSize.y * height);
 	}
 	for (auto& it : interactives) {
-		it->move(Vector2f(offset.x, offset.y - 32 * height));
+		it->move(Vector2f(offset.x, offset.y - tileSize.y * height));
 	}
 #pragma endregion
 	return *this;
@@ -187,6 +187,14 @@ void Level::Draw(RenderWindow& wnd, Player* player) const {
 		
 	
 
+}
+
+void Level::applyUseMap(map<string, function<void()>> map) {
+	for (auto& obj : interactives) {
+		if (map.count(obj->getName())) {
+			obj->use = map[obj->getName()];
+		}
+	}
 }
 
 void Level::Update(Player& player) {

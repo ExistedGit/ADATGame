@@ -1,14 +1,20 @@
 #include "Player.h"
 
-Player::Player(Texture* text, Vector2u frameCount, float switchTime, float speed, float jumpHeight, float weight, Vector2f spawn) : animation(text, frameCount, switchTime) {
-	this->speed = speed;
-	this->jumpHeight = jumpHeight;
-	this->weight = weight;
-	row = 0;
-	turned = false;
-	body.setSize(Vector2f(animation.uvRect.width, animation.uvRect.height));
+Player::Player(map<string, Animation*> animMap, float speed, float jumpHeight, float weight, Vector2f spawn) :
+	animMap(animMap), 
+	speed(speed), 
+	jumpHeight(jumpHeight), 
+	weight(weight),
+	turned(false),
+	canJump(false)
+{
+	if (animMap.empty()) throw invalid_argument("Player(конструктор): карта анимаций пуста");
+
+	currAnim = (*animMap.begin()).first;
+	body.setSize(Vector2f(animMap[currAnim]->uvRect.width, animMap[currAnim]->uvRect.height));
 	body.setPosition(spawn);
-	body.setTexture(text);
+	body.setTexture(animMap[currAnim]->getTexture());
+	body.setTextureRect(animMap[currAnim]->uvRect);
 	body.setOrigin(body.getSize() / 2.0f);
 	
 }
@@ -29,7 +35,6 @@ void Player::Update(float deltaTime) {
 	if (Keyboard::isKeyPressed(Keyboard::Space)) {
 		if (canJump) {
 			canJump = false;
-			row = 0;
 			velocity.y = -sqrtf(2 * 981.0f * jumpHeight);
 		}
 	}
@@ -37,16 +42,16 @@ void Player::Update(float deltaTime) {
 	velocity.y += 981.0f * deltaTime * weight;
 
 	if (velocity.x == 0) {
-		row = 0;
+		currAnim = "idle";
 	}
 	else {
-		if(canJump) row = 1;
+		if(canJump) currAnim = "walk";
 
 		turned = velocity.x < 0;
 	}
 
-	animation.Update(row, deltaTime, turned);
-	body.setTextureRect(animation.uvRect);
+	animMap[currAnim]->Update(deltaTime, velocity.x < 0);
+	body.setTextureRect(animMap[currAnim]->uvRect);
 	body.move(velocity * deltaTime);
 }
 
@@ -55,8 +60,7 @@ void Player::onCollision(const Vector2f& direction) {
 	if (direction.x != 0) velocity.x = 0; // √оризонтальна€ коллизи€
 	if (direction.y != 0) {
 		velocity.y = 0; // ¬ертикальна€ коллизи€
-		if (direction.y < 0)canJump = true;
-		else canJump = false;
+		canJump = direction.y < 0;
 	}
 	if(direction.y >= 0 && direction.x == 0)
 		canJump = false;

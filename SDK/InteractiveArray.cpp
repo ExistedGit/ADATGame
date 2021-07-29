@@ -3,6 +3,12 @@ Keyboard::Key InteractiveObject::interactKey = Keyboard::Key::E;
 
 
 
+InteractiveArray::InteractiveArray() {
+	hintText.setString("E");
+	hintText.setOrigin(Vector2f(hintText.getCharacterSize(), hintText.getCharacterSize() / 2) / 2.0f);
+	hintText.setColor(Color(255, 255, 255, hintOpacity));
+}
+
 void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 	if (ev.type == Event::KeyReleased ||
 		ev.type == Event::KeyPressed)
@@ -13,13 +19,13 @@ void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 					if (ev.key.code == InteractiveObject::interactKey)
 						if (player.getCollider().collides(button->getCollider())) {
 							if (ev.type == Event::KeyPressed
-								&& button->getRow() == 0) {
+								&& button->getCurrFrame() == 0) {
 								button->Update();
 								button->pressed = true;
 								if (button->isOneTime()) button->use();
 							}
 							else if (ev.type == Event::KeyReleased
-								&& button->getRow() == 1)
+								&& button->getCurrFrame() == 1)
 								button->Update();
 							if (ev.type == Event::KeyReleased)
 								button->use();
@@ -70,15 +76,14 @@ void InteractiveArray::drawHint(Player& player, RenderWindow& wnd, Font& font) {
 		hintOpacity));
 }
 
-InteractiveObject::InteractiveObject(Texture* text, Vector2f size, Vector2f pos, string name, IntObjType type, function<void()> use, bool oneTime) :
+InteractiveObject::InteractiveObject(Animation* text, Vector2f size, Vector2f pos, string name, IntObjType type, function<void()> use, bool oneTime) :
 	Object(text, size, pos),
 	name(name),
 	type(type),
-	anim(text, Vector2u(1, 2), 0),
 	use(use),
 	oneTime(oneTime)
 {
-	body.setTextureRect(anim.uvRect);
+	body.setTextureRect(anim->uvRect);
 }
 
 const string& InteractiveObject::getName() const {
@@ -87,31 +92,28 @@ const string& InteractiveObject::getName() const {
 
 const IntObjType& InteractiveObject::getType() const { return type; }
 
-uint InteractiveObject::getRow() const {
-	return anim.getRow();
-}
 
 bool InteractiveObject::isOneTime() const { return oneTime; }
 
 bool InteractiveObject::isActive() const { return active; }
 
-InteractiveButton::InteractiveButton(Texture* text, Vector2f size, Vector2f pos, string name, function<void()> use, bool oneTime) :
+InteractiveButton::InteractiveButton(Animation* text, Vector2f size, Vector2f pos, string name, function<void()> use, bool oneTime) :
 	InteractiveObject(text, size, pos, name, IntObjType::Button, use, oneTime)
 {}
 
 void InteractiveButton::Update() {
-	anim.Update((anim.getRow() == 0 ? 1 : 0), 0, false);
-	body.setTextureRect(anim.uvRect);
+	anim->Update(0, false);
+	body.setTextureRect(anim->uvRect);
 	if (isOneTime()) active = false;
 }
 
-InteractiveLever::InteractiveLever(Texture* text, Vector2f size, Vector2f pos, string name, function<void()> use, bool oneTime) :
+InteractiveLever::InteractiveLever(Animation* text, Vector2f size, Vector2f pos, string name, function<void()> use, bool oneTime) :
 	InteractiveObject(text, size, pos, name, IntObjType::Lever, use, oneTime)
 {}
 
 void InteractiveLever::Update() {
-	anim.Update((anim.getRow() == 0 ? 1 : 0), 0, false);
-	body.setTextureRect(anim.uvRect);
+	anim->Update(0, false);
+	body.setTextureRect(anim->uvRect);
 	on = !on;
 
 	if (isOneTime()) active = false;

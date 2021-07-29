@@ -9,32 +9,38 @@
 using namespace sf;
 using namespace std;
 
-extern const Clock cl;
-class ClickButton
-{
-private:
+class BaseButton {
+protected:
 	RectangleShape body;
 	string name;
 public:
+	const string& getName() const noexcept;
 	function<void()> use;
+	BaseButton(const string& name, function<void()> use);
+	virtual bool intersects(const Vector2f& pos) const noexcept = 0;
+};
+
+extern const Clock cl;
+class ClickButton : public BaseButton
+{
+public:
 	ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use = []() {});;
 
-	bool intersects(const Vector2f& pos) const noexcept;;
+	bool intersects(const Vector2f& pos) const noexcept override ;
 	void draw(RenderWindow& wnd);
-	const string& getName() const noexcept;
-	
 };
 
 class IButtonArray {
 protected:
 	std::vector<ClickButton> buttons;
 public:
-	virtual void CheckClick(const Event& ev, RenderWindow& wnd, const View& view) = 0;
-	virtual void Click(int index) = 0;
+	void CheckClick(const Event& ev, RenderWindow& wnd, const View& view);
 
 	void draw(RenderWindow& wnd);
 
 	void addButton(const ClickButton& button);
+
+	void applyUseMap(map<string, function<void()>> useMap);
 
 	IButtonArray(const std::initializer_list<ClickButton>& il = {});;
 };
@@ -66,11 +72,6 @@ public:
 	
 
 	MusicPlayer(const std::vector<Song*>& src);
-	
-
-	void CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override;
-	void Click(int index) override;
-
 	void setPosition(float pos) noexcept;;
 	void setVolume(float volume) noexcept;
 	float getVolume() const noexcept;
