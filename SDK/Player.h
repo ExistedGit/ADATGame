@@ -2,32 +2,34 @@
 #include <SFML/Graphics.hpp>
 #include "Animation.h"
 #include "Collider.h"
+#include <map>
 
 using namespace sf;
 
 class Player
 {
 public:
-	Player(Texture* text, Vector2u frameCount, float switchTime, float speed = 0, float jumpHeight = 0, float weight = 1, Vector2f spawn = Vector2f(0, 0));
+	Player(Animation* animMap, Vector2f size, float speed, float jumpHeight, float weight = 1, Vector2f spawn = Vector2f(0, 0));
 	Collider getCollider();
 	void Update(float deltaTime);
-
+	
 	void onCollision(const Vector2f& direction);
 
-	void Draw(RenderWindow& wnd);
-	Vector2f getPos();
-	float getWeight();
+	void Draw(RenderWindow& wnd) const;
+	Vector2f getPos() const;
+	float getWeight() const;
 	void setWeight(float weight);
+	
 private:
+	std::string currAnim;
+	Animation* anim;
 	RectangleShape body;
-	Animation animation;
-	unsigned int row;
-
+//	Vector2f scale;
 	float weight = 0;
 	float speed;
 	float jumpHeight;
-	bool turned;
-	bool canJump = false;
+	bool turned ;
+	bool canJump;
 
 	Vector2f velocity;
 };

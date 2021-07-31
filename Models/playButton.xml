@@ -1,0 +1,7 @@
+<!DOCTYPE SpriteDecomposer>
+<sprites image="playButton.png" transparentColor="">
+ <animation title="default" delay="10">
+  <cut w="262" x="17" y="15" h="84" row="1" col="1"/>
+  <cut w="262" x="17" y="105" h="84" row="1" col="1"/>
+ </animation>
+</sprites>

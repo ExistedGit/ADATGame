@@ -3,6 +3,8 @@
 #include "tinyxml.h"
 #include <iostream>
 
+using namespace std;
+
 void Level::insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, TileMap> tmap) {
 	if (layers.empty()) {
 		layers.push_back(tmap);
@@ -26,7 +28,7 @@ vector<Object>& Level::getObjects() {
 	return objects;
 }
 
-Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* window) {
+Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* window, map<string, function<void()>> useMap) {
 	tileLayers.clear();
 	objects.clear();
 
@@ -43,15 +45,26 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 #pragma endregion
 
 
-	TiXmlDocument doc(filename.c_str());
-	doc.LoadFile();
+	TiXmlDocument doc(xmlDoc.c_str());
+	if (!doc.LoadFile()) {
+		throw xmlDoc + ": map file not found";
+		return *this;
+	}
 	// Загружаем карту
 	TiXmlElement* map = doc.FirstChildElement("map");
-
+	string tileset;
+	{
+		TiXmlElement* ts = map->FirstChildElement("tileset");
+		string tilesetPath = "TileMap/" + string(ts->Attribute("source"));
+		TiXmlDocument tilesetDoc = TiXmlDocument(tilesetPath.c_str());
+		tilesetDoc.LoadFile();
+		tileset = string("TileMap/") + tilesetDoc.FirstChildElement("tileset")->FirstChildElement("image")->Attribute("source");
+	}
 
 	// Сохраняем размеры карты
 	int width = atoi(map->Attribute("width")), height = atoi(map->Attribute("height"));
-	for (TiXmlElement* child = map->FirstChildElement("layer"); child != NULL && string(child->Value()) == "layer"; child = child->NextSiblingElement())
+	Vector2u tileSize(atoi(map->Attribute("tilewidth")), atoi(map->Attribute("tileheight")));
+	for (TiXmlElement* child = map->FirstChildElement("layer"); child != NULL && (string(child->Value())) == "layer"; child = child->NextSiblingElement())
 	{
 		int* tileArray = new int[width * height];
 
@@ -68,8 +81,8 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 			int i = 0;
 			while (ss >> value) {
 				ss >> comma;
-				// Для текущего тайлсета, если значение клетки 0, ставим на это место 141 клетку тайлсета(пустое пространство)
-				tileArray[i] = (value ? value - 1 : 141);
+				// Для текущего тайлсета, если значение клетки 0, ставим на это место первую клетку тайлсета(пустое пространство)
+				tileArray[i] = (value ? value - 1 : 0 );
 				i++;
 			}
 			//for (int k = 0; k < width * height; k++) {
@@ -79,7 +92,7 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 			//cout << endl;
 		}
 		TileMap tmap;
-		tmap.load("TileMap/tileset.png", { 32, 32 }, tileArray, width, height);
+		tmap.load(tileset, tileSize, tileArray, width, height);
 		insertWithPriority(tileLayers, pair<int, TileMap>(atoi(child->Attribute("name")), tmap));
 		delete tileArray;
 		tileArray = nullptr;
@@ -103,31 +116,38 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 			istringstream ss(objName);
 			string specifier, interactiveName;
 			ss >> specifier >> interactiveName;
+			
+			bool oneTime = false;
+
+			if (child->Attribute("type")!=nullptr) {
+				string type;
+				istringstream typestream(child->Attribute("type"));
+				typestream >> type;
+				
+				oneTime = type == "oneTime";
+			}
+
+			std::string textPath = "Models/" + interactiveName + ".xml";
+			Animation* anim = new Animation(textPath);
 
 			if (specifier == "button") {
 				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя кнопки");
 				
 				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
 				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
-				Texture* buttonTexture = new Texture();
-				if (!buttonTexture->loadFromFile("Textures/" + interactiveName + ".png")) {
-					delete buttonTexture;
-					buttonTexture = nullptr;
-				}
+				
 
-				interactives.push_back(new InteractiveButton(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName));
+
+				interactives.push_back(new InteractiveButton(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 			} else if (specifier == "lever") {
 				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя рычага");
 
 				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
 				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
-				Texture* buttonTexture = new Texture();
-				if (!buttonTexture->loadFromFile("Textures/" + interactiveName + ".png")) {
-					delete buttonTexture;
-					buttonTexture = nullptr;
-				}
+				
+				
 
-				interactives.push_back(new InteractiveLever(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName));
+				interactives.push_back(new InteractiveLever(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 			}
 			else throw runtime_error("Level.load(): недопустимое имя объекта(интерактивные объекты)");
 		}
@@ -137,13 +157,13 @@ Level& Level::load(const string& filename, Vector2f offset, const RenderWindow* 
 #pragma region Перемещение объектов и тайлов к нужному месту
 	for (int i = 0; i < objects.size(); i++) {
 		if (objects[i].solid)
-			objects[i].getCollider().Move(offset.x, offset.y - 32 * height);
+			objects[i].getCollider().Move(offset.x, offset.y - tileSize.y * height);
 	}
 	for (auto& it : tileLayers) {
-		it.second.move(offset.x, offset.y - 32 * height);
+		it.second.move(offset.x, offset.y - tileSize.y * height);
 	}
 	for (auto& it : interactives) {
-		it->move(Vector2f(offset.x, offset.y - 32 * height));
+		it->move(Vector2f(offset.x, offset.y - tileSize.y * height));
 	}
 #pragma endregion
 	return *this;
@@ -178,6 +198,14 @@ void Level::Draw(RenderWindow& wnd, Player* player) const {
 
 }
 
+void Level::applyUseMap(map<string, function<void()>> map) {
+	for (auto& obj : interactives) {
+		if (map.count(obj->getName())) {
+			obj->use = map[obj->getName()];
+		}
+	}
+}
+
 void Level::Update(Player& player) {
 	for (auto& obj : interactives)
 		if (obj->isActive())
@@ -185,7 +213,7 @@ void Level::Update(Player& player) {
 				if (obj->getType() == IntObjType::Button)
 				{
 					auto& button = *(InteractiveButton*)obj;
-					if (button.getRow() == 1) button.Update();
+					if (button.getCurrFrame() == 1) button.Update();
 					button.pressed = false;
 				}
 }

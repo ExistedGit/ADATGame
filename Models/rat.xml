@@ -1,0 +1,15 @@
+<!DOCTYPE SpriteDecomposer>
+<sprites image="rat.png" transparentColor="">
+ <animation title="idle" delay="150">
+  <cut w="174" x="10" y="1" h="184" row="1" col="1"/>
+  <cut w="174" x="205" y="1" h="184" row="1" col="1"/>
+  <cut w="174" x="383" y="1" h="184" row="1" col="1"/>
+  <cut w="174" x="578" y="1" h="184" row="1" col="1"/>
+ </animation>
+ <animation title="walk" delay="150">
+  <cut w="174" x="10" y="192" h="184" row="1" col="1"/>
+  <cut w="174" x="213" y="192" h="184" row="1" col="1"/>
+  <cut w="174" x="402" y="195" h="184" row="1" col="1"/>
+  <cut w="174" x="588" y="195" h="184" row="1" col="1"/>
+ </animation>
+</sprites>

@@ -89,7 +89,8 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/D_HAS_STD_BYTE=0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -107,6 +108,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/D_HAS_STD_BYTE=0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,8 +125,9 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SDK;G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/D_HAS_STD_BYTE=0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,7 +144,9 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SDK;G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/D_HAS_STD_BYTE=0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,6 +159,19 @@
   <ItemGroup>
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SDK\AnimatedSprite.h" />
+    <ClInclude Include="SDK\Animation.h" />
+    <ClInclude Include="SDK\Button.h" />
+    <ClInclude Include="SDK\Collider.h" />
+    <ClInclude Include="SDK\ConfigManager.h" />
+    <ClInclude Include="SDK\InteractiveArray.h" />
+    <ClInclude Include="SDK\Level.h" />
+    <ClInclude Include="SDK\Menu.h" />
+    <ClInclude Include="SDK\Object.h" />
+    <ClInclude Include="SDK\Player.h" />
+    <ClInclude Include="SDK\TileMap.h" />
+    <ClInclude Include="SDK\tinystr.h" />
+    <ClInclude Include="SDK\tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project2.rc" />
@@ -164,6 +183,7 @@
     <ClCompile Include="SDK\Animation.cpp" />
     <ClCompile Include="SDK\Button.cpp" />
     <ClCompile Include="SDK\Collider.cpp" />
+    <ClCompile Include="SDK\ConfigManager.cpp" />
     <ClCompile Include="SDK\InteractiveArray.cpp" />
     <ClCompile Include="SDK\Level.cpp" />
     <ClCompile Include="SDK\Object.cpp" />

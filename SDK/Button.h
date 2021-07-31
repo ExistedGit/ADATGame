@@ -4,21 +4,29 @@
 #include <mutex>
 #include <vector>
 #include <map>
+#include <functional>
 
 using namespace sf;
 using namespace std;
 
-extern const Clock cl;
-
-class ClickButton
-{
-private:
+class BaseButton {
+protected:
 	RectangleShape body;
-	
+	string name;
 public:
-	ClickButton(Texture* text, const Vector2f& size, const Vector2f& pos);;
+	const string& getName() const noexcept;
+	function<void()> use;
+	BaseButton(const string& name, function<void()> use);
+	virtual bool intersects(const Vector2f& pos) const noexcept = 0;
+};
 
-	bool intersects(const Vector2f& pos) const;;
+extern const Clock cl;
+class ClickButton : public BaseButton
+{
+public:
+	ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use = []() {});;
+
+	bool intersects(const Vector2f& pos) const noexcept override ;
 	void draw(RenderWindow& wnd);
 };
 
@@ -26,12 +34,13 @@ class IButtonArray {
 protected:
 	std::vector<ClickButton> buttons;
 public:
-	virtual void CheckClick(const Event& ev, RenderWindow& wnd, const View& view) = 0;
-	virtual void Click(int index) = 0;
+	void CheckClick(const Event& ev, RenderWindow& wnd, const View& view);
 
 	void draw(RenderWindow& wnd);
 
 	void addButton(const ClickButton& button);
+
+	void applyUseMap(map<string, function<void()>> useMap);
 
 	IButtonArray(const std::initializer_list<ClickButton>& il = {});;
 };
@@ -42,44 +51,50 @@ private:
 public:
 	Song(const string& songname, const string& filename);
 
-	const string& getName();
+	const string& getName() const noexcept;
 };
 
 class MusicPlayer : public IButtonArray {
 private:  
 	std::vector<Song*> songs;
 	int currentIndex = 0;
+	//std::map<string, any> mpMap = {
+	//{
+	//	"playButton",
+	//	std::function<void()>([this]()->void {
+	//		if (!this->play()) this->pause();
+	//	})
+	//}
+	//};;
 
 	float lastSwitchTime =0;
 public:
+	
+
 	MusicPlayer(const std::vector<Song*>& src);
+	void setPosition(float pos) noexcept;;
+	void setVolume(float volume) noexcept;
+	float getVolume() const noexcept;
 
-	void CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override;
-	void Click(int index) override;
+	void mute() noexcept;
+	void unmute() noexcept;
 
-	void setPosition(float pos);;
-	void setVolume(float volume);
-	float getVolume() const;
+	bool muted() const noexcept;
 
-	void mute();
-	void unmute();
+	void next() noexcept;;
 
-	bool muted();
+	void prev() noexcept;;
 
-	void next();;
-
-	void prev();;
-
-	void restart();
+	void restart() noexcept;
 
 	// Возвращает правду, если музыка ещё играет
-	bool pause();
+	bool pause() noexcept;
 
 	// Возвращает правду, если музыку ещё не играет
-	bool play();
+	bool play() noexcept;
 
-	Music::Status getStatus();
+	Music::Status getStatus() const noexcept;
 
-	const string& getSongName();
+	const string& getSongName() const noexcept;
 	bool setMusic(unsigned int index);
 };

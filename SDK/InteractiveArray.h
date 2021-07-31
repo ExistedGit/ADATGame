@@ -1,7 +1,8 @@
 #pragma once
 #include "Object.h"
 #include <vector>
-#include <Player.h>
+#include "Player.h"
+#include <functional>
 
 using namespace std;
 
@@ -12,20 +13,19 @@ enum class IntObjType {
 };
 
 class InteractiveObject : public Object {
-private:
-	// На случай, если объект будет одноразовым
-	bool oneTime = false;
 protected:
 	string name;
 	IntObjType type;
 
-	Animation anim;
-	uint row = 0;
 
 	bool active = true;
 
+	// На случай, если объект будет одноразовым
+	bool oneTime = false;
 public:
-	InteractiveObject(Texture* text, Vector2f size, Vector2f pos, string name = "InteractiveObject", IntObjType type = IntObjType::Button);
+	InteractiveObject(Animation* text, Vector2f size, Vector2f pos, string name, IntObjType type, function<void()> use = []() {}, bool oneTime = false);
+
+	function<void()> use;
 
 	static Keyboard::Key interactKey;
 
@@ -34,15 +34,14 @@ public:
 
 	virtual void Update() = 0;
 
-	uint getRow() const;
-
+	
 	bool isActive() const;;
 	bool isOneTime() const;
 };
 
 class InteractiveButton : public InteractiveObject {
 public:	
-	InteractiveButton(Texture* text, Vector2f size, Vector2f pos, string name = "InteractiveObject");
+	InteractiveButton(Animation* text, Vector2f size, Vector2f pos, string name, function<void()> use = []() {}, bool oneTime = false);
 
 	bool pressed = false;
 
@@ -52,7 +51,7 @@ public:
 class InteractiveLever : public InteractiveObject {
 
 public:
-	InteractiveLever(Texture* text, Vector2f size, Vector2f pos, string name = "InteractiveObject");;
+	InteractiveLever(Animation* text, Vector2f size, Vector2f pos, string name, function<void()> use = []() {}, bool oneTime = false);;
 
 	void Update() override;;
 	bool on = false;
@@ -64,15 +63,12 @@ private:
 	Text hintText;
 	float hintOpacity = 0;
 	float opacityOffset = 0.4;
+	
 protected:
 	vector<InteractiveObject*> interactives;
 public:
-	InteractiveArray() {
-		hintText.setString("E");
-		hintText.setOrigin(Vector2f(hintText.getCharacterSize(), hintText.getCharacterSize()/2) / 2.0f);
-		hintText.setColor(Color(255, 255, 255, hintOpacity));
-	}
-	InteractiveObject* checkInteraction(Event& ev, Player& player);
+	InteractiveArray();
+	void checkInteraction(Event& ev, Player& player);
 
 	// Отвечает за отрисовку кнопки над головой игрока при контакте с интерактивным объектом 
 	void drawHint(Player& player, RenderWindow& wnd, Font& font);

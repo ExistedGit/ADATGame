@@ -5,7 +5,6 @@
 #include "Player.h"
 #include "InteractiveArray.h"
 
-using namespace std;
 
 class Level : public InteractiveArray
 {
@@ -17,15 +16,17 @@ private:
 	bool _bordered = false;
 public:
 	using InteractiveArray::InteractiveArray;
-
+	
 	bool bordered() const;
-
+	
 	vector<Object>& getObjects();
-
-	Level& load(const string& filename, Vector2f offset = Vector2f(0, 0), const RenderWindow* window = nullptr);
-
+	
+	Level& load(string xmlDoc, const Vector2f& offset = Vector2f(0, 0), const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
+	
 	void Draw(RenderWindow& wnd, Player* player = nullptr) const;
-
+	
+	void applyUseMap(map<string, function<void()>> map);
+	
 	void Update(Player& player) override;
 };
 

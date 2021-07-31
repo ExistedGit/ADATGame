@@ -7,6 +7,8 @@
 #include <iostream>
 
 #include <SFML/Audio.hpp>
+#include "SDK/ConfigManager.h"
+#include <Windows.h>
 
 const Clock cl;
 
@@ -17,19 +19,35 @@ using namespace std;
 
 
 int main() {
+	SetConsoleCP(65001); SetConsoleOutputCP(65001);
 #pragma region Инициализация
-	vector<Level> levels = {};
-
+	cout.setf(ios::boolalpha);
+	
 	View view(Vector2f(0, 0), Vector2f(1920, 1080));
 	RenderWindow mainWindow(sf::VideoMode(1920, 1080), L"ВЫ — КРЫСА!");
-	
-	Texture* playerTexture = new Texture();
-	playerTexture->loadFromFile("Textures/NewRatR.png");
+	vector<Level> levels = ConfigManager::loadLevels(&mainWindow);
+	//vector<Level> levels = { Level().load("TileMap/untitled.tmx", "TileMap/tileset.png", {32, 32}, Vector2f(1, 1079), &mainWindow) };
 
-	Player player(playerTexture, Vector2u(4, 2), 0.15, 600, 150, 1, Vector2f(200, 200));
+
+	Player player(new Animation("Models/rat.xml"), Vector2f(191/2, 191/2), 650, 150, 1, Vector2f(200, 200));
+
+	MusicPlayer mp({
+		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
+		new Song("Gonna Give You Up",		 "Sounds/llorkcir.ogg")
+		});
 	
-	levels.push_back(Level().load("TileMap/untitled.tmx", Vector2f(1, 767), &mainWindow));
-	levels.push_back(Level().load("TileMap/other map.tmx", Vector2f(32 * 4 + 1, 767), &mainWindow));
+	bool viewCentered = true;
+	//levels[0].applyUseMap({
+	//		{"playButton", [&mp]() mutable {
+	//			if (!mp.play()) mp.pause();
+	//		}
+	//	} });
+	//levels[1].applyUseMap({
+	//		{"lever", [&viewCentered]() mutable {
+	//			viewCentered = !viewCentered;
+	//		}
+	//		}
+	//	});
 
 
 	Font pixelFont;
@@ -38,23 +56,15 @@ int main() {
 	hintFont.loadFromFile("Fonts/forward.ttf");
 #pragma endregion
 
+	
 
 	Clock clock;
 	float deltaTime = 0;
 	Event ev;
+	int currLevel = 0;
 	
-	bool switched = false;
-
-
-	Texture* buttonTexture = new Texture();
-	buttonTexture->loadFromFile("Textures/button.png");
-	
-	MusicPlayer mp({
-		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
-		new Song("Gonna Give You Up",		 "Sounds/llorkcir.ogg")
-	});
 	Text songText("", pixelFont);
-	songText.setPosition(200, 200);
+	songText.setPosition(200, 500);
 
 	while (mainWindow.isOpen()) {
 		while (!mainWindow.hasFocus()) {
@@ -77,7 +87,7 @@ int main() {
 		if (Keyboard::isKeyPressed((Keyboard::Key)55)) {
 			mp.setVolume(mp.getVolume() + 1);
 		}
-		
+
 
 		mainWindow.clear();
 
@@ -85,9 +95,10 @@ int main() {
 		if (deltaTime > 1. / 60.) deltaTime = 1. / 60.;
 
 		view.setCenter(player.getPos());
-		mainWindow.setView(view);
+		if(viewCentered) mainWindow.setView(view);
 
 		while (mainWindow.pollEvent(ev)) {
+
 			switch (ev.type) {
 			case Event::Closed:
 
@@ -97,14 +108,12 @@ int main() {
 			case Event::Resized:
 				view.setSize(Vector2f(mainWindow.getSize()));//VIEW_HEIGHT * (float(mainWindow.getSize().x) / float(mainWindow.getSize().y)), VIEW_HEIGHT);
 				break;
-			case Event::KeyPressed:
-				levels[switched].checkInteraction(ev, player);
+			case Event::KeyPressed: {}
 				break;
 			case Event::KeyReleased: {
 				switch (ev.key.code) {
 				case Keyboard::X:
-					switched = !switched;
-					mp.next();
+					currLevel = currLevel == levels.size() - 1 ? 0 : currLevel + 1;
 					break;
 				case Keyboard::M:
 					mp.setVolume(mp.muted() ? 100 : 0);
@@ -113,35 +122,22 @@ int main() {
 					mp.setPosition(0);
 					break;
 				}
-
-				InteractiveObject* objPointer = levels[switched].checkInteraction(ev, player);
-				
-				if (objPointer != nullptr) 
-					if (objPointer->getType() == IntObjType::Button) {
-						auto* button = (InteractiveButton*)objPointer;
-						if (button->pressed)
-							if (button->getName() == "playButton") {
-								if (mp.getStatus() == Music::Playing) mp.pause();
-								else mp.play();
-							}
-						button->pressed = false;
-					}
-			}
-				break;
+				}
 			case Event::MouseButtonReleased:
 				if (ev.mouseButton.button == Mouse::Button::Left) {
 					mp.CheckClick(ev, mainWindow, view);
 				}
 				break;
 			}
+			levels[currLevel].checkInteraction(ev, player);
 		}
-		
+
 		player.Update(deltaTime);
 
 		Vector2f direction;
 
 		bool groundCollision = false;
-		for (auto& p : levels[switched].getObjects()) {
+		for (auto& p : levels[currLevel].getObjects()) {
 			if (p.getCollider().CheckCollision(player.getCollider(), direction, !p.push)) {
 				player.onCollision(direction);
 				if (direction.y == -1) groundCollision = true;
@@ -156,15 +152,13 @@ int main() {
 		//	}
 		//}
 
-		levels[switched].Update(player);
-		levels[switched].Draw(mainWindow, &player);
-		levels[switched].drawHint(player, mainWindow, pixelFont);
-
-
-
+		levels[currLevel].Update(player);
+		levels[currLevel].Draw(mainWindow, &player);
+		levels[currLevel].drawHint(player, mainWindow, pixelFont);
+		
 		mp.draw(mainWindow);
 		mainWindow.draw(songText);
-
+		
 		mainWindow.display();
 	}
 	return 0;

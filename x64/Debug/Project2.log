@@ -1,18 +1,5 @@
 ﻿  Source.cpp
-G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(66,22): warning C4305: инициализация: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(72,87): warning C4244: аргумент: преобразование "unsigned int" в "T", возможна потеря данных
-          with
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(72,56): warning C4244: аргумент: преобразование "unsigned int" в "T", возможна потеря данных
-          with
-          [
-              T=float
-          ]
-G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(73,42): warning C4244: аргумент: преобразование "float" в "sf::Uint8", возможна потеря данных
-G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(73,11): warning C4996: 'sf::Text::setColor': объявлен deprecate
-G:\VS Repo\Project2\Project2\Source.cpp(29,84): warning C4305: аргумент: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\Source.cpp(85,49): warning C4305: =: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\Source.cpp(110,27): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(65,22): warning C4305: инициализация: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\Source.cpp(95,49): warning C4305: =: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\Source.cpp(119,27): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
   Project2.vcxproj -> G:\VS Repo\Project2\x64\Debug\Project2.exe
