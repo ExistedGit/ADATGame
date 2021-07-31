@@ -52,7 +52,7 @@ void InteractiveArray::addObject(InteractiveObject* obj) {
 	interactives.push_back(obj);
 }
 
-void InteractiveArray::drawHint(Player& player, RenderWindow& wnd, Font& font) {
+void InteractiveArray::drawHint(RenderWindow& wnd, Player& player, Font& font) {
 	if (hintText.getFont() == nullptr ||
 		hintText.getFont()->getInfo().family != font.getInfo().family)
 		hintText.setFont(font);

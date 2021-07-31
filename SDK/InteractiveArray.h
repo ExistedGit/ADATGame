@@ -71,7 +71,7 @@ public:
 	void checkInteraction(Event& ev, Player& player);
 
 	// Отвечает за отрисовку кнопки над головой игрока при контакте с интерактивным объектом 
-	void drawHint(Player& player, RenderWindow& wnd, Font& font);
+	void drawHint(RenderWindow& wnd, Player& player, Font& font);
 	
 	void addObject(InteractiveObject* obj);
 

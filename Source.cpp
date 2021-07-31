@@ -154,7 +154,7 @@ int main() {
 
 		levels[currLevel].Update(player);
 		levels[currLevel].Draw(mainWindow, &player);
-		levels[currLevel].drawHint(player, mainWindow, pixelFont);
+		levels[currLevel].drawHint(mainWindow, player, pixelFont);
 		
 		mp.draw(mainWindow);
 		mainWindow.draw(songText);

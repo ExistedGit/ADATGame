@@ -1,5 +1,153 @@
-﻿  Source.cpp
+﻿  Level.cpp
 G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(65,22): warning C4305: инициализация: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\Source.cpp(95,49): warning C4305: =: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\Source.cpp(119,27): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(40,136): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(40,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(40,77): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(41,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(41,77): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(42,117): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(42,80): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(43,139): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(43,114): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(43,80): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(105,89): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(105,74): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(105,54): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(105,47): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(133,107): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(133,92): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(133,72): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(133,65): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(142,106): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(142,91): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(142,71): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
+G:\VS Repo\Project2\Project2\SDK\Level.cpp(142,64): warning C4244: аргумент: преобразование "int" в "T", возможна потеря данных
+          with
+          [
+              T=float
+          ]
   Project2.vcxproj -> G:\VS Repo\Project2\x64\Debug\Project2.exe

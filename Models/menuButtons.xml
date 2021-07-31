@@ -12,7 +12,7 @@
   <cut w="431" x="6" y="215" h="84" row="1" col="1"/>
   <cut w="431" x="442" y="215" h="84" row="1" col="1"/>
  </animation>
- <animation title="exit" delay="150">
+ <animation title="exit" delay="10">
   <cut w="431" x="6" y="317" h="84" row="1" col="1"/>
   <cut w="431" x="442" y="317" h="84" row="1" col="1"/>
  </animation>

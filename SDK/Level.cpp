@@ -52,15 +52,7 @@ Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* wi
 	}
 	// Загружаем карту
 	TiXmlElement* map = doc.FirstChildElement("map");
-	string tileset;
-	{
-		TiXmlElement* ts = map->FirstChildElement("tileset");
-		string tilesetPath = "TileMap/" + string(ts->Attribute("source"));
-		TiXmlDocument tilesetDoc = TiXmlDocument(tilesetPath.c_str());
-		tilesetDoc.LoadFile();
-		tileset = string("TileMap/") + tilesetDoc.FirstChildElement("tileset")->FirstChildElement("image")->Attribute("source");
-	}
-
+	string tileset = string("TileMap/") + map->FirstChildElement("tileset")->FirstChildElement("image")->Attribute("source");;
 	// Сохраняем размеры карты
 	int width = atoi(map->Attribute("width")), height = atoi(map->Attribute("height"));
 	Vector2u tileSize(atoi(map->Attribute("tilewidth")), atoi(map->Attribute("tileheight")));
