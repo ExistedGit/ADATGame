@@ -9,7 +9,7 @@ using namespace sf;
 class Player
 {
 public:
-	Player(map<string, Animation*> animMap, float speed, float jumpHeight, float weight = 1, Vector2f spawn = Vector2f(0, 0));
+	Player(Animation* animMap, Vector2f size, float speed, float jumpHeight, float weight = 1, Vector2f spawn = Vector2f(0, 0));
 	Collider getCollider();
 	void Update(float deltaTime);
 	
@@ -19,11 +19,12 @@ public:
 	Vector2f getPos() const;
 	float getWeight() const;
 	void setWeight(float weight);
+	
 private:
-	map<string, Animation*> animMap;
-	string currAnim;
+	std::string currAnim;
+	Animation* anim;
 	RectangleShape body;
-
+//	Vector2f scale;
 	float weight = 0;
 	float speed;
 	float jumpHeight;

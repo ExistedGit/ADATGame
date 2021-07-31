@@ -1,40 +1,77 @@
 #include "Animation.h"
 #include <iostream>
 
-Animation::Animation(const string& texturePath, const string& modelPath, const vector<IntRect>& rects, float switchTime)
-	: rects(rects), switchTime(switchTime) {
+Animation::Animation(const string& xmlDoc) :
+	texture(new Texture()) {
+	
+	TiXmlDocument doc(xmlDoc.c_str());
+	doc.LoadFile();
+	if (doc.FirstChildElement("default") != nullptr) {
+		string textPath = "Textures/" + string(doc.FirstChildElement("default")->Attribute("src"));
+		texture->loadFromFile(textPath);
+		rectMap["default"].push_back(IntRect(Vector2i(0, 0), Vector2i(texture->getSize())));
+		
+		return;
+	}
+	
+	TiXmlElement* sprites = doc.FirstChildElement("sprites");
+	for (TiXmlElement* anim = sprites->FirstChildElement("animation"); anim != nullptr; anim = anim->NextSiblingElement()) {
+		switchMap[anim->Attribute("title")] = atoi(anim->Attribute("delay")) / 1000.;
+		if (switchMap[anim->Attribute("title")] <= 0.01) 
+			switchMap[anim->Attribute("title")] = 0;
 
-	texture = new Texture();
-	texture->loadFromFile(texturePath);
+		for (TiXmlElement* cut = anim->FirstChildElement("cut"); cut != nullptr; cut = cut->NextSiblingElement()) {
+			int width = atoi(cut->Attribute("w")),
+				height = atoi(cut->Attribute("h")), 
+				x = atoi(cut->Attribute("x")), 
+				y= atoi(cut->Attribute("y"));
+			rectMap[anim->Attribute("title")].push_back(IntRect(x, y, width, height));
+		}
+	}
+
+	{
+		string textPath = "Textures/" + string(sprites->Attribute("image"));
+		texture->loadFromFile(textPath);
+	}
 
 	try {
-		if (rects.empty()) 
+		if (rectMap.empty()) 
 			throw out_of_range("Анимация(конструктор): был передан пустой массив кадров");
-		uvRect = rects[0];
+		uvRect = (*rectMap.begin()).second[0];
+		currAnim = (*rectMap.begin()).first;
 	}
 	catch (out_of_range err) {
 		cerr << err.what();
 	}
 }
 
-void Animation::Update(float deltaTime, bool mirrored) {
-	totalTime += deltaTime;
+bool Animation::Update(const string& animName, float deltaTime, bool mirrored) {
+	bool success = false;
 
-	if (totalTime >= switchTime) {
-		totalTime -= switchTime;		
+	totalTime += deltaTime;
+	if (animName != currAnim) {
+		currAnim = animName;
+		totalTime = 0;
+		uvRect = rectMap[currAnim][0];
+		success = true;
 	}
 
-	currFrame = currFrame == rects.size() - 1 ? 0 : currFrame + 1;
-	uvRect = rects[currFrame];
+	if (totalTime >= switchMap[currAnim]) {
+		totalTime -= switchMap[currAnim];
+		currFrame = currFrame == rectMap[currAnim].size() - 1 ? 0 : currFrame + 1;
+		uvRect = rectMap[currAnim][currFrame];
+		success = true;
+	}
 
-	if (mirrored && !_mirrored) {
+	
+	if (mirrored) {
 		uvRect.left += abs(uvRect.width);
 		uvRect.width = -abs(uvRect.width);
 	}
-	else {
-		uvRect.left += -abs(uvRect.width);
-		uvRect.width = abs(uvRect.width);
-	}
+	
+	_mirrored = mirrored;
+
+	return success;
 }
 
 int Animation::getCurrFrame() const noexcept {
@@ -45,24 +82,10 @@ const Texture* Animation::getTexture() const noexcept {
 	return texture;
 }
 
-Animation& Animation::load(const string& xmlDoc) {
-	TiXmlDocument doc(xmlDoc.c_str());
-
-	TiXmlElement* sprites = doc.FirstChildElement("sprites");
-	string texturePath = sprites->Attribute("image");
-
-	for (TiXmlElement* anim = sprites->FirstChildElement("animation"); anim != NULL && string(anim->Value()) == "animation"; anim = anim->NextSiblingElement()) {
-
-		for (TiXmlElement* cut = anim->FirstChildElement("cut"); cut != NULL && string(cut->Value()) == "cut"; cut = cut->NextSiblingElement()) {
-			int x = atoi(cut->Attribute("x")),
-				y = atoi(cut->Attribute("y")),
-				width = atoi(cut->Attribute("width")),
-				height = atoi(cut->Attribute("height"));
-			rects.push_back(IntRect(x, y, width, height));
-		}
-	}
-	return *this;
+const string& Animation::getCurrAnim() const noexcept {
+	return currAnim;
 }
+
 
 
 ComplexAnim::ComplexAnim(const std::string& texturePath, const std::vector<IntRect>& rect, float switchTime) : switchTime(switchTime), rect(rect) {	

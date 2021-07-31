@@ -12,8 +12,9 @@ InteractiveArray::InteractiveArray() {
 void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 	if (ev.type == Event::KeyReleased ||
 		ev.type == Event::KeyPressed)
-		for (auto& obj : interactives) 
-			if (obj->getType() == IntObjType::Button) {
+		for (auto& obj : interactives)
+			switch (obj->getType()) {
+			case IntObjType::Button: {
 				auto* button = (InteractiveButton*)obj;
 				if (button->isActive())
 					if (ev.key.code == InteractiveObject::interactKey)
@@ -31,17 +32,20 @@ void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 								button->use();
 						}
 			}
-			else if (obj->getType() == IntObjType::Lever
-				&& ev.type == Event::KeyReleased) {
-				auto* lever = (InteractiveLever*)obj;
-				if (lever->isActive())
-					if (ev.key.code == InteractiveObject::interactKey)
-						if (player.getCollider().collides(lever->getCollider())) {
-							lever->Update();
-							lever->use();
-						}
+								   break;
+			case IntObjType::Lever: {
+				if (ev.type == Event::KeyReleased) {
+					auto* lever = (InteractiveLever*)obj;
+					if (lever->isActive())
+						if (ev.key.code == InteractiveObject::interactKey)
+							if (player.getCollider().collides(lever->getCollider())) {
+								lever->Update();
+								lever->use();
+							}
+				}
 			}
-		
+								  break;
+			}
 }
 
 void InteractiveArray::addObject(InteractiveObject* obj) {
@@ -102,7 +106,7 @@ InteractiveButton::InteractiveButton(Animation* text, Vector2f size, Vector2f po
 {}
 
 void InteractiveButton::Update() {
-	anim->Update(0, false);
+	anim->Update("default", 0, false);
 	body.setTextureRect(anim->uvRect);
 	if (isOneTime()) active = false;
 }
@@ -112,7 +116,7 @@ InteractiveLever::InteractiveLever(Animation* text, Vector2f size, Vector2f pos,
 {}
 
 void InteractiveLever::Update() {
-	anim->Update(0, false);
+	anim->Update("default", 0, false);
 	body.setTextureRect(anim->uvRect);
 	on = !on;
 

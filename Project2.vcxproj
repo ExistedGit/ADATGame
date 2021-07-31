@@ -90,6 +90,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/D_HAS_STD_BYTE=0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,6 +109,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/D_HAS_STD_BYTE=0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,6 +127,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/D_HAS_STD_BYTE=0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +146,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>G:\VS Repo\Project2\Project2\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/D_HAS_STD_BYTE=0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,7 +158,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
-    <ClInclude Include="Menu.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SDK\AnimatedSprite.h" />
     <ClInclude Include="SDK\Animation.h" />
@@ -163,6 +166,7 @@
     <ClInclude Include="SDK\ConfigManager.h" />
     <ClInclude Include="SDK\InteractiveArray.h" />
     <ClInclude Include="SDK\Level.h" />
+    <ClInclude Include="SDK\Menu.h" />
     <ClInclude Include="SDK\Object.h" />
     <ClInclude Include="SDK\Player.h" />
     <ClInclude Include="SDK\TileMap.h" />
@@ -176,7 +180,6 @@
     <Image Include="Icons\rat-looking-right.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="SDK\Animation.cpp" />
     <ClCompile Include="SDK\Button.cpp" />
     <ClCompile Include="SDK\Collider.cpp" />

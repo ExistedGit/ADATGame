@@ -1,0 +1,7 @@
+<!DOCTYPE SpriteDecomposer>
+<sprites image="lever.png" transparentColor="">
+ <animation title="default" delay="10">
+  <cut w="30" x="0" y="1" h="22" row="1" col="1"/>
+  <cut w="30" x="0" y="24" h="22" row="1" col="1"/>
+ </animation>
+</sprites>

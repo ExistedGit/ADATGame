@@ -1,22 +1,20 @@
 #include "Player.h"
 
-Player::Player(map<string, Animation*> animMap, float speed, float jumpHeight, float weight, Vector2f spawn) :
-	animMap(animMap), 
+Player::Player(Animation* animMap, Vector2f size, float speed, float jumpHeight, float weight, Vector2f spawn) :
+	anim(animMap), 
 	speed(speed), 
 	jumpHeight(jumpHeight), 
 	weight(weight),
 	turned(false),
 	canJump(false)
 {
-	if (animMap.empty()) throw invalid_argument("Player(конструктор): карта анимаций пуста");
-
-	currAnim = (*animMap.begin()).first;
-	body.setSize(Vector2f(animMap[currAnim]->uvRect.width, animMap[currAnim]->uvRect.height));
+	currAnim = "idle";
+	body.setSize(size);
 	body.setPosition(spawn);
-	body.setTexture(animMap[currAnim]->getTexture());
-	body.setTextureRect(animMap[currAnim]->uvRect);
+	body.setTexture(anim->getTexture());
+	body.setTextureRect(anim->uvRect);
 	body.setOrigin(body.getSize() / 2.0f);
-	
+//	scale = Vector2f(body.getSize().x / body.getTextureRect().width, body.getSize().y / body.getTextureRect().height);
 }
 
 Collider Player::getCollider() {
@@ -41,18 +39,28 @@ void Player::Update(float deltaTime) {
 
 	velocity.y += 981.0f * deltaTime * weight;
 
+	string oldAnim = anim->getCurrAnim();
 	if (velocity.x == 0) {
 		currAnim = "idle";
 	}
 	else {
-		if(canJump) currAnim = "walk";
+		if(canJump) 
+			currAnim = "walk";
 
 		turned = velocity.x < 0;
 	}
+	if(!canJump) 
+		currAnim = "idle";
 
-	animMap[currAnim]->Update(deltaTime, velocity.x < 0);
-	body.setTextureRect(animMap[currAnim]->uvRect);
+	anim->Update(currAnim, deltaTime, false);
+	body.setTextureRect(anim->uvRect);
 	body.move(velocity * deltaTime);
+
+	//body.setSize(Vector2f(body.getTextureRect().width, body.getTextureRect().height));
+	//body.setOrigin(Vector2f(body.getSize().x / 2.0f * scale.x, body.getSize().y / 2.0f * scale.y));
+	//body.setScale(scale);
+	if(velocity.x != 0) 
+		body.setScale((velocity.x < 0 ? -1 : 1), 1);
 }
 
 void Player::onCollision(const Vector2f& direction) {

@@ -8,7 +8,7 @@
 
 #include <SFML/Audio.hpp>
 #include "SDK/ConfigManager.h"
-
+#include <Windows.h>
 
 const Clock cl;
 
@@ -19,22 +19,17 @@ using namespace std;
 
 
 int main() {
+	SetConsoleCP(65001); SetConsoleOutputCP(65001);
 #pragma region Инициализация
 	cout.setf(ios::boolalpha);
 	
 	View view(Vector2f(0, 0), Vector2f(1920, 1080));
 	RenderWindow mainWindow(sf::VideoMode(1920, 1080), L"ВЫ — КРЫСА!");
-	vector<Level> levels = ConfigManager::loadLevels(mainWindow);
+	vector<Level> levels = ConfigManager::loadLevels(&mainWindow);
 	//vector<Level> levels = { Level().load("TileMap/untitled.tmx", "TileMap/tileset.png", {32, 32}, Vector2f(1, 1079), &mainWindow) };
-	Texture* playerTexture = new Texture();
-	playerTexture->loadFromFile("Textures/NewRatR.png");
 
-	Player player(
-		{ 
-			{"idle", new Animation("Textures/NewRatR.png", "Models/NewRatR.xml", {} ,0.15)
-			} 
-		},
-		500, 150, 1, Vector2f(200, 200));
+
+	Player player(new Animation("Models/rat.xml"), Vector2f(191/2, 191/2), 650, 150, 1, Vector2f(200, 200));
 
 	MusicPlayer mp({
 		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
@@ -42,18 +37,17 @@ int main() {
 		});
 	
 	bool viewCentered = true;
-	levels[0].applyUseMap({
-			{"playButton", [&mp]() mutable {
-				if (!mp.play()) mp.pause();
-			}
-		} });
-	levels[1].applyUseMap({
-			{"lever", [&viewCentered]() mutable {
-				viewCentered = !viewCentered;
-				cout << viewCentered << endl;
-			}
-			}
-		});
+	//levels[0].applyUseMap({
+	//		{"playButton", [&mp]() mutable {
+	//			if (!mp.play()) mp.pause();
+	//		}
+	//	} });
+	//levels[1].applyUseMap({
+	//		{"lever", [&viewCentered]() mutable {
+	//			viewCentered = !viewCentered;
+	//		}
+	//		}
+	//	});
 
 
 	Font pixelFont;
@@ -161,12 +155,10 @@ int main() {
 		levels[currLevel].Update(player);
 		levels[currLevel].Draw(mainWindow, &player);
 		levels[currLevel].drawHint(player, mainWindow, pixelFont);
-
-
-
+		
 		mp.draw(mainWindow);
 		mainWindow.draw(songText);
-
+		
 		mainWindow.display();
 	}
 	return 0;

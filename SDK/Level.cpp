@@ -3,6 +3,8 @@
 #include "tinyxml.h"
 #include <iostream>
 
+using namespace std;
+
 void Level::insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, TileMap> tmap) {
 	if (layers.empty()) {
 		layers.push_back(tmap);
@@ -26,7 +28,7 @@ vector<Object>& Level::getObjects() {
 	return objects;
 }
 
-Level& Level::load(string xmlDoc, string tileset, const Vector2u& tileSize, const Vector2f& offset, const RenderWindow* window, map<string, function<void()>> useMap) {
+Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* window, map<string, function<void()>> useMap) {
 	tileLayers.clear();
 	objects.clear();
 
@@ -44,13 +46,24 @@ Level& Level::load(string xmlDoc, string tileset, const Vector2u& tileSize, cons
 
 
 	TiXmlDocument doc(xmlDoc.c_str());
-	doc.LoadFile();
+	if (!doc.LoadFile()) {
+		throw xmlDoc + ": map file not found";
+		return *this;
+	}
 	// Загружаем карту
 	TiXmlElement* map = doc.FirstChildElement("map");
-
+	string tileset;
+	{
+		TiXmlElement* ts = map->FirstChildElement("tileset");
+		string tilesetPath = "TileMap/" + string(ts->Attribute("source"));
+		TiXmlDocument tilesetDoc = TiXmlDocument(tilesetPath.c_str());
+		tilesetDoc.LoadFile();
+		tileset = string("TileMap/") + tilesetDoc.FirstChildElement("tileset")->FirstChildElement("image")->Attribute("source");
+	}
 
 	// Сохраняем размеры карты
 	int width = atoi(map->Attribute("width")), height = atoi(map->Attribute("height"));
+	Vector2u tileSize(atoi(map->Attribute("tilewidth")), atoi(map->Attribute("tileheight")));
 	for (TiXmlElement* child = map->FirstChildElement("layer"); child != NULL && (string(child->Value())) == "layer"; child = child->NextSiblingElement())
 	{
 		int* tileArray = new int[width * height];
@@ -68,8 +81,8 @@ Level& Level::load(string xmlDoc, string tileset, const Vector2u& tileSize, cons
 			int i = 0;
 			while (ss >> value) {
 				ss >> comma;
-				// Для текущего тайлсета, если значение клетки 0, ставим на это место 141 клетку тайлсета(пустое пространство)
-				tileArray[i] = (value ? value - 1 : tileset == "TileMap/tileset.png" ?141: 131 );
+				// Для текущего тайлсета, если значение клетки 0, ставим на это место первую клетку тайлсета(пустое пространство)
+				tileArray[i] = (value ? value - 1 : 0 );
 				i++;
 			}
 			//for (int k = 0; k < width * height; k++) {
@@ -114,31 +127,27 @@ Level& Level::load(string xmlDoc, string tileset, const Vector2u& tileSize, cons
 				oneTime = type == "oneTime";
 			}
 
+			std::string textPath = "Models/" + interactiveName + ".xml";
+			Animation* anim = new Animation(textPath);
+
 			if (specifier == "button") {
 				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя кнопки");
 				
 				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
 				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
-				Texture* buttonTexture = new Texture();
-				if (!buttonTexture->loadFromFile("Textures/" + interactiveName + ".png")) {
-					delete buttonTexture;
-					buttonTexture = nullptr;
-				}
+				
 
 
-				interactives.push_back(new InteractiveButton(buttonTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
+				interactives.push_back(new InteractiveButton(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 			} else if (specifier == "lever") {
 				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя рычага");
 
 				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
 				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
-				Texture* leverTexture = new Texture();
-				if (!leverTexture->loadFromFile("Textures/" + interactiveName + ".png")) {
-					delete leverTexture;
-					leverTexture = nullptr;
-				}
+				
+				
 
-				interactives.push_back(new InteractiveLever(leverTexture, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
+				interactives.push_back(new InteractiveLever(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 			}
 			else throw runtime_error("Level.load(): недопустимое имя объекта(интерактивные объекты)");
 		}
@@ -204,7 +213,7 @@ void Level::Update(Player& player) {
 				if (obj->getType() == IntObjType::Button)
 				{
 					auto& button = *(InteractiveButton*)obj;
-					if (button.getRow() == 1) button.Update();
+					if (button.getCurrFrame() == 1) button.Update();
 					button.pressed = false;
 				}
 }

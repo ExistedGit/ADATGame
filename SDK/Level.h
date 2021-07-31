@@ -5,7 +5,6 @@
 #include "Player.h"
 #include "InteractiveArray.h"
 
-using namespace std;
 
 class Level : public InteractiveArray
 {
@@ -22,7 +21,7 @@ public:
 	
 	vector<Object>& getObjects();
 	
-	Level& load(string xmlDoc, string tileset, const Vector2u& tileSize, const Vector2f& offset = Vector2f(0, 0), const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
+	Level& load(string xmlDoc, const Vector2f& offset = Vector2f(0, 0), const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
 	
 	void Draw(RenderWindow& wnd, Player* player = nullptr) const;
 	

@@ -3,7 +3,8 @@
 Object::Object(Animation* text, Vector2f size, Vector2f pos, bool solid, bool gravity , float weight, bool push) : 
 	anim(text), solid(solid), gravity(gravity), weight(weight), push(push) 
 {
-	body.setTexture(anim->getTexture());
+	if (text != nullptr) body.setTexture(anim->getTexture());
+	else body.setTexture(nullptr);
 	body.setSize(size);
 	body.setOrigin(size / 2.0f);
 	body.setPosition(pos);
@@ -18,7 +19,7 @@ Collider Object::getCollider() {
 }
 
 void Object::Update(float deltaTime) {
-	anim->Update(deltaTime, false);
+	anim->Update("default", deltaTime, false);
 	body.setTextureRect(anim->uvRect);
 }
 

@@ -75,8 +75,8 @@
     <ClInclude Include="SDK\ConfigManager.h">
       <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="SDK\Menu.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -128,9 +128,6 @@
     </ClCompile>
     <ClCompile Include="SDK\Button.cpp">
       <Filter>Файлы заголовков\SDK\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu.cpp">
-      <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="SDK\ConfigManager.cpp">
       <Filter>Файлы заголовков\SDK\Utility</Filter>

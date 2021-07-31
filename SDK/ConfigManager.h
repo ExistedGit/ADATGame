@@ -5,6 +5,6 @@
 class ConfigManager
 {
 public:
-	static vector<Level> loadLevels(RenderWindow& wnd);
+	static vector<Level> loadLevels(RenderWindow* wnd = nullptr);
 };
 
