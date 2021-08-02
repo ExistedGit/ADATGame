@@ -17,6 +17,15 @@ public:
 
 	void Draw(RenderWindow& wnd) const;
 	Vector2f getPos() const;
+	void setPos(float x, float y);
+	void setPos(const Vector2f& pos);;
+	
+	void respawn(float x, float y) {
+		velocity = Vector2f(0, 0);
+		setPos(x, y);
+		canJump = false;
+	}
+
 	float getWeight() const;
 	void setWeight(float weight);
 	

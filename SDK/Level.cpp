@@ -31,7 +31,7 @@ vector<Object>& Level::getObjects() {
 Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* window, map<string, function<void()>> useMap) {
 	tileLayers.clear();
 	objects.clear();
-
+	
 #pragma region Генерация границ окна
 
 

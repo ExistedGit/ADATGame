@@ -19,7 +19,7 @@ Collider Object::getCollider() {
 }
 
 void Object::Update(float deltaTime) {
-	anim->Update("default", deltaTime, false);
+	anim->Update(deltaTime, false, "default");
 	body.setTextureRect(anim->uvRect);
 }
 

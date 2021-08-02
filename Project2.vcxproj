@@ -169,9 +169,11 @@
     <ClInclude Include="SDK\Menu.h" />
     <ClInclude Include="SDK\Object.h" />
     <ClInclude Include="SDK\Player.h" />
+    <ClInclude Include="SDK\SmartSprite.h" />
     <ClInclude Include="SDK\TileMap.h" />
     <ClInclude Include="SDK\tinystr.h" />
     <ClInclude Include="SDK\tinyxml.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project2.rc" />
@@ -186,6 +188,7 @@
     <ClCompile Include="SDK\ConfigManager.cpp" />
     <ClCompile Include="SDK\InteractiveArray.cpp" />
     <ClCompile Include="SDK\Level.cpp" />
+    <ClCompile Include="SDK\Menu.cpp" />
     <ClCompile Include="SDK\Object.cpp" />
     <ClCompile Include="SDK\Player.cpp" />
     <ClCompile Include="SDK\TileMap.cpp" />
@@ -194,6 +197,7 @@
     <ClCompile Include="SDK\tinyxmlerror.cpp" />
     <ClCompile Include="SDK\tinyxmlparser.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

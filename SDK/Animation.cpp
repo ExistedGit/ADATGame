@@ -10,7 +10,7 @@ Animation::Animation(const string& xmlDoc) :
 		string textPath = "Textures/" + string(doc.FirstChildElement("default")->Attribute("src"));
 		texture->loadFromFile(textPath);
 		rectMap["default"].push_back(IntRect(Vector2i(0, 0), Vector2i(texture->getSize())));
-		
+		uvRect = IntRect(Vector2i(0, 0), Vector2i(texture->getSize()));
 		return;
 	}
 	
@@ -45,16 +45,14 @@ Animation::Animation(const string& xmlDoc) :
 	}
 }
 
-bool Animation::Update(const string& animName, float deltaTime, bool mirrored) {
+bool Animation::Update(float deltaTime, bool mirrored, string animName) {
 	bool success = false;
 
+	if (animName == "") 
+		animName = currAnim;
+	if(setAnim(animName)) return true;
+
 	totalTime += deltaTime;
-	if (animName != currAnim) {
-		currAnim = animName;
-		totalTime = 0;
-		uvRect = rectMap[currAnim][0];
-		success = true;
-	}
 
 	if (totalTime >= switchMap[currAnim]) {
 		totalTime -= switchMap[currAnim];
@@ -84,6 +82,17 @@ const Texture* Animation::getTexture() const noexcept {
 
 const string& Animation::getCurrAnim() const noexcept {
 	return currAnim;
+}
+
+bool Animation::setAnim(const string& animName) {
+	if (animName != currAnim) {
+		currAnim = animName;
+		currFrame = 0;
+		totalTime = 0;
+		uvRect = rectMap[currAnim][0];
+		return true;
+	}
+	return false;
 }
 
 

@@ -106,7 +106,7 @@ InteractiveButton::InteractiveButton(Animation* text, Vector2f size, Vector2f po
 {}
 
 void InteractiveButton::Update() {
-	anim->Update("default", 0, false);
+	anim->Update(0, false, "default");
 	body.setTextureRect(anim->uvRect);
 	if (isOneTime()) active = false;
 }
@@ -116,7 +116,7 @@ InteractiveLever::InteractiveLever(Animation* text, Vector2f size, Vector2f pos,
 {}
 
 void InteractiveLever::Update() {
-	anim->Update("default", 0, false);
+	anim->Update(0, false, "default");
 	body.setTextureRect(anim->uvRect);
 	on = !on;
 

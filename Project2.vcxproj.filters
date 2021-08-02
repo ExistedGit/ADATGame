@@ -78,6 +78,12 @@
     <ClInclude Include="SDK\Menu.h">
       <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\SmartSprite.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project2.rc">
@@ -131,6 +137,12 @@
     </ClCompile>
     <ClCompile Include="SDK\ConfigManager.cpp">
       <Filter>Файлы заголовков\SDK\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Menu.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

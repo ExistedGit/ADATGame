@@ -2,29 +2,60 @@
 #include "Button.h"
 #include "tinyxml.h"
 #include "Animation.h"
+#include <sstream>
 
-class Menu : public IButtonArray
+class Menu : public IButtonArray<HoverButton>
 {
 private:
-	vector<ComplexAnim> anims;
+	Vector2f pos;
 public:
-	void load(const string& xmlDoc) {
-		TiXmlDocument doc(xmlDoc.c_str());
-		doc.LoadFile();
-		TiXmlElement* sprites = doc.FirstChildElement("sprites");
-		string texturePath = sprites->Attribute("image");
-
-		for (TiXmlElement* anim = sprites->FirstChildElement("animation"); anim != NULL && string(anim->Value()) == "animation"; anim = anim->NextSiblingElement()) {
-			vector<IntRect> v;
-			for (TiXmlElement* cut = anim->FirstChildElement("cut"); cut!= NULL && string(cut->Value()) == "cut"; cut = cut->NextSiblingElement()) {
-				int x = atoi(cut->Attribute("x")), 
-					y = atoi(cut->Attribute("y")), 
-					width= atoi(cut->Attribute("width")), 
-					height = atoi(cut->Attribute("height"));
-				v.push_back(IntRect(x, y, width, height));
+	inline Menu(const Vector2f pos) : pos(pos) {}
+	
+	inline void load(const string& xmlDoc, const string& modelDoc, unsigned int distance) {
+		Animation* anim = new Animation(xmlDoc);
+		
+		TiXmlDocument model(modelDoc.c_str());
+		if(!model.LoadFile()) throw runtime_error(u8"Menu.load(): файл модели не найден");
+		
+		vector<string> list;
+		{
+			TiXmlElement* buttonList = model.FirstChildElement("list");
+			string data = buttonList->GetText();
+			istringstream ss(data);
+			
+			string name;
+			while (ss >> name) {
+				list.push_back(name);
 			}
-			anims.push_back(ComplexAnim(texturePath, v, 0));
 		}
+
+		Vector2f currPos = pos;
+		for (int i = 0; i < list.size(); i++) {
+			Vector2f size = Vector2f(anim->uvRect.width, anim->uvRect.height);
+			
+			addButton(HoverButton(anim, list[i], list[i], size, currPos));
+			currPos.y += size.y + distance;
+		}
+	}
+
+	inline void select_vertical(const Event& ev, RenderWindow& wnd, const View& view) {
+		while (!CheckClick(ev, wnd, view)) {
+			wnd.clear();
+			drawButtons(wnd);
+			wnd.display();
+		}
+	}
+
+	bool CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override {
+		if (ev.type == Event::MouseMoved)
+			for (int i = 0; i < buttons.size(); i++) {
+				auto& button = buttons[i];
+					
+				button.setHover(button.intersects(Vector2f(ev.mouseMove.x - (wnd.getSize().x - (view.getCenter().x + wnd.getSize().x / 2)),
+								ev.mouseMove.y - (wnd.getSize().y - (view.getCenter().y + wnd.getSize().y / 2)))));
+					
+			}
+		if (IButtonArray::CheckClick(ev, wnd, view)) return true;
 	}
 };
 

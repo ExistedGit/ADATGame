@@ -52,7 +52,7 @@ void Player::Update(float deltaTime) {
 	if(!canJump) 
 		currAnim = "idle";
 
-	anim->Update(currAnim, deltaTime, false);
+	anim->Update(deltaTime, false, currAnim);
 	body.setTextureRect(anim->uvRect);
 	body.move(velocity * deltaTime);
 
@@ -81,6 +81,14 @@ void Player::Draw(RenderWindow& wnd) const {
 
 Vector2f Player::getPos() const {
 	return body.getPosition();
+}
+
+void Player::setPos(float x, float y) {
+	body.setPosition(x, y);
+}
+
+void Player::setPos(const Vector2f& pos) {
+	body.setPosition(pos);
 }
 
 float Player::getWeight() const {

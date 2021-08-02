@@ -1,19 +1,15 @@
 <!DOCTYPE SpriteDecomposer>
-<sprites image="menuButtons.png" transparentColor="">
- <animation title="newGame" delay="10">
-  <cut w="431" x="6" y="11" h="84" row="1" col="1"/>
-  <cut w="431" x="442" y="11" h="84" row="1" col="1"/>
- </animation>
- <animation title="continue" delay="10">
-  <cut w="431" x="442" y="101" h="84" row="1" col="1"/>
-  <cut w="431" x="6" y="102" h="84" row="1" col="1"/>
+<sprites image="BUTTONS.png" transparentColor="">
+ <animation title="start" delay="10">
+  <cut w="431" x="6" y="29" h="84" row="1" col="1"/>
+  <cut w="431" x="442" y="29" h="84" row="1" col="1"/>
  </animation>
  <animation title="settings" delay="10">
-  <cut w="431" x="6" y="215" h="84" row="1" col="1"/>
-  <cut w="431" x="442" y="215" h="84" row="1" col="1"/>
+  <cut w="431" x="6" y="131" h="84" row="1" col="1"/>
+  <cut w="431" x="442" y="131" h="84" row="1" col="1"/>
  </animation>
  <animation title="exit" delay="10">
-  <cut w="431" x="6" y="317" h="84" row="1" col="1"/>
-  <cut w="431" x="442" y="317" h="84" row="1" col="1"/>
+  <cut w="431" x="6" y="239" h="84" row="1" col="1"/>
+  <cut w="431" x="442" y="239" h="84" row="1" col="1"/>
  </animation>
 </sprites>

@@ -2,73 +2,63 @@
 
 const string& BaseButton::getName() const noexcept { return name; }
 
-BaseButton::BaseButton(const string& name, function<void()> use) : name(name), use(use) {}
-
-ClickButton::ClickButton(Texture* text, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use) : BaseButton(name, use) {
-
-	body = RectangleShape(size);
-	body.setPosition(pos);
-	body.setTexture(text);
-	
+const ClickButtonType& BaseButton::getType() const noexcept {
+	return type;
 }
 
-bool ClickButton::intersects(const Vector2f& pos) const noexcept {
+BaseButton::BaseButton(Animation* anim, const string& name, function<void()> use, ClickButtonType type) :
+	name(name), use(use), anim(anim), type(type)
+{
+
+}
+
+bool RectButton::intersects(const Vector2f& pos) const noexcept {
 	return FloatRect(body.getPosition(), body.getSize()).contains(pos);
 }
 
-void ClickButton::draw(RenderWindow& wnd) {
+void RectButton::Update() {
+	anim->Update(0, false, animName);
+}
+
+RectButton::RectButton(Animation * text, const string& animName, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use, ClickButtonType type) :
+	BaseButton(text, name, use, ClickButtonType::RectButton), animName(animName){
+
+	body = RectangleShape(size);
+	body.setPosition(pos);
+	body.setTexture(text->getTexture());
+	text->setAnim(animName);
+	body.setTextureRect(text->uvRect);
+}
+
+void RectButton::draw(RenderWindow& wnd)const noexcept {
 	wnd.draw(body);
 }
-
-void IButtonArray::draw(RenderWindow& wnd) {
-	for (auto& it : buttons) it.draw(wnd);
+HoverButton::HoverButton(Animation* text, const string& animName, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use) :
+	RectButton(text, animName, name, size, pos, use, ClickButtonType::HoverButton)
+{
+	text->setAnim(animName);
+	states["inactive"] =text->uvRect;
+	text->Update(0, false, animName);
+	states["active"] = text->uvRect;
 }
-
-void IButtonArray::addButton(const ClickButton& button) {
-	buttons.push_back(button);
-}
-
-void IButtonArray::applyUseMap(map<string, function<void()>> useMap) {
-	for (auto& button : buttons) {
-		if (useMap.count(button.getName())) {
-			button.use = useMap[button.getName()];
-		}
+void HoverButton::setHover(bool hover) {
+	if (this->hover != hover) {
+		this->hover = hover;
+		body.setTextureRect(states[hover ? "active" : "inactive"]);
 	}
 }
 
-IButtonArray::IButtonArray(const std::initializer_list<ClickButton>& il) : buttons(il) {}
+bool HoverButton::getHover() const noexcept { return hover; }
 
 MusicPlayer::MusicPlayer(const std::vector<Song*>& src) : songs(src) {
 	
-	vector<Texture*> buttonTextures = {new Texture()};
-	buttonTextures[0]->loadFromFile("Textures/button.png");
-
-	addButton(ClickButton(buttonTextures[0], "playButton", Vector2f(64, 64), Vector2f(400, 700), 
+	vector<Animation*> buttonTextures = {new Animation("Models/button.xml")};
+	
+	addButton(RectButton(buttonTextures[0], "default", "playButton", Vector2f(64, 64), Vector2f(400, 700),
 		[this]() {
 			if (!this->play()) this->pause();
 		}));
 }
-
-void IButtonArray::CheckClick(const Event& ev, RenderWindow& wnd, const View& view) {
-	if (ev.type == Event::MouseButtonReleased) 
-		if (ev.mouseButton.button == Mouse::Left) 
-			for (int i = 0; i < buttons.size(); i++) {
-				auto& button = buttons[i];
-				if (button.intersects
-					// Из-за класса View графические представления объектов смещаются
-					// При этом их координаты остаются прежними
-					
-					// Это вынуждает отнять от координат мыши разницу между
-					// координатами крайней стороны текущего вида
-					// и крайней стороны окна
-				(Vector2f(ev.mouseButton.x - (wnd.getSize().x - (view.getCenter().x + wnd.getSize().x / 2)),
-					ev.mouseButton.y - (wnd.getSize().y - (view.getCenter().y + wnd.getSize().y / 2))))
-					)
-					button.use();
-			}
-}
-
-
 void MusicPlayer::setPosition(float pos) noexcept {
 	songs[currentIndex]->setPlayingOffset(seconds(0));
 }
@@ -82,13 +72,15 @@ void MusicPlayer::setVolume(float volume) noexcept {
 	}
 }
 
-void MusicPlayer::mute() noexcept { songs[currentIndex]->setVolume(0); }
+void MusicPlayer::mute() noexcept { if (!songs.empty()) songs[currentIndex]->setVolume(0); }
 
-void MusicPlayer::unmute() noexcept { songs[currentIndex]->setVolume(100);}
+void MusicPlayer::unmute() noexcept { if(!songs.empty()) songs[currentIndex]->setVolume(100);}
 
-bool MusicPlayer::muted() const noexcept { return songs[currentIndex]->getVolume() == 0; }
+bool MusicPlayer::muted() const noexcept { return !songs.empty() && songs[currentIndex]->getVolume() == 0; }
 
 void MusicPlayer::next()noexcept {
+	if (songs.empty()) return;
+
 	songs[currentIndex]->pause();
 	if (currentIndex + 1 >= songs.size())
 		currentIndex = 0;
@@ -98,6 +90,9 @@ void MusicPlayer::next()noexcept {
 }
 
 void MusicPlayer::prev()noexcept {
+
+	if (songs.empty()) return;
+
 	songs[currentIndex]->pause();
 	if (currentIndex - 1 < 0)
 		currentIndex = songs.size();
@@ -113,6 +108,8 @@ void MusicPlayer::restart()noexcept {
 // Возвращает правду, если музыка ещё играет
 
 bool MusicPlayer::pause()noexcept {
+	if (songs.empty()) return false;
+
 	if (songs[currentIndex]->getStatus() == Music::Status::Playing) {
 		songs[currentIndex]->pause();
 		return true;
@@ -123,6 +120,8 @@ bool MusicPlayer::pause()noexcept {
 // Возвращает правду, если музыку ещё не играет
 
 bool MusicPlayer::play() noexcept {
+	if (songs.empty()) return false;
+
 	if (songs[currentIndex]->getStatus() != Music::Status::Playing) {
 		songs[currentIndex]->play();
 		return true;
@@ -131,18 +130,24 @@ bool MusicPlayer::play() noexcept {
 }
 
 Music::Status MusicPlayer::getStatus() const noexcept  {
+	if (songs.empty()) return Music::Status::Stopped;
 	return songs[currentIndex]->getStatus();
 }
 
 float MusicPlayer::getVolume() const noexcept  {
+	if (songs.empty()) return 0;
 	return songs[currentIndex]->getVolume();
 }
 
 const string& MusicPlayer::getSongName() const noexcept {
+	if (songs.empty()) return "undefinedSong";
 	return songs[currentIndex]->getName();
 }
 
 bool MusicPlayer::setMusic(unsigned int index) {
+
+	if (songs.empty()) return false;
+
 	if (index > songs.size()) return false;
 	songs[currentIndex]->pause();
 	currentIndex = index;
