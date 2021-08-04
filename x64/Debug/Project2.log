@@ -1,5 +1,5 @@
-﻿  Button.cpp
-G:\VS Repo\Project2\Project2\SDK\Button.cpp(106,30): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+﻿  ConfigManager.cpp
+G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(72,22): warning C4305: инициализация: усечение из "double" в "float"
   Source.cpp
 G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(72,22): warning C4305: инициализация: усечение из "double" в "float"
 G:\VS Repo\Project2\Project2\SDK\Menu.h(38,61): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
@@ -152,5 +152,4 @@ G:\VS Repo\Project2\Project2\World.h(167,1): warning C4305: =: усечение 
 G:\VS Repo\Project2\Project2\World.h(193,30): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
   Создание кода...
 G:\VS Repo\Project2\Project2\SDK\Menu.h(70): warning C4715: Menu::CheckClick: значение возвращается не при всех путях выполнения
-G:\VS Repo\Project2\Project2\SDK\Button.cpp(153): warning C4172: возвращение адреса локальной или временной переменной
   Project2.vcxproj -> G:\VS Repo\Project2\x64\Debug\Project2.exe

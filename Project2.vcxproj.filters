@@ -84,11 +84,14 @@
     <ClInclude Include="SDK\SmartSprite.h">
       <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Achievement.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="FragShader.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Achievement.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\FragShader.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -150,8 +153,8 @@
     <ClCompile Include="World.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Achievement.cpp">
-      <Filter>Файлы заголовков</Filter>
+    <ClCompile Include="SDK\Achievement.cpp">
+      <Filter>Файлы заголовков\SDK\Objects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

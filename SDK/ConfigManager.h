@@ -1,7 +1,7 @@
 #pragma once
 #include "Level.h"
 #include "tinyxml.h"
-#include "../Achievement.h"
+#include "Achievement.h"
 
 class ConfigManager
 {
@@ -30,11 +30,9 @@ public:
 				);
 
 				newAch.setActive(true);
-				achievements.push_back(newAch);
+				v.push_back(newAch);
 			}
-
-			return true;
 		}
-		else return false;
+}
 };
 
