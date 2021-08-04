@@ -35,14 +35,17 @@ private:
 				if (!mp.play()) mp.pause();
 			}
 		} });
-
 	}
+
+	enum class MenuState : int {
+		MAIN, INGAME, NO_MENU
+	};
 public:
 	
 
 	inline World(const Vector2f& wndSize) :
-		wnd(RenderWindow(sf::VideoMode(wndSize.x, wndSize.y), L"ВЫ — КРЫСА!", 7U, cs)),
-		view(View(Vector2f(0, 0), wndSize)),
+		wnd(RenderWindow(sf::VideoMode(wndSize.x, wndSize.y), L"ВЫ — КРЫСА!", Style::Titlebar | Style::Close , cs)),
+		view(View(Vector2f(wndSize.x, wndSize.y), wndSize)),
 		levels(ConfigManager::loadLevels()),
 		player(new Animation("Models/rat.xml"), Vector2f(191 / 2, 191 / 2), 650, 150, 1, Vector2f(200, 200)),
 		mp({
@@ -52,8 +55,13 @@ public:
 	{
 		cs.antialiasingLevel = 8;
 
-		sprites["menu_bg"] = new SmartSprite("Textures/menu_bg.png");
+		sprites["menu_bg"] = new SmartSprite("Textures/menu_bg.png"); 
+		sprites["menu_bg"]->setPosition(Vector2f(wnd.getSize()/2u));
+		sprites["ingame_menu_bg"] = new SmartSprite("Textures/ingame_menu_bg.png");
+		sprites["ingame_menu_bg"]->setPosition(Vector2f(wnd.getSize() / 2u));
+
 		sprites["hub_bg"] = new SmartSprite("Textures/hub_bg.jpg");
+		
 		initLevels();
 	}
 
@@ -61,21 +69,48 @@ public:
 		view.setCenter(Vector2f(wnd.getSize() / 2u));
 
 		Event ev;
+		MenuState menuState = MenuState::MAIN;
 
 		Menu mainMenu(Vector2f(wnd.getSize().x /2 - 200, wnd.getSize().y / 2+100));
 		mainMenu.load("Models/menuButtons.xml", "Models/Menu/mainMenu.xml", 10);
-		bool gameStarted = false;
 		mainMenu.applyUseMap({
 			{
 			"start",
-			[&gameStarted]() mutable { gameStarted = true; }
+			[this, &menuState]() mutable { 
+				player.respawn(200, 200);
+				menuState = MenuState::NO_MENU;
+				
+			}
 			},
 			{
 			"exit",
-			[this]()mutable {wnd.close(); exit(0); }
+			[this]()mutable {
+				mp.stop();
+				wnd.close();
+				exit(0);
+			}	
 			}
 			});
-
+		Menu ingameMenu(Vector2f(wnd.getSize().x / 2, wnd.getSize().y / 2), true);
+		ingameMenu.load("Models/menuButtons.xml", "Models/Menu/ingameMenu.xml", 10);
+		ingameMenu.applyUseMap({
+			{
+			"continue",
+			[this, &menuState]() mutable { 
+				menuState = MenuState::NO_MENU; 
+				if(mp.isInterrupted()) mp.play();
+			}
+			},
+			{
+			"menu",
+			[this, &menuState]() mutable {
+				mp.stop();
+				view.setCenter(Vector2f(wnd.getSize() / 2u)); 
+				wnd.setView(view); 
+				menuState = MenuState::MAIN; 
+			}
+			}
+			});
 		Font pixelFont;
 		pixelFont.loadFromFile("Fonts/kongtext.ttf");
 		Font hintFont;
@@ -87,105 +122,132 @@ public:
 
 		Text songText("", pixelFont);
 		songText.setPosition(200, 500);
-
-
 		while (wnd.isOpen()) {
-			while (!wnd.hasFocus()) {
-				if (wnd.pollEvent(ev)) {
+			while (!wnd.hasFocus())
+				if (wnd.pollEvent(ev)) 
 					if (ev.type == Event::GainedFocus) break;
-				}
-			}
+				
 			wnd.clear();
-			sprites["hub_bg"]->setPosition(player.getPos().x - sprites["hub_bg"]->getTexture()->getSize().x/2, player.getPos().y - sprites["hub_bg"]->getTexture()->getSize().y / 2);
+			sprites["hub_bg"]->setPosition(view.getCenter());
 			wnd.draw(*sprites["hub_bg"]);
 
-			if (gameStarted) {
+			
+			if (menuState != MenuState::MAIN) {
 				songText.setString("Now playing " + mp.getSongName() + (mp.getStatus() == Music::Paused || mp.getStatus() == Music::Stopped ? " (Paused)" : ""));
+				
+				if (menuState != MenuState::INGAME) {
+					view.setCenter(Vector2f(player.getPos().x - 0.01, player.getPos().y));
 
-				if (Keyboard::isKeyPressed(Keyboard::Escape)) {
-					gameStarted = false;
+					if (view.getCenter().x - wnd.getSize().x / 2 < 0)
+						view.move(-(view.getCenter().x - wnd.getSize().x / 2) - 0.01, 0);
+					else if (view.getCenter().x + wnd.getSize().x / 2 > levels[currLevel].getSize().x)
+						view.move((levels[currLevel].getSize().x - (view.getCenter().x + wnd.getSize().x / 2)) - 0.01, 0);
+					if (view.getCenter().y - wnd.getSize().y / 2 < 0)
+						view.move(0, -(view.getCenter().y - wnd.getSize().y / 2));
+					else if (view.getCenter().y + wnd.getSize().y / 2 > levels[currLevel].getSize().y)
+						view.move(0, (levels[currLevel].getSize().y - (view.getCenter().y + wnd.getSize().y / 2)));
+
+					if (viewCentered) wnd.setView(view);
+
+
+
 					
-					view.setCenter(Vector2f(wnd.getSize() / 2u));
-					wnd.setView(view);
-					player.respawn(200, 200);
-					continue;
-				}
 
-				if (Keyboard::isKeyPressed(Keyboard::Dash)) {
-					mp.setVolume(mp.getVolume() - 1);
-				}
+					if (Keyboard::isKeyPressed(Keyboard::Dash)) {
+						mp.setVolume(mp.getVolume() - 1);
+					}
 
-				if (Keyboard::isKeyPressed((Keyboard::Key)55)) {
-					mp.setVolume(mp.getVolume() + 1);
-				}
+					if (Keyboard::isKeyPressed((Keyboard::Key)55)) {
+						mp.setVolume(mp.getVolume() + 1);
+					}
 
 
 
-				deltaTime = clock.restart().asSeconds();
-				if (deltaTime > 1. / 60.) deltaTime = 1. / 60.;
+					deltaTime = clock.restart().asSeconds();
+					if (deltaTime > 1. / 60.) deltaTime = 1. / 60.;
 
-				view.setCenter(Vector2f(player.getPos().x - 0.01, player.getPos().y));
-				if (viewCentered) wnd.setView(view);
 
-				while (wnd.pollEvent(ev)) {
+					while (wnd.pollEvent(ev)) {
 
-					switch (ev.type) {
-					case Event::Closed:
+						switch (ev.type) {
+						case Event::Closed:
 
-						wnd.close();
-						return;
-						break;
-					case Event::Resized:
-						view.setSize(Vector2f(wnd.getSize()));//VIEW_HEIGHT * (float(wnd.getSize().x) / float(wnd.getSize().y)), VIEW_HEIGHT);
-						break;
-					case Event::KeyReleased: {
-						switch (ev.key.code) {
-						case Keyboard::X:
-							currLevel = currLevel == levels.size() - 1 ? 0 : currLevel + 1;
+							wnd.close();
+							return;
 							break;
-						case Keyboard::M:
-							mp.setVolume(mp.muted() ? 100 : 0);
+						case Event::Resized:
+							view.setSize(Vector2f(wnd.getSize()));//VIEW_HEIGHT * (float(wnd.getSize().x) / float(wnd.getSize().y)), VIEW_HEIGHT);
 							break;
-						case Keyboard::S:
-							mp.setPosition(0);
+						case Event::KeyReleased: {
+							switch (ev.key.code) {
+							case Keyboard::Escape:
+								mp.interrupt();
+								menuState = MenuState::INGAME;
+								sprites["ingame_menu_bg"]->setPosition(view.getCenter());
+								ingameMenu.setPosition(Vector2f(view.getCenter().x, view.getCenter().y - 100));
+								continue;
+							case Keyboard::X:
+								currLevel = currLevel == levels.size() - 1 ? 0 : currLevel + 1;
+								break;
+							case Keyboard::M:
+								mp.setVolume(mp.muted() ? 100 : 0);
+								break;
+							case Keyboard::S:
+								mp.setPosition(0);
+								break;
+							}
+						}
+						case Event::MouseButtonReleased:
+							if (ev.mouseButton.button == Mouse::Button::Left) {
+								mp.CheckClick(ev, wnd, view);
+							}
 							break;
 						}
+						levels[currLevel].checkInteraction(ev, player);
 					}
-					case Event::MouseButtonReleased:
-						if (ev.mouseButton.button == Mouse::Button::Left) {
-							mp.CheckClick(ev, wnd, view);
-						}
-						break;
+
+					player.Update(deltaTime);
+
+					Vector2f direction;
+
+					bool groundCollision = false;
+					for (auto& p : levels[currLevel].getObjects()) {
+						if (p.getCollider().CheckCollision(player.getCollider(), direction, !p.push)) {
+							player.onCollision(direction);
+							if (direction.y == -1) groundCollision = true;
+						};
 					}
-					levels[currLevel].checkInteraction(ev, player);
+					if (!groundCollision) player.onCollision(direction);
+
+					//// Отрисовка белых границ окна. Можно откомментировать когда-нибудь
+					//if (levels[switched].bordered()) {
+					//	for (int i = 0; i < 4; i++) {
+					//		levels[switched].getObjects()[i].Draw(wnd);
+					//	}
+					//}
+
+					levels[currLevel].Update(player);
 				}
 
-				player.Update(deltaTime);
-
-				Vector2f direction;
-
-				bool groundCollision = false;
-				for (auto& p : levels[currLevel].getObjects()) {
-					if (p.getCollider().CheckCollision(player.getCollider(), direction, !p.push)) {
-						player.onCollision(direction);
-						if (direction.y == -1) groundCollision = true;
-					};
-				}
-				if (!groundCollision) player.onCollision(direction);
-
-				//// Отрисовка белых границ окна. Можно откомментировать когда-нибудь
-				//if (levels[switched].bordered()) {
-				//	for (int i = 0; i < 4; i++) {
-				//		levels[switched].getObjects()[i].Draw(wnd);
-				//	}
-				//}
-
-				levels[currLevel].Update(player);
 				levels[currLevel].Draw(wnd, &player);
 				levels[currLevel].drawHint(wnd, player, pixelFont);
 
 				mp.drawButtons(wnd);
 				wnd.draw(songText);
+
+				if (menuState == MenuState::INGAME) {
+					wnd.draw(*sprites["ingame_menu_bg"]);
+					ingameMenu.drawButtons(wnd);
+					if (wnd.pollEvent(ev)) {
+						if (ev.type == Event::KeyReleased)
+							if (ev.key.code == (Keyboard::Escape)) {
+								menuState = MenuState::NO_MENU;
+								if (mp.isInterrupted()) mp.play();
+								continue;
+							}
+						ingameMenu.CheckClick(ev, wnd, view);
+					}
+				}
 			}
 			else {
 				wnd.draw(*sprites["menu_bg"]);

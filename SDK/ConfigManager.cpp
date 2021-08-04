@@ -11,11 +11,10 @@ vector<Level> ConfigManager::loadLevels(RenderWindow* wnd) {
 	TiXmlElement* loader = document.FirstChildElement("Loader");
 	try {
 		for (TiXmlElement* child = loader->FirstChildElement("Level"); child != NULL && string(child->Value()) == "Level"; child = child->NextSiblingElement()) {
-			Vector2f offset(atoi(child->Attribute("x")), atoi(child->Attribute("y")));
 			
 			try {
 				vector.push_back(Level().
-					load("TileMap/" + string(child->GetText()), offset, wnd));
+					load("TileMap/" + string(child->GetText()), wnd));
 			}
 			catch (const string& err) {
 				cout << err << endl;

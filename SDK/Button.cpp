@@ -20,6 +20,14 @@ void RectButton::Update() {
 	anim->Update(0, false, animName);
 }
 
+const Vector2f& RectButton::getSize() const noexcept {
+	return body.getSize();
+}
+
+void RectButton::setPosition(const Vector2f& pos) {
+	body.setPosition(pos);
+}
+
 RectButton::RectButton(Animation * text, const string& animName, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use, ClickButtonType type) :
 	BaseButton(text, name, use, ClickButtonType::RectButton), animName(animName){
 
@@ -121,6 +129,8 @@ bool MusicPlayer::pause()noexcept {
 
 bool MusicPlayer::play() noexcept {
 	if (songs.empty()) return false;
+	
+	if (interrupted) interrupted = false;
 
 	if (songs[currentIndex]->getStatus() != Music::Status::Playing) {
 		songs[currentIndex]->play();
@@ -153,6 +163,12 @@ bool MusicPlayer::setMusic(unsigned int index) {
 	currentIndex = index;
 	return true;
 }
+
+bool MusicPlayer::isInterrupted() const noexcept {
+	return interrupted;
+}
+
+void MusicPlayer::stop() noexcept { songs[currentIndex]->stop(); }
 
 Song::Song(const string& songname, const string& filename) :
 	name(songname) {

@@ -9,7 +9,7 @@ using namespace std;
 typedef unsigned int uint;
 
 enum class IntObjType {
-	Button, Lever
+	Button, Lever, Field
 };
 
 class InteractiveObject : public Object {
@@ -32,7 +32,7 @@ public:
 	const string& getName() const;
 	const IntObjType& getType() const;
 
-	virtual void Update() = 0;
+	virtual void Update() {};
 
 	
 	bool isActive() const;;
@@ -55,6 +55,13 @@ public:
 
 	void Update() override;;
 	bool on = false;
+};
+
+class InteractiveField : public InteractiveObject {
+public:
+	InteractiveField(Vector2f size, Vector2f pos, string name, function<void()> use = []() {}, bool oneTime = false) :
+		InteractiveObject(nullptr, size, pos, name, IntObjType::Field, use, oneTime)
+	{};
 };
 
 class InteractiveArray

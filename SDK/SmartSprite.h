@@ -16,6 +16,7 @@ public:
 		if (!texture->loadFromFile(texturePath))
 			throw std::runtime_error(u8"SmartSprite(const string&): файл не найден");
 		setTexture(*texture);
+		setOrigin(Vector2f(getTexture()->getSize() / 2u));
 	}
 
 };

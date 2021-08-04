@@ -11,6 +11,7 @@ class Level : public InteractiveArray
 private:
 	vector<pair<int, TileMap>> tileLayers;
 	vector<Object> objects;
+	Vector2f size;
 
 	void insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, TileMap> tmap);
 	bool _bordered = false;
@@ -19,9 +20,11 @@ public:
 	
 	bool bordered() const;
 	
+	const Vector2f& getSize() const noexcept;
+	
 	vector<Object>& getObjects();
 	
-	Level& load(string xmlDoc, const Vector2f& offset = Vector2f(0, 0), const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
+	Level& load(string xmlDoc, const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
 	
 	void Draw(RenderWindow& wnd, Player* player = nullptr) const;
 	

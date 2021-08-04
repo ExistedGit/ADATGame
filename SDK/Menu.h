@@ -8,10 +8,14 @@ class Menu : public IButtonArray<HoverButton>
 {
 private:
 	Vector2f pos;
+	unsigned int distance = 0;
+	bool centered;
 public:
-	inline Menu(const Vector2f pos) : pos(pos) {}
+	inline Menu(const Vector2f pos, bool centered = false) : pos(pos), centered(centered) {}
 	
 	inline void load(const string& xmlDoc, const string& modelDoc, unsigned int distance) {
+		this->distance = distance;
+		
 		Animation* anim = new Animation(xmlDoc);
 		
 		TiXmlDocument model(modelDoc.c_str());
@@ -33,7 +37,14 @@ public:
 		for (int i = 0; i < list.size(); i++) {
 			Vector2f size = Vector2f(anim->uvRect.width, anim->uvRect.height);
 			
-			addButton(HoverButton(anim, list[i], list[i], size, currPos));
+			addButton(
+				HoverButton(
+					anim, list[i], list[i], size, 
+
+					centered ? 
+						Vector2f(currPos.x - size.x / 2, currPos.y) : 
+						currPos
+			));
 			currPos.y += size.y + distance;
 		}
 	}
@@ -46,7 +57,7 @@ public:
 		}
 	}
 
-	bool CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override {
+	inline bool CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override {
 		if (ev.type == Event::MouseMoved)
 			for (int i = 0; i < buttons.size(); i++) {
 				auto& button = buttons[i];
@@ -57,5 +68,19 @@ public:
 			}
 		if (IButtonArray::CheckClick(ev, wnd, view)) return true;
 	}
+
+	inline void setPosition(const Vector2f& pos) {
+		Vector2f currPos = pos;
+
+		for (auto& button : buttons) {
+			Vector2f size = button.getSize();
+			button.setPosition(
+				centered ?
+					Vector2f(currPos.x - size.x / 2, currPos.y) :
+					currPos
+			);
+			currPos.y += size.y + distance;
+		}
+	};
 };
 

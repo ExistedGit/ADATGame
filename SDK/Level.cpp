@@ -24,14 +24,18 @@ bool Level::bordered() const {
 	return _bordered;
 }
 
+const Vector2f& Level::getSize() const noexcept {
+	return size;
+}
+
 vector<Object>& Level::getObjects() {
 	return objects;
 }
 
-Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* window, map<string, function<void()>> useMap) {
+Level& Level::load(string xmlDoc, const RenderWindow* window, map<string, function<void()>> useMap) {
 	tileLayers.clear();
 	objects.clear();
-	
+
 #pragma region Генерация границ окна
 
 
@@ -56,6 +60,7 @@ Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* wi
 	// Сохраняем размеры карты
 	int width = atoi(map->Attribute("width")), height = atoi(map->Attribute("height"));
 	Vector2u tileSize(atoi(map->Attribute("tilewidth")), atoi(map->Attribute("tileheight")));
+	size = Vector2f(width * tileSize.x, height * tileSize.y);
 	for (TiXmlElement* child = map->FirstChildElement("layer"); child != NULL && (string(child->Value())) == "layer"; child = child->NextSiblingElement())
 	{
 		int* tileArray = new int[width * height];
@@ -74,7 +79,7 @@ Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* wi
 			while (ss >> value) {
 				ss >> comma;
 				// Для текущего тайлсета, если значение клетки 0, ставим на это место первую клетку тайлсета(пустое пространство)
-				tileArray[i] = (value ? value - 1 : 0 );
+				tileArray[i] = (value ? value - 1 : 0);
 				i++;
 			}
 			//for (int k = 0; k < width * height; k++) {
@@ -92,70 +97,72 @@ Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* wi
 #pragma endregion
 
 #pragma region Обработка объектов
-	
+
 
 	TiXmlElement* objGroup = map->FirstChildElement("objectgroup");
 	std::map<string, vector<string>> knownInteractives;
-	for (TiXmlElement* child = objGroup->FirstChildElement("object"); child != NULL; child = child->NextSiblingElement())
-	{
-		string objName = string(child->Attribute("name"));
-		if (objName == "solid") {
-			int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
-			int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
-			objects.push_back(Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), true));
-		}
-		else {
-			istringstream ss(objName);
-			string specifier, interactiveName;
-			ss >> specifier >> interactiveName;
-			
-			bool oneTime = false;
-
-			if (child->Attribute("type")!=nullptr) {
-				string type;
-				istringstream typestream(child->Attribute("type"));
-				typestream >> type;
-				
-				oneTime = type == "oneTime";
-			}
-
-			std::string textPath = "Models/" + interactiveName + ".xml";
-			Animation* anim = new Animation(textPath);
-
-			if (specifier == "button") {
-				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя кнопки");
-				
+	if (objGroup != nullptr)
+		for (TiXmlElement* child = objGroup->FirstChildElement("object"); child != NULL; child = child->NextSiblingElement())
+		{
+			string objName = string(child->Attribute("name"));
+			if (objName == "solid") {
 				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
 				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
-				
-
-
-				interactives.push_back(new InteractiveButton(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
-			} else if (specifier == "lever") {
-				if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя рычага");
-
-				int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
-				int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
-				
-				
-
-				interactives.push_back(new InteractiveLever(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
+				objects.push_back(Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), true));
 			}
-			else throw runtime_error("Level.load(): недопустимое имя объекта(интерактивные объекты)");
+			else {
+				istringstream ss(objName);
+				string specifier, interactiveName;
+				ss >> specifier >> interactiveName;
+
+				bool oneTime = false;
+
+				if (child->Attribute("type") != nullptr) {
+					string type;
+					istringstream typestream(child->Attribute("type"));
+					typestream >> type;
+
+					oneTime = type == "oneTime";
+				}
+
+				std::string textPath = "Models/" + interactiveName + ".xml";
+				Animation* anim = new Animation(textPath);
+
+				if (specifier == "button") {
+					if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя кнопки");
+
+					int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
+					int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
+
+
+
+					interactives.push_back(new InteractiveButton(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
+				}
+				else if (specifier == "lever") {
+					if (interactiveName.empty()) throw runtime_error("Level.load(): Отсутствует имя рычага");
+
+					int x = atoi(child->Attribute("x")), y = atoi(child->Attribute("y"));
+					int width = atoi(child->Attribute("width")), height = atoi(child->Attribute("height"));
+
+
+
+					interactives.push_back(new InteractiveLever(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
+				}
+				else throw runtime_error("Level.load(): недопустимое имя объекта(интерактивные объекты)");
+			}
 		}
-	}
 #pragma endregion
 
 #pragma region Перемещение объектов и тайлов к нужному месту
 	for (int i = 0; i < objects.size(); i++) {
 		if (objects[i].solid)
-			objects[i].getCollider().Move(offset.x, offset.y - tileSize.y * height);
+			objects[i].getCollider().Move(1, size.y - tileSize.y * height);
 	}
 	for (auto& it : tileLayers) {
-		it.second.move(offset.x, offset.y - tileSize.y * height);
+		it.second.move(1, size.y - tileSize.y * height);
 	}
 	for (auto& it : interactives) {
-		it->move(Vector2f(offset.x, offset.y - tileSize.y * height));
+		it->move(Vector2f(1, size.y - tileSize.y * height));
 	}
 #pragma endregion
 	return *this;
@@ -163,7 +170,7 @@ Level& Level::load(string xmlDoc, const Vector2f& offset, const RenderWindow* wi
 
 void Level::Draw(RenderWindow& wnd, Player* player) const {
 	// Отрисовка заднего плана
-	for (auto& it : tileLayers) 
+	for (auto& it : tileLayers)
 		if (it.first < 0)
 			wnd.draw(it.second);
 
@@ -175,18 +182,18 @@ void Level::Draw(RenderWindow& wnd, Player* player) const {
 		player->Draw(wnd);
 
 	// Отрисовка переднего плана
-	for (auto& it : tileLayers) 
+	for (auto& it : tileLayers)
 		if (it.first > 0)
 			wnd.draw(it.second);
-	
 
-	
 
-	if (_bordered) 
+
+
+	if (_bordered)
 		for (int i = 0; i < 4; i++)
 			objects[i].Draw(wnd);
-		
-	
+
+
 
 }
 

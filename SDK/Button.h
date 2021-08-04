@@ -34,6 +34,7 @@ public:
 	virtual void draw(RenderWindow& wnd) const noexcept = 0;
 	virtual bool intersects(const Vector2f& pos) const noexcept =0;
 	virtual void Update() {};
+	virtual void setPosition(const Vector2f& pos) = 0;
 };
 
 class RectButton : public BaseButton
@@ -46,6 +47,10 @@ public:
 	void draw(RenderWindow& wnd) const noexcept override;
 	bool intersects(const Vector2f& pos) const noexcept override;
 	virtual void Update() override;
+
+	const Vector2f& getSize() const noexcept;
+
+	void setPosition(const Vector2f& pos) override;
 }; 
 
 class HoverButton : public RectButton {
@@ -128,6 +133,7 @@ private:
 	int currentIndex = 0;
 
 	float lastSwitchTime =0;
+	bool interrupted = false;
 public:
 	
 
@@ -146,12 +152,17 @@ public:
 	void prev() noexcept;;
 
 	void restart() noexcept;
-
 	// Возвращает правду, если музыка ещё играет
 	bool pause() noexcept;
-
 	// Возвращает правду, если музыку ещё не играет
 	bool play() noexcept;
+	void stop() noexcept;
+	// То же самое, что и стоп, но используется, если музыка прервана e.g. открытием меню
+	inline void interrupt() noexcept { 
+		if(pause())
+			interrupted = true; 
+	}
+	bool isInterrupted() const noexcept;
 
 	Music::Status getStatus() const noexcept;
 
