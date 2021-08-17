@@ -12,20 +12,33 @@ private:
 	vector<pair<int, TileMap>> tileLayers;
 	vector<Object> objects;
 	Vector2f size;
+	string name;
+
+	string filename;
 
 	void insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, TileMap> tmap);
 	bool _bordered = false;
+
+	static Font debugFont;
+
 public:
-	using InteractiveArray::InteractiveArray;
+	Vector2f spawn;
+	static bool debug;
+
+	Level();
 	
 	bool bordered() const;
 	
 	const Vector2f& getSize() const noexcept;
 	
-	vector<Object>& getObjects();
 	
-	Level& load(string xmlDoc, const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
-	
+	Level& load(string xmlDoc, const RenderWindow* window = nullptr, const string& name = "LEVEL", map<string, function<void()>> useMap = {});
+	void reload();;
+
+	void checkCollision(Player& player);
+
+	const string& getName()const;
+
 	void Draw(RenderWindow& wnd, Player* player = nullptr) const;
 	
 	void applyUseMap(map<string, function<void()>> map);

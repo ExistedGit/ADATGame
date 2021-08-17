@@ -6,7 +6,7 @@
 class ConfigManager
 {
 public:
-	static vector<Level> loadLevels(RenderWindow* wnd = nullptr);
+	static std::map<string, Level> loadLevels(RenderWindow* wnd = nullptr);
 	// TODO: сделать нормально
 	static vector<Achievement> load(const string& xmlDoc)
 	{

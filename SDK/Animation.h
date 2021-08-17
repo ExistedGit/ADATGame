@@ -21,7 +21,7 @@ public:
 	IntRect uvRect;
 
 	Animation(const string& xmlDoc);
-
+	
 	bool Update(float deltaTime, bool mirrored = false, string animName="");
 	
 	int getCurrFrame() const noexcept;;
@@ -33,17 +33,4 @@ public:
 
 };
 
-class ComplexAnim {
-private:
-	Texture* texture;
-	std::vector<IntRect> rect;
-	float totalTime = 0;
-	float switchTime;
-	int currIndex = 0;
 
-	
-public:
-	IntRect uvRect;
-	ComplexAnim(const std::string& texturePath, const std::vector<IntRect>& rect, float switchTime);
-	void Update(float deltaTime, bool mirrored = false);;
-};

@@ -1,9 +1,10 @@
 #include "ConfigManager.h"
 #include <iostream>
 #include <regex>
+#include <map>
 
-vector<Level> ConfigManager::loadLevels(RenderWindow* wnd) {
-	vector<Level> vector;
+std::map<string, Level> ConfigManager::loadLevels(RenderWindow* wnd) {
+	std::map<string, Level> map;
 
 	TiXmlDocument document("cfg/config.xml");
 	document.LoadFile();
@@ -13,8 +14,8 @@ vector<Level> ConfigManager::loadLevels(RenderWindow* wnd) {
 		for (TiXmlElement* child = loader->FirstChildElement("Level"); child != NULL && string(child->Value()) == "Level"; child = child->NextSiblingElement()) {
 			
 			try {
-				vector.push_back(Level().
-					load("TileMap/" + string(child->GetText()), wnd));
+				Level newLevel = Level().load("TileMap/" + string(child->GetText()), wnd, child->Attribute("id"));
+				map[newLevel.getName()] = newLevel;
 			}
 			catch (const string& err) {
 				cout << err << endl;
@@ -25,5 +26,5 @@ vector<Level> ConfigManager::loadLevels(RenderWindow* wnd) {
 		cout << re.what();
 	}
 
-	return vector;
+	return map;
 }

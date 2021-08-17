@@ -45,6 +45,16 @@ void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 				}
 			}
 								  break;
+			case IntObjType::Door:
+				if (ev.type == Event::KeyReleased) {
+					auto* door = (InteractiveDoor*)obj;
+					if (door->isActive())
+						if (ev.key.code == InteractiveObject::interactKey)
+							if (player.getCollider().collides(door->getCollider()))
+								door->use();
+							
+				}
+				break;
 			}
 }
 
@@ -80,10 +90,11 @@ void InteractiveArray::drawHint(RenderWindow& wnd, Player& player, Font& font) {
 		hintOpacity));
 }
 
-InteractiveObject::InteractiveObject(Animation* text, Vector2f size, Vector2f pos, string name, IntObjType type, function<void()> use, bool oneTime) :
-	Object(text, size, pos),
+InteractiveObject::InteractiveObject(Animation* text, const Vector2f& size, const Vector2f& pos, const string& name, const IntObjType& interactiveType, function<void()> use, bool oneTime, 
+	const ObjectType& type) :
+	Object(text, size, pos, ObjectType(type | Interactive)),
 	name(name),
-	type(type),
+	interactiveType(interactiveType),
 	use(use),
 	oneTime(oneTime)
 {
@@ -94,7 +105,7 @@ const string& InteractiveObject::getName() const {
 	return name;
 }
 
-const IntObjType& InteractiveObject::getType() const { return type; }
+const IntObjType& InteractiveObject::getType() const { return interactiveType; }
 
 
 bool InteractiveObject::isOneTime() const { return oneTime; }
@@ -122,3 +133,5 @@ void InteractiveLever::Update() {
 
 	if (isOneTime()) active = false;
 }
+
+bool InteractiveDoor::isOpen() const { return open; }

@@ -1,7 +1,7 @@
 #include "Object.h"
 
-Object::Object(Animation* text, Vector2f size, Vector2f pos, bool solid, bool gravity , float weight, bool push) : 
-	anim(text), solid(solid), gravity(gravity), weight(weight), push(push) 
+Object::Object(Animation* text, const Vector2f& size, const Vector2f& pos, const ObjectType& type, bool gravity , float weight, bool push) :
+	anim(text), type(type), gravity(gravity), weight(weight), push(push) 
 {
 	if (text != nullptr) body.setTexture(anim->getTexture());
 	else body.setTexture(nullptr);
@@ -21,6 +21,10 @@ Collider Object::getCollider() {
 void Object::Update(float deltaTime) {
 	anim->Update(deltaTime, false, "default");
 	body.setTextureRect(anim->uvRect);
+}
+
+const RectangleShape& Object::getRect() const {
+	return body;
 }
 
 void Object::Draw(RenderWindow& wnd) const {

@@ -13,6 +13,27 @@ Animation::Animation(const string& xmlDoc) :
 		uvRect = IntRect(Vector2i(0, 0), Vector2i(texture->getSize()));
 		return;
 	}
+	if (doc.FirstChildElement("frames") != nullptr) {
+		string textPath = "Textures/" + string(doc.FirstChildElement("frames")->Attribute("src"));
+		texture->loadFromFile(textPath);
+		
+		int x = atoi(doc.FirstChildElement("frames")->Attribute("x")), 
+			y = atoi(doc.FirstChildElement("frames")->Attribute("y"));
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				rectMap["default"].push_back(
+					IntRect(
+						texture->getSize().x / x * i, 
+						texture->getSize().y / y * j,
+						texture->getSize().x/x, 
+						texture->getSize().y / y)
+				);
+			}
+		}
+		uvRect = rectMap["default"][0];
+		return;
+	}
+
 	
 	TiXmlElement* sprites = doc.FirstChildElement("sprites");
 	for (TiXmlElement* anim = sprites->FirstChildElement("animation"); anim != nullptr; anim = anim->NextSiblingElement()) {
@@ -93,22 +114,4 @@ bool Animation::setAnim(const string& animName) {
 		return true;
 	}
 	return false;
-}
-
-
-
-ComplexAnim::ComplexAnim(const std::string& texturePath, const std::vector<IntRect>& rect, float switchTime) : switchTime(switchTime), rect(rect) {	
-	texture = new Texture();
-	texture->loadFromFile(texturePath);
-}
-
-void ComplexAnim::Update(float deltaTime, bool mirrored) {
-
-	totalTime += deltaTime;
-	if (totalTime - switchTime >= 0) {
-		totalTime -= switchTime;
-
-		currIndex = currIndex == rect.size() - 1 ? 0 : currIndex + 1;
-		uvRect = rect[currIndex];
-	}
 }

@@ -73,7 +73,8 @@ class IButtonArray {
 protected:
 	std::vector<ButtonType> buttons;
 public:	
-	inline IButtonArray(const std::initializer_list<ButtonType>& il = {}) : buttons(il) {}
+	inline IButtonArray(const std::initializer_list<ButtonType>& il) : buttons(il) {}
+	inline IButtonArray() {};
 
 	inline virtual bool CheckClick(const Event& ev, RenderWindow& wnd, const View& view) {
 		
