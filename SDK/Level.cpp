@@ -2,7 +2,6 @@
 #include <sstream>
 #include "tinyxml.h"
 #include <iostream>
-#include <thread>
 #include <Windows.h>
 
 bool Level::debug = false;
@@ -71,6 +70,7 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 	Vector2u tileSize(atoi(map->Attribute("tilewidth")), atoi(map->Attribute("tileheight")));
 	size = Vector2f(width * tileSize.x, height * tileSize.y);
 #pragma endregion
+
 #pragma region Обработка тайлов
 	for (TiXmlElement* child = map->FirstChildElement("layer"); child != NULL && (string(child->Value())) == "layer"; child = child->NextSiblingElement())
 	{
@@ -115,53 +115,64 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 #pragma region Обработка объектов
 	TiXmlElement* objGroup = map->FirstChildElement("objectgroup");
 	if (objGroup != nullptr) {
-		std::map<string, vector<string>> knownInteractives;
-		for (TiXmlElement* child = objGroup->FirstChildElement("object"); child != NULL; child = child->NextSiblingElement())
+		for (TiXmlElement* object = objGroup->FirstChildElement("object"); object != NULL; object = object->NextSiblingElement())
 		{
-			string objName = string(child->Attribute("name"));
+			string objName = string(object->Attribute("name"));
+			if (objName.empty())
+			{
+				cerr << u8"Level.load(): объект без названия" << endl;
+				continue;
+			}
+
 			if (objName == "solid") {
-				float x = atof(child->Attribute("x")), y = atof(child->Attribute("y"));
-				float width = atof(child->Attribute("width")), height = atof(child->Attribute("height"));
+				float x = atof(object->Attribute("x")), y = atof(object->Attribute("y"));
+				float width = atof(object->Attribute("width")), height = atof(object->Attribute("height"));
 				objects.push_back(Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType::Solid));
 			}
 			else if (objName == "platform") {
-				float x = atof(child->Attribute("x")),
-					y = atof(child->Attribute("y"));
-				float width = atof(child->Attribute("width")),
-					height = atof(child->Attribute("height"));
+				float x = atof(object->Attribute("x")),
+					y = atof(object->Attribute("y"));
+				float width = atof(object->Attribute("width")),
+					height = 140; // Работае только так, нет времени фиксытъ
 				objects.push_back(Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType(Platform | Solid)));
 			}
 			else if (objName == "spawn") {
-				float x = atof(child->Attribute("x")),
-					y = atof(child->Attribute("y"));
+				float x = atof(object->Attribute("x")),
+					y = atof(object->Attribute("y"));
 				spawn = Vector2f(x, y);
 			}
 			else {
 				istringstream ss(objName);
-				string specifier, interactiveName;
-				ss >> specifier >> interactiveName;
+				string specifier, interactiveName, modelName;
+				ss >> specifier >> interactiveName >> modelName;
+
+				if (interactiveName.empty()) 
+					throw u8"Level.load(): интерактивный объект без имени\n";
+				if (modelName.empty())
+					cerr << u8"Level.load(): интерактивный объект без модели\n";
 
 				bool oneTime = false;
-
-				if (child->Attribute("type") != nullptr) {
+				if (object->Attribute("type") != nullptr) {
 					string type;
-					istringstream typestream(child->Attribute("type"));
+					istringstream typestream(object->Attribute("type"));
 					typestream >> type;
 
 					oneTime = type == "oneTime";
 				}
 
-				std::string textPath = "Models/" + interactiveName + ".xml";
-				Animation* anim = new Animation(textPath);
-
+				std::string modelPath = !modelName.empty() ? 
+					"Models/" + modelName+ ".xml" :
+					"";
+				
+				Animation* anim = new Animation(modelPath);
 				if (specifier == "button") {
 					if (interactiveName.empty())
 						throw u8"Level.load(): Отсутствует имя кнопки";
 					
-					float x = atof(child->Attribute("x")),
-						y = atof(child->Attribute("y"));
-					float width = atof(child->Attribute("width")),
-						height = atof(child->Attribute("height"));
+					float x = atof(object->Attribute("x")),
+						y = atof(object->Attribute("y"));
+					float width = atof(object->Attribute("width")),
+						height = atof(object->Attribute("height"));
 
 					interactives.push_back(new InteractiveButton(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 				}
@@ -169,10 +180,10 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 					if (interactiveName.empty())
 						throw u8"Level.load(): Отсутствует имя рычага";
 
-					float x = atof(child->Attribute("x")),
-						y = atof(child->Attribute("y"));
-					float width = atof(child->Attribute("width")),
-						height = atof(child->Attribute("height"));
+					float x = atof(object->Attribute("x")),
+						y = atof(object->Attribute("y"));
+					float width = atof(object->Attribute("width")),
+						height = atof(object->Attribute("height"));
 
 					interactives.push_back(new InteractiveLever(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 				}
@@ -180,14 +191,14 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 					if (interactiveName.empty())
 						throw u8"Level.load(): Отсутствует имя двери";
 
-					float x = atof(child->Attribute("x")),
-						y = atof(child->Attribute("y"));
-					float width = atof(child->Attribute("width")),
-						height = atof(child->Attribute("height"));
+					float x = atof(object->Attribute("x")),
+						y = atof(object->Attribute("y"));
+					float width = atof(object->Attribute("width")),
+						height = atof(object->Attribute("height"));
 
 					RectangleShape hitbox;
 					{
-						string modelPath = "Models/Complex/" + interactiveName + ".xml";
+						string modelPath = "Models/Complex/" + modelName + ".xml";
 						TiXmlDocument doorModel(modelPath.c_str());
 						doorModel.LoadFile();
 						TiXmlElement* hitboxElem = doorModel.FirstChildElement("hitbox");
@@ -210,6 +221,7 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 					interactives.push_back(new InteractiveDoor(anim, hitbox, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, oneTime));
 				}
 				else throw u8"Level.load(): недопустимое имя объекта";
+				
 			}
 		}
 	}
@@ -258,8 +270,6 @@ void Level::checkCollision(Player& player) {
 					player.onCollision(direction);
 					if (direction.y == -1) groundCollision = true;
 				};
-				
-			
 		}
 
 	for (auto& p : interactives)

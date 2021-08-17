@@ -157,7 +157,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="FragShader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SDK\Achievement.h" />

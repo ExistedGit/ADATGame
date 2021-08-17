@@ -76,25 +76,7 @@ void Player::Draw(RenderWindow& wnd) const {
 	wnd.draw(body);
 }
 
-Vector2f Player::getPos() const {
-	return body.getPosition();
-}
 
-void Player::setPos(float x, float y) {
-	body.setPosition(x, y);
-}
-
-void Player::setPos(const Vector2f& pos) {
-	body.setPosition(pos);
-}
-
-void Player::move(float x, float y) {
-	body.move(x, y);
-}
-
-void Player::move(const Vector2f& offset) {
-	body.move(offset);
-}
 
 void Player::respawn(float x, float y) {
 	velocity = Vector2f(0, 0);
@@ -102,6 +84,3 @@ void Player::respawn(float x, float y) {
 	canJump = false;
 }
 
-const RectangleShape& Player::getRect() const {
-	return body;
-}

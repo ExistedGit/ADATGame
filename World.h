@@ -52,7 +52,7 @@ public:
 		wnd(RenderWindow(sf::VideoMode(wndSize.x, wndSize.y), L"ÂÛ — ÊÐÛÑÀ!", Style::Titlebar | Style::Close , cs)),
 		view(View(Vector2f(wndSize.x, wndSize.y), wndSize)),
 		levels(ConfigManager::loadLevels()),
-		player(new Animation("Models/rat.xml"), Vector2f(191 / 2, 191 / 2), 650, 210,0.1),
+		player(new Animation("Models/rat.xml"), Vector2f(191 / 2, 191 / 2), 650, 210,1),
 		mp({
 		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
 		new Song("Gonna Give You Up",		 "Sounds/llorkcir.ogg")

@@ -23,10 +23,29 @@ void Object::Update(float deltaTime) {
 	body.setTextureRect(anim->uvRect);
 }
 
-const RectangleShape& Object::getRect() const {
+const RectangleShape& Movable::getRect() const {
 	return body;
 }
 
+Vector2f Movable::getPos() const {
+	return body.getPosition();
+}
+
+void Movable::setPos(float x, float y) {
+	body.setPosition(x, y);
+}
+
+void Movable::setPos(const Vector2f& pos) {
+	body.setPosition(pos);
+}
+
+void Movable::move(float x, float y) {
+	body.move(x, y);
+}
+
+void Movable::move(const Vector2f& offset) {
+	body.move(offset);
+}
 void Object::Draw(RenderWindow& wnd) const {
 	wnd.draw(body);
 }

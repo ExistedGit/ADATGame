@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="35" height="11" tilewidth="72" tileheight="72" infinite="0" nextlayerid="10" nextobjectid="60">
+<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="35" height="11" tilewidth="72" tileheight="72" infinite="0" nextlayerid="10" nextobjectid="61">
  <tileset firstgid="1" name="myTitle" tilewidth="72" tileheight="72" tilecount="624" columns="48">
   <image source="tileset.png" trans="ff00ff" width="3456" height="936"/>
  </tileset>
@@ -66,12 +66,13 @@
   <object id="44" name="solid" x="743.667" y="90.3333" width="107.333" height="50.6667"/>
   <object id="46" name="solid" x="1969.67" y="90.8333" width="104" height="51.5"/>
   <object id="47" name="solid" x="468.833" y="166.667" width="74.3333" height="47.6667"/>
-  <object id="50" name="door door_wood" x="2376" y="576" width="72" height="144"/>
+  <object id="50" name="door door1 door_wood" x="2376" y="576" width="72" height="144"/>
   <object id="52" name="solid" x="2160" y="720" width="360" height="72"/>
   <object id="53" name="solid" x="2376" y="0" width="72" height="576"/>
   <object id="54" name="solid" x="216" y="648" width="72" height="72"/>
   <object id="55" name="solid" x="1008" y="432" width="144" height="72"/>
   <object id="56" name="solid" x="360" y="432" width="72" height="72"/>
   <object id="59" name="spawn" x="714" y="185.333"/>
+  <object id="60" name="door door1 door_wood" x="2160" y="576" width="72" height="144"/>
  </objectgroup>
 </map>

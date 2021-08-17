@@ -3,13 +3,29 @@
 #include "Animation.h"
 
 enum ObjectType {
-	Solid = 1, Platform = 2, Interactive = 4
+	Solid = 1, Platform = 2, Moving = 4, Interactive = 8
 };
 
-class Object
-{
+class Movable {
+public:
+	Vector2f velocity; 
+	
+	Vector2f getPos() const;
+	void setPos(float x, float y);
+	void setPos(const Vector2f& pos);
+	void move(float x, float y);;
+	void move(const Vector2f& offset);;
+
+
+	const RectangleShape& getRect() const;
+
 protected:
 	RectangleShape body;
+};
+
+class Object : public Movable
+{
+protected:
 	Animation* anim;
 public:
 	bool active = true;
@@ -23,7 +39,6 @@ public:
 	const Texture* getTexture() const;
 	Collider getCollider();
 	int getCurrFrame() const;
-	const RectangleShape& getRect() const;
 
 	void Update(float deltaTime);
 

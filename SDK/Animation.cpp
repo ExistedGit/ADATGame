@@ -1,22 +1,39 @@
 #include "Animation.h"
 #include <iostream>
 
+std::map<string, Texture*> Animation::usedTextures = {};
+
 Animation::Animation(const string& xmlDoc) :
-	texture(new Texture()) {
+	texture(nullptr) {
 	
+
 	TiXmlDocument doc(xmlDoc.c_str());
-	doc.LoadFile();
+	if (!doc.LoadFile() || xmlDoc.empty()) {
+		rectMap["default"].push_back(IntRect(Vector2i(0, 0), Vector2i(0, 0)));
+		uvRect = IntRect(Vector2i(0, 0), Vector2i(0, 0));
+		return;
+	}
+
 	if (doc.FirstChildElement("default") != nullptr) {
-		string textPath = "Textures/" + string(doc.FirstChildElement("default")->Attribute("src"));
-		texture->loadFromFile(textPath);
+		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
+		else {
+			string textPath = "Textures/" + string(doc.FirstChildElement("default")->Attribute("src"));
+			texture = new Texture();		
+			texture->loadFromFile(textPath);
+			usedTextures[xmlDoc] = texture;
+		}
 		rectMap["default"].push_back(IntRect(Vector2i(0, 0), Vector2i(texture->getSize())));
 		uvRect = IntRect(Vector2i(0, 0), Vector2i(texture->getSize()));
 		return;
 	}
 	if (doc.FirstChildElement("frames") != nullptr) {
-		string textPath = "Textures/" + string(doc.FirstChildElement("frames")->Attribute("src"));
-		texture->loadFromFile(textPath);
-		
+		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
+		else {
+			string textPath = "Textures/" + string(doc.FirstChildElement("frames")->Attribute("src"));
+			texture = new Texture();
+			texture->loadFromFile(textPath);
+			usedTextures[xmlDoc] = texture;
+		}
 		int x = atoi(doc.FirstChildElement("frames")->Attribute("x")), 
 			y = atoi(doc.FirstChildElement("frames")->Attribute("y"));
 		for (int i = 0; i < x; i++) {
@@ -51,18 +68,26 @@ Animation::Animation(const string& xmlDoc) :
 	}
 
 	{
+		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
+		else {
+			string textPath = "Textures/" + string(sprites->Attribute("image"));
+			texture = new Texture();
+			texture->loadFromFile(textPath);
+			usedTextures[xmlDoc] = texture;
+		}
+
 		string textPath = "Textures/" + string(sprites->Attribute("image"));
 		texture->loadFromFile(textPath);
 	}
 
 	try {
 		if (rectMap.empty()) 
-			throw out_of_range("Анимация(конструктор): был передан пустой массив кадров");
+			throw u8"Animation::Animation(): был передан пустой массив кадров";
 		uvRect = (*rectMap.begin()).second[0];
 		currAnim = (*rectMap.begin()).first;
 	}
-	catch (out_of_range err) {
-		cerr << err.what();
+	catch (const std::string& err) {
+		cerr << err;
 	}
 }
 

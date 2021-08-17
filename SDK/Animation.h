@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "tinyxml.h"
+#include <map>
 
 using namespace sf;
 using namespace std;
@@ -17,6 +18,7 @@ private:
 
 	float totalTime = 0;
 	Texture* texture;
+	static std::map<string, Texture*> usedTextures;
 public:
 	IntRect uvRect;
 
