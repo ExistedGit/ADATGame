@@ -4,17 +4,20 @@
 #include "Animation.h"
 #include <sstream>
 
+struct MenuGrid {
+	int x = 0, y = 0, indent =0;
+};
+
 class Menu : public IButtonArray<HoverButton>
 {
 private:
 	Vector2f pos;
-	unsigned int distance = 0;
 	bool centered;
+	MenuGrid grid;
 public:
 	inline Menu(const Vector2f pos, bool centered = false) : pos(pos), centered(centered) {}
 	
-	inline void load(const string& xmlDoc, const string& modelDoc, unsigned int distance) {
-		this->distance = distance;
+	inline void load(const string& xmlDoc, const string& modelDoc) {
 		
 		Animation* anim = new Animation(xmlDoc);
 		
@@ -22,8 +25,8 @@ public:
 		if(!model.LoadFile()) throw runtime_error(u8"Menu.load(): файл модели не найден");
 		
 		vector<string> list;
+		TiXmlElement* buttonList = model.FirstChildElement("list");
 		{
-			TiXmlElement* buttonList = model.FirstChildElement("list");
 			string data = buttonList->GetText();
 			istringstream ss(data);
 			
@@ -34,18 +37,47 @@ public:
 		}
 
 		Vector2f currPos = pos;
+
+		Vector2f originPos = pos;
+		int x = 1, y = 1;
 		for (int i = 0; i < list.size(); i++) {
 			Vector2f size = Vector2f(anim->uvRect.width, anim->uvRect.height);
-			
-			addButton(
-				HoverButton(
-					anim, list[i], list[i], size, 
+			{
+				TiXmlElement* gridElem = model.FirstChildElement("grid");
+				if (gridElem != nullptr) {
+					if (gridElem->Attribute("x") != nullptr) 
+						grid.x = atoi(gridElem->Attribute("x"));
+					if (gridElem->Attribute("y") != nullptr)
+						grid.y = atoi(gridElem->Attribute("y"));
+					
+					if (gridElem->Attribute("indent") != nullptr)
+						grid.indent = atoi(gridElem->Attribute("indent"));
 
-					centered ? 
-						Vector2f(currPos.x - size.x / 2, currPos.y) : 
-						currPos
-			));
-			currPos.y += size.y + distance;
+					if (grid.x != 0 || grid.y != 0)
+						if (list.size() > (grid.x + !grid.x) * (grid.y + !grid.y))
+							throw u8"Menu.load(): кнопок больше заданной сетки, переназначьте значения";
+					
+					addButton(
+						HoverButton(
+							anim, list[i], list[i], size,
+
+							Vector2f(currPos.x + bool(x-1) * grid.indent, currPos.y + bool(y-1) * grid.indent )
+						));
+					if (grid.x == 0 && grid.y == 0 && grid.indent != 0) 
+						currPos.y += size.y + grid.indent;
+					else if (grid.x != 0) {
+						if (x++ < grid.x) 
+							currPos.x += size.x + grid.indent;
+						else if(grid.y != 0) {
+							y++;
+							x = 1;
+							currPos.x = originPos.x;
+							currPos.y += size.y + grid.indent;
+						}
+					}
+				}
+			}
+			
 		}
 	}
 
@@ -79,7 +111,7 @@ public:
 					Vector2f(currPos.x - size.x / 2, currPos.y) :
 					currPos
 			);
-			currPos.y += size.y + distance;
+			currPos.y += size.y + grid.indent;
 		}
 	};
 };

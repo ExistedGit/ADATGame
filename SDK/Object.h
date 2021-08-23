@@ -13,10 +13,8 @@ public:
 	Vector2f getPos() const;
 	void setPos(float x, float y);
 	void setPos(const Vector2f& pos);
-	void move(float x, float y);;
-	void move(const Vector2f& offset);;
-
-
+	void move(float x, float y);
+	void move(const Vector2f& offset);
 	const RectangleShape& getRect() const;
 
 protected:
@@ -40,10 +38,70 @@ public:
 	Collider getCollider();
 	int getCurrFrame() const;
 
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime);
 
 	void Draw(RenderWindow& wnd) const;
 
 	void move(const Vector2f& offset);
 };
 
+class MovingPlatform : public Object {
+private:
+	// Направление движения(отрицательно: false, положительно: true)
+	bool direction = true;
+	float start;
+public:	
+	// Плоскость(x: false, y: true)
+	bool plane;
+	// Длина пути платформы
+	float distance;
+	// Скорость перемещения
+	float speed;
+
+	inline MovingPlatform(const Object& obj, float speed, bool plane, float distance) :
+		Object(obj),
+		plane(plane),
+		speed(speed),
+		distance(distance)
+	{
+		start = plane ? getPos().y : getPos().x;
+		direction = plane ? start < start + distance : start < start + distance;
+	};
+	inline void Update(float deltaTime) override {
+		velocity *= 0.0f;
+
+		if (!plane) {
+			if (start < start + distance) {
+				if (getPos().x > start + distance)
+					direction = false;
+				else if (getPos().x < start)
+					direction = true;
+			}
+			else {
+				if (getPos().x < start + distance)
+					direction = true;
+				else if (getPos().x > start)
+					direction = false;
+			}
+			velocity.x = speed * deltaTime * (direction ? 1 : -1);
+		}
+		else {
+			if (start < start + distance) {
+				if (getPos().y > start + distance)
+					direction = false;
+				else if (getPos().y < start)
+					direction = true;
+			}
+			else {
+				if (getPos().y < start + distance)
+					direction = true;
+				else if (getPos().y > start)
+					direction = false;
+			}
+			velocity.y = speed * deltaTime * (direction ? 1 : -1);
+		}
+		
+		Object::Update(deltaTime);
+	}
+	bool getDirection();
+};

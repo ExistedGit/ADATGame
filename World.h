@@ -66,7 +66,7 @@ public:
 		sprites["ingame_menu_bg"]->setPosition(Vector2f(wnd.getSize() / 2u));
 
 		sprites["hub_bg"] = new SmartSprite("Textures/hub_bg.jpg");
-		
+		sprites["unfocused_greyscale"] = new SmartSprite();
 		for (const auto& it : levels) 
 			levelNames.push_back(it.first);
 		
@@ -85,14 +85,13 @@ public:
 		MenuState menuState = MenuState::MAIN;
 
 		Menu mainMenu(Vector2f(wnd.getSize().x /2 - 200, wnd.getSize().y / 2+100));
-		mainMenu.load("Models/menuButtons.xml", "Models/Menu/mainMenu.xml", 10);
+		mainMenu.load("Models/menuButtons.xml", "Models/Menu/mainMenu.xml");
 		mainMenu.applyUseMap({
 			{
 			"start",
 			[this, &menuState]() mutable { 
 				player.respawn(levels[levelNames[currLevel]].spawn.x, levels[levelNames[currLevel]].spawn.y);
 				menuState = MenuState::NO_MENU;
-				
 			}
 			},
 			{
@@ -105,7 +104,7 @@ public:
 			}
 			});
 		Menu ingameMenu(Vector2f(wnd.getSize().x / 2, wnd.getSize().y / 2), true);
-		ingameMenu.load("Models/menuButtons.xml", "Models/Menu/ingameMenu.xml", 10);
+		ingameMenu.load("Models/menuButtons.xml", "Models/Menu/ingameMenu.xml");
 		ingameMenu.applyUseMap({
 			{
 			"continue",
@@ -133,13 +132,20 @@ public:
 		Clock clock;
 		float deltaTime = 0;
 
+		Texture unfocused;
+		unfocused.create(wnd.getSize().x, wnd.getSize().y);
 		Text songText("", pixelFont);
 		songText.setPosition(200, 500);
 		while (wnd.isOpen()) {
-			while (!wnd.hasFocus())
-				while (wnd.pollEvent(ev)) 
+			while (!wnd.hasFocus()) {
+				unfocused.update(wnd);
+				sprites["unfocused_greyscale"]->setTexture(unfocused);
+				wnd.draw(*sprites["unfocused_greyscale"], &Achievement::greyscale);
+				wnd.display();
+				while (wnd.pollEvent(ev)) {
 					if (ev.type == Event::GainedFocus) break;
-				
+				}
+			}
 			wnd.clear();
 			sprites["hub_bg"]->setPosition(view.getCenter());
 			wnd.draw(*sprites["hub_bg"]);
@@ -211,7 +217,7 @@ public:
 					}
 
 					player.Update(deltaTime);
-					levels[levelNames[currLevel]].checkCollision(player);
+					levels[levelNames[currLevel]].checkCollision(player, deltaTime);
 
 					//// Отрисовка белых границ окна. Можно откомментировать когда-нибудь
 					//if (levels[switched].bordered()) {
@@ -221,6 +227,7 @@ public:
 					//}
 
 					levels[levelNames[currLevel]].Update(player);
+					levels[levelNames[currLevel]].Update(deltaTime);
 				}
 
 				levels[levelNames[currLevel]].Draw(wnd, &player);
@@ -244,6 +251,7 @@ public:
 				}
 			}
 			else {
+				view.setCenter(Vector2f(wnd.getSize()/2u));
 				wnd.draw(*sprites["menu_bg"]);
 				mainMenu.drawButtons(wnd);
 				while (wnd.pollEvent(ev)) {

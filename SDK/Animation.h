@@ -26,7 +26,7 @@ public:
 	
 	bool Update(float deltaTime, bool mirrored = false, string animName="");
 	
-	int getCurrFrame() const noexcept;;
+	int getCurrFrame() const noexcept;
 	
 	const Texture* getTexture() const noexcept;
 	const string& getCurrAnim() const noexcept;

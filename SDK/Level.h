@@ -10,7 +10,8 @@ class Level : public InteractiveArray
 {
 private:
 	vector<pair<int, TileMap>> tileLayers;
-	vector<Object> objects;
+	map<string, Object*> namedObjects;
+	vector<Object*> objects;
 	Vector2f size;
 	string name;
 
@@ -35,7 +36,7 @@ public:
 	Level& load(string xmlDoc, const RenderWindow* window = nullptr, const string& name = "LEVEL", map<string, function<void()>> useMap = {});
 	void reload();;
 
-	void checkCollision(Player& player);
+	void checkCollision(Player& player, float deltaTime);
 
 	const string& getName()const;
 
@@ -44,5 +45,6 @@ public:
 	void applyUseMap(map<string, function<void()>> map);
 	
 	void Update(Player& player) override;
+	void Update(float deltaTime);
 };
 

@@ -4,6 +4,7 @@
 class FragShader : public sf::Shader
 {
 public:
+
 	inline FragShader() : Shader() {};
 	inline FragShader(const std::string& code) {
 		loadFromMemory(code, Shader::Type::Fragment);

@@ -19,8 +19,11 @@ Collider Object::getCollider() {
 }
 
 void Object::Update(float deltaTime) {
-	anim->Update(deltaTime, false, "default");
-	body.setTextureRect(anim->uvRect);
+	if (anim != nullptr) {
+		anim->Update(deltaTime, false, "default");
+		body.setTextureRect(anim->uvRect);
+	}
+	body.move(velocity);
 }
 
 const RectangleShape& Movable::getRect() const {
@@ -47,7 +50,8 @@ void Movable::move(const Vector2f& offset) {
 	body.move(offset);
 }
 void Object::Draw(RenderWindow& wnd) const {
-	wnd.draw(body);
+	if(body.getTexture() != nullptr)
+		wnd.draw(body);
 }
 
 void Object::move(const Vector2f& offset) {
@@ -56,4 +60,8 @@ void Object::move(const Vector2f& offset) {
 
 int Object::getCurrFrame() const {
 	return anim->getCurrFrame();
+}
+
+bool MovingPlatform::getDirection() {
+	return direction;
 }

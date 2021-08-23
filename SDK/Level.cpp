@@ -49,10 +49,10 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 	
 	_bordered = window != nullptr;
 	if (_bordered) {
-		objects.insert(objects.begin(), Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, window->getSize().y), Solid)); // Снизу окна
-		objects.insert(objects.begin(), Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, 0), Solid)); // Сверху
-		objects.insert(objects.begin(), Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(0, window->getSize().y / 2), Solid)); // Слева
-		objects.insert(objects.begin(), Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(window->getSize().x + 1, window->getSize().y / 2), Solid)); // Справа
+		objects.insert(objects.begin(), new Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, window->getSize().y), Solid)); // Снизу окна
+		objects.insert(objects.begin(), new Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, 0), Solid)); // Сверху
+		objects.insert(objects.begin(), new Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(0, window->getSize().y / 2), Solid)); // Слева
+		objects.insert(objects.begin(), new Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(window->getSize().x + 1, window->getSize().y / 2), Solid)); // Справа
 	}
 #pragma endregion
 
@@ -127,14 +127,14 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 			if (objName == "solid") {
 				float x = atof(object->Attribute("x")), y = atof(object->Attribute("y"));
 				float width = atof(object->Attribute("width")), height = atof(object->Attribute("height"));
-				objects.push_back(Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType::Solid));
+				objects.push_back(new Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType::Solid));
 			}
 			else if (objName == "platform") {
 				float x = atof(object->Attribute("x")),
 					y = atof(object->Attribute("y"));
 				float width = atof(object->Attribute("width")),
 					height = 140; // Работае только так, нет времени фиксытъ
-				objects.push_back(Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType(Platform | Solid)));
+				objects.push_back(new Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType(Platform | Solid)));
 			}
 			else if (objName == "spawn") {
 				float x = atof(object->Attribute("x")),
@@ -148,9 +148,6 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 
 				if (interactiveName.empty()) 
 					throw u8"Level.load(): интерактивный объект без имени\n";
-				if (modelName.empty())
-					cerr << u8"Level.load(): интерактивный объект без модели\n";
-
 				bool oneTime = false;
 				if (object->Attribute("type") != nullptr) {
 					string type;
@@ -166,8 +163,6 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 				
 				Animation* anim = new Animation(modelPath);
 				if (specifier == "button") {
-					if (interactiveName.empty())
-						throw u8"Level.load(): Отсутствует имя кнопки";
 					
 					float x = atof(object->Attribute("x")),
 						y = atof(object->Attribute("y"));
@@ -177,8 +172,6 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 					interactives.push_back(new InteractiveButton(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 				}
 				else if (specifier == "lever") {
-					if (interactiveName.empty())
-						throw u8"Level.load(): Отсутствует имя рычага";
 
 					float x = atof(object->Attribute("x")),
 						y = atof(object->Attribute("y"));
@@ -188,9 +181,6 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 					interactives.push_back(new InteractiveLever(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
 				}
 				else if (specifier == "door") {
-					if (interactiveName.empty())
-						throw u8"Level.load(): Отсутствует имя двери";
-
 					float x = atof(object->Attribute("x")),
 						y = atof(object->Attribute("y"));
 					float width = atof(object->Attribute("width")),
@@ -220,17 +210,39 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 
 					interactives.push_back(new InteractiveDoor(anim, hitbox, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, oneTime));
 				}
-				else throw u8"Level.load(): недопустимое имя объекта";
-				
+				else if (specifier == "moveplatform") {
+					bool platformPlane;
+					float platformDistance, platformSpeed;
+					{
+						istringstream typestream(object->Attribute("type"));
+						string speed, plane, distance;
+						typestream >> speed >> plane >> distance;
+						platformSpeed = atof(speed.c_str());
+						if (plane != "y" && plane != "x")
+							throw u8"Level.load(): Неверный символ направления движущейся платформы\n";
+						platformPlane = plane == "y";
+						platformDistance = atof(distance.c_str());
+					}
+
+					float x = atof(object->Attribute("x")),
+						y = atof(object->Attribute("y"));
+					float width = atof(object->Attribute("width")),
+						height = atof(object->Attribute("height"));
+					
+					Object* moveplatform = new MovingPlatform(Object(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType(Moving | Solid)), platformSpeed, platformPlane, platformDistance) ;
+
+					objects.push_back(moveplatform);
+					namedObjects[interactiveName] = moveplatform;
+				}
+				else throw u8"Level.load(): недопустимый тип объекта";
 			}
 		}
 	}
 #pragma endregion
-
 #pragma region Перемещение объектов и тайлов к нужному месту
 	for (int i = 0; i < objects.size(); i++) {
-		if (objects[i].type & ObjectType::Solid)
-			objects[i].getCollider().Move(1, size.y - tileSize.y * height);
+		if (objects[i]->type & ObjectType::Solid)
+			objects[i]->getCollider().Move(1, size.y - tileSize.y * height);
 	}
 	for (auto& it : tileLayers) {
 		it.second.move(1, size.y - tileSize.y * height);
@@ -246,29 +258,32 @@ void Level::reload() {
 	load(filename);
 }
 
-void Level::checkCollision(Player& player) {
+void Level::checkCollision(Player& player, float deltaTime) {
 
 	Vector2f direction;
-	bool groundCollision = false;
+	Object* groundCollision = nullptr;
 	for (auto& p : objects) {
-		if (p.type & Platform) {
-			if (player.getPos().y + player.getRect().getSize().y < p.getRect().getPosition().y
+		if (p->type & Platform) {
+			if (player.getPos().y + player.getRect().getSize().y < p->getRect().getPosition().y
 				&&
 				player.velocity.y > 0) {
-				p.type = ObjectType(p.type | Solid);
+				p->type = ObjectType(p->type | Solid);
 				if (Keyboard::isKeyPressed(Keyboard::S))
-					p.type = ObjectType(p.type ^ Solid);
+					p->type = ObjectType(p->type ^ Solid);
 				
 			}
-			else if (p.type & Solid)
-				p.type = ObjectType(p.type ^ Solid);
+			else if (p->type & Solid)
+				p->type = ObjectType(p->type ^ Solid);
 		}
 		
-		if (p.active) 
-			if (p.type & Solid)
-				if (p.getCollider().CheckCollision(player.getCollider(), direction)) {
+		if (p->active) 
+			if (p->type & Solid)
+				if (p->getCollider().CheckCollision(player.getCollider(), direction)) {
 					player.onCollision(direction);
-					if (direction.y == -1) groundCollision = true;
+					if (direction.y == -1)
+						groundCollision = p;
+					if ((p->type & Moving) && ((MovingPlatform*)p)->plane == false)
+						player.move(((MovingPlatform*)p)->speed * deltaTime * (((MovingPlatform*)p)->getDirection() ? 1 : -1), 0);
 				};
 		}
 
@@ -281,12 +296,12 @@ void Level::checkCollision(Player& player) {
 				}
 				else if (p->getCollider().CheckCollision(player.getCollider(), direction)) {
 						player.onCollision(direction);
-
-						
-						if (direction.y == -1) groundCollision = true;
-					};
+						if (direction.y == -1) 
+							groundCollision = p;
+				};
 			
-	if (!groundCollision) player.onCollision(direction);
+	if (groundCollision == nullptr) 
+		player.onCollision(direction);
 
 		
 
@@ -311,17 +326,20 @@ void Level::Draw(RenderWindow& wnd, Player* player) const {
 	for (auto& it : tileLayers)
 		if (it.first > 0)
 			wnd.draw(it.second);
+	for (auto& it : objects)
+		it->Draw(wnd);
+	
 
 	if (_bordered)
 		for (int i = 0; i < 4; i++)
-			objects[i].Draw(wnd);
+			objects[i]->Draw(wnd);
 
 	if (debug) {
 		Text text;
 		text.setFont(debugFont);
 		for (auto& it : objects) {
-			text.setPosition(it.getRect().getPosition());
-			text.setString(it.type & Solid ? "1" : "0");
+			text.setPosition(it->getRect().getPosition());
+			text.setString(it->type & Solid ? "1" : "0");
 			wnd.draw(text);
 		}
 	}
@@ -345,4 +363,9 @@ void Level::Update(Player& player) {
 					if (button.getCurrFrame() == 1) button.Update();
 					button.pressed = false;
 				}
+}
+void Level::Update(float deltaTime) {
+	for (auto& obj : objects) {
+		obj->Update(deltaTime);
+	}
 }

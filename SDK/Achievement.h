@@ -20,8 +20,8 @@ private:
 
 	bool done;
 
-	static const FragShader greyscale;
 public:
+	static const FragShader greyscale;
 
 	static map<string, Achievement*> ach_id;
 	
