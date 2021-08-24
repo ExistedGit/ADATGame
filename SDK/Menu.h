@@ -42,41 +42,41 @@ public:
 		int x = 1, y = 1;
 		for (int i = 0; i < list.size(); i++) {
 			Vector2f size = Vector2f(anim->uvRect.width, anim->uvRect.height);
-			{
-				TiXmlElement* gridElem = model.FirstChildElement("grid");
-				if (gridElem != nullptr) {
-					if (gridElem->Attribute("x") != nullptr) 
-						grid.x = atoi(gridElem->Attribute("x"));
-					if (gridElem->Attribute("y") != nullptr)
-						grid.y = atoi(gridElem->Attribute("y"));
-					
-					if (gridElem->Attribute("indent") != nullptr)
-						grid.indent = atoi(gridElem->Attribute("indent"));
+			
+			TiXmlElement* gridElem = model.FirstChildElement("grid");
+			if (gridElem != nullptr) {
+				if (gridElem->Attribute("x") != nullptr)
+					grid.x = atoi(gridElem->Attribute("x"));
+				if (gridElem->Attribute("y") != nullptr)
+					grid.y = atoi(gridElem->Attribute("y"));
 
-					if (grid.x != 0 || grid.y != 0)
-						if (list.size() > (grid.x + !grid.x) * (grid.y + !grid.y))
-							throw u8"Menu.load(): кнопок больше заданной сетки, переназначьте значения";
-					
-					addButton(
-						HoverButton(
-							anim, list[i], list[i], size,
+				if (gridElem->Attribute("indent") != nullptr)
+					grid.indent = atoi(gridElem->Attribute("indent"));
 
-							Vector2f(currPos.x + bool(x-1) * grid.indent, currPos.y + bool(y-1) * grid.indent )
-						));
-					if (grid.x == 0 && grid.y == 0 && grid.indent != 0) 
+				if (grid.x != 0 || grid.y != 0)
+					if (list.size() > (grid.x + !grid.x) * (grid.y + !grid.y))
+						throw u8"Menu.load(): кнопок больше заданной сетки, переназначьте значения";
+
+				addButton(
+					HoverButton(
+						anim, list[i], list[i], size,
+
+						Vector2f(currPos.x + bool(x - 1) * grid.indent - centered * size.x/2, currPos.y + bool(y - 1) * grid.indent - centered * size.y / 2)
+					));
+				if (grid.x == 0 && grid.y == 0 && grid.indent != 0)
+					currPos.y += size.y + grid.indent;
+				else if (grid.x != 0) {
+					if (x++ < grid.x)
+						currPos.x += size.x + grid.indent;
+					else if (grid.y != 0) {
+						y++;
+						x = 1;
+						currPos.x = originPos.x;
 						currPos.y += size.y + grid.indent;
-					else if (grid.x != 0) {
-						if (x++ < grid.x) 
-							currPos.x += size.x + grid.indent;
-						else if(grid.y != 0) {
-							y++;
-							x = 1;
-							currPos.x = originPos.x;
-							currPos.y += size.y + grid.indent;
-						}
 					}
 				}
 			}
+			else throw u8"Menu.load(): в модели не найдена сетка";
 			
 		}
 	}
@@ -102,17 +102,34 @@ public:
 	}
 
 	inline void setPosition(const Vector2f& pos) {
-		Vector2f currPos = pos;
-
+		Vector2f currPos = pos,
+				 originPos = pos,
+				 size;
+		
+		int	  	 x = 1, 
+				 y = 1;
+		
 		for (auto& button : buttons) {
-			Vector2f size = button.getSize();
+			size = button.getSize();
+
 			button.setPosition(
-				centered ?
-					Vector2f(currPos.x - size.x / 2, currPos.y) :
-					currPos
+				Vector2f(currPos.x + bool(x - 1) * grid.indent - centered * size.x / 2, currPos.y + bool(y - 1) * grid.indent - centered * size.y / 2)
 			);
-			currPos.y += size.y + grid.indent;
+
+			if (grid.x == 0 && grid.y == 0 && grid.indent != 0)
+				currPos.y += size.y + grid.indent;
+			else if (grid.x != 0) {
+				if (x++ < grid.x)
+					currPos.x += size.x + grid.indent;
+				else if (grid.y != 0) {
+					y++;
+					x = 1;
+					currPos.x = originPos.x;
+					currPos.y += size.y + grid.indent;
+				}
+			}
 		}
+
 	};
 };
 

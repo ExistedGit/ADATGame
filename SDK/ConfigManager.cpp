@@ -3,8 +3,8 @@
 #include <regex>
 #include <map>
 
-std::map<string, Level> ConfigManager::loadLevels(RenderWindow* wnd) {
-	std::map<string, Level> map;
+Level ConfigManager::loadLevel(const string& name, RenderWindow* wnd) {
+	Level level;
 
 	TiXmlDocument document("cfg/config.xml");
 	document.LoadFile();
@@ -14,17 +14,16 @@ std::map<string, Level> ConfigManager::loadLevels(RenderWindow* wnd) {
 		for (TiXmlElement* child = loader->FirstChildElement("Level"); child != NULL && string(child->Value()) == "Level"; child = child->NextSiblingElement()) {
 			
 			try {
-				Level newLevel = Level().load("TileMap/" + string(child->GetText()), wnd, child->Attribute("id"));
-				map[newLevel.getName()] = newLevel;
+				level = Level().load("TileMap/" + string(child->GetText()), wnd, child->Attribute("id"));
 			}
 			catch (const string& err) {
 				cout << err << endl;
 			}
 		}
 	}
-	catch (runtime_error re) {
-		cout << re.what();
+	catch (const string& re) {
+		cout << re;
 	}
 
-	return map;
+	return level;
 }

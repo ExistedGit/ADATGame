@@ -28,7 +28,7 @@ G:\VS Repo\Project2\Project2\World.h(52,41): warning C4244: аргумент: п
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(87,71): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(88,65): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=unsigned int
@@ -37,7 +37,7 @@ G:\VS Repo\Project2\Project2\World.h(87,71): warning C4244: аргумент: п
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(87,45): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(88,42): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=unsigned int
@@ -46,7 +46,7 @@ G:\VS Repo\Project2\Project2\World.h(87,45): warning C4244: аргумент: п
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(106,65): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(107,65): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=unsigned int
@@ -55,7 +55,7 @@ G:\VS Repo\Project2\Project2\World.h(106,65): warning C4244: аргумент: �
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(106,44): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(107,44): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=unsigned int
@@ -64,15 +64,15 @@ G:\VS Repo\Project2\Project2\World.h(106,44): warning C4244: аргумент: �
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(158,48): warning C4244: аргумент: преобразование "double" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(168,48): warning C4244: аргумент: преобразование "double" в "T", возможна потеря данных
           with
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(161,61): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
-G:\VS Repo\Project2\Project2\World.h(163,106): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
-G:\VS Repo\Project2\Project2\World.h(177,1): warning C4305: =: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\World.h(203,30): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(171,61): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(173,106): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(187,1): warning C4305: =: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\World.h(213,30): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
   World.cpp
 G:\VS Repo\Project2\Project2\SDK\InteractiveArray.h(105,22): warning C4305: инициализация: усечение из "double" в "float"
 G:\VS Repo\Project2\Project2\SDK\Menu.h(44,61): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
@@ -103,7 +103,7 @@ G:\VS Repo\Project2\Project2\World.h(52,41): warning C4244: аргумент: п
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(87,71): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(88,65): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=unsigned int
@@ -112,7 +112,7 @@ G:\VS Repo\Project2\Project2\World.h(87,71): warning C4244: аргумент: п
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(87,45): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(88,42): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=unsigned int
@@ -121,7 +121,7 @@ G:\VS Repo\Project2\Project2\World.h(87,45): warning C4244: аргумент: п
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(106,65): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(107,65): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=unsigned int
@@ -130,7 +130,7 @@ G:\VS Repo\Project2\Project2\World.h(106,65): warning C4244: аргумент: �
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(106,44): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(107,44): warning C4244: аргумент: преобразование "T" в "T", возможна потеря данных
           with
           [
               T=unsigned int
@@ -139,15 +139,15 @@ G:\VS Repo\Project2\Project2\World.h(106,44): warning C4244: аргумент: �
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(158,48): warning C4244: аргумент: преобразование "double" в "T", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(168,48): warning C4244: аргумент: преобразование "double" в "T", возможна потеря данных
           with
           [
               T=float
           ]
-G:\VS Repo\Project2\Project2\World.h(161,61): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
-G:\VS Repo\Project2\Project2\World.h(163,106): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
-G:\VS Repo\Project2\Project2\World.h(177,1): warning C4305: =: усечение из "double" в "float"
-G:\VS Repo\Project2\Project2\World.h(203,30): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(171,61): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(173,106): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+G:\VS Repo\Project2\Project2\World.h(187,1): warning C4305: =: усечение из "double" в "float"
+G:\VS Repo\Project2\Project2\World.h(213,30): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
   Создание кода...
 G:\VS Repo\Project2\Project2\SDK\Menu.h(102): warning C4715: Menu::CheckClick: значение возвращается не при всех путях выполнения
   Project2.vcxproj -> G:\VS Repo\Project2\x64\Debug\Project2.exe

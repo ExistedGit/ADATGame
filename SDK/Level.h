@@ -10,8 +10,8 @@ class Level : public InteractiveArray
 {
 private:
 	vector<pair<int, TileMap>> tileLayers;
-	map<string, Object*> namedObjects;
-	vector<Object*> objects;
+	map<string, shared_ptr<Object>> namedObjects;
+	vector<shared_ptr<Object>> objects;
 	Vector2f size;
 	string name;
 

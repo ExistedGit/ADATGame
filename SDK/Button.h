@@ -22,7 +22,6 @@ protected:
 	Animation* anim;
 	string name;
 	ClickButtonType type;
-	
 public:
 	function<void()> use;
 

@@ -55,18 +55,20 @@ public:
 		player(new Animation("Models/rat.xml"), Vector2f(191 / 2, 191 / 2), 650, 210,1),
 		mp({
 		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
-		new Song("Gonna Give You Up",		 "Sounds/llorkcir.ogg")
+		new Song("Gonna Give You Up",		"Sounds/llorkcir.ogg")
 			})
 	{
 		cs.antialiasingLevel = 8;
 
 		sprites["menu_bg"] = new SmartSprite("Textures/menu_bg.png"); 
 		sprites["menu_bg"]->setPosition(Vector2f(wnd.getSize()/2u));
+
 		sprites["ingame_menu_bg"] = new SmartSprite("Textures/ingame_menu_bg.png");
 		sprites["ingame_menu_bg"]->setPosition(Vector2f(wnd.getSize() / 2u));
-
+		
 		sprites["hub_bg"] = new SmartSprite("Textures/hub_bg.jpg");
 		sprites["unfocused_greyscale"] = new SmartSprite();
+
 		for (const auto& it : levels) 
 			levelNames.push_back(it.first);
 		
@@ -75,7 +77,6 @@ public:
 			levels[levelNames[currLevel]].spawn.y
 		);
 
-		initLevels();
 	}
 
 	inline void start() {
@@ -84,7 +85,7 @@ public:
 		Event ev;
 		MenuState menuState = MenuState::MAIN;
 
-		Menu mainMenu(Vector2f(wnd.getSize().x /2 - 200, wnd.getSize().y / 2+100));
+		Menu mainMenu(Vector2f(wnd.getSize().x /2, wnd.getSize().y / 2+100) , true);
 		mainMenu.load("Models/menuButtons.xml", "Models/Menu/mainMenu.xml");
 		mainMenu.applyUseMap({
 			{
@@ -132,25 +133,34 @@ public:
 		Clock clock;
 		float deltaTime = 0;
 
+		bool greyscaled = false;;
+
 		Texture unfocused;
 		unfocused.create(wnd.getSize().x, wnd.getSize().y);
 		Text songText("", pixelFont);
 		songText.setPosition(200, 500);
 		while (wnd.isOpen()) {
 			while (!wnd.hasFocus()) {
-				unfocused.update(wnd);
-				sprites["unfocused_greyscale"]->setTexture(unfocused);
-				wnd.draw(*sprites["unfocused_greyscale"], &Achievement::greyscale);
-				wnd.display();
-				while (wnd.pollEvent(ev)) {
-					if (ev.type == Event::GainedFocus) break;
+				if (!greyscaled) {
+					unfocused.update(wnd);
+					sprites["unfocused_greyscale"]->setTexture(unfocused);
+					sprites["unfocused_greyscale"]->setPosition(
+						Vector2f(view.getCenter().x - wnd.getSize().x / 2, view.getCenter().y - wnd.getSize().y/2)
+					);
+					wnd.draw(*sprites["unfocused_greyscale"], &Achievement::greyscale);
+					wnd.display();
+					greyscaled = true;
 				}
+				if (wnd.pollEvent(ev))
+					if (ev.type == Event::GainedFocus) {
+						greyscaled = false;
+						break;
+					}
 			}
 			wnd.clear();
 			sprites["hub_bg"]->setPosition(view.getCenter());
 			wnd.draw(*sprites["hub_bg"]);
 
-			
 			if (menuState != MenuState::MAIN) {
 				songText.setString("Now playing " + mp.getSongName() + (mp.getStatus() == Music::Paused || mp.getStatus() == Music::Stopped ? " (Paused)" : ""));
 				
@@ -207,10 +217,10 @@ public:
 								break;
 							}
 						}
+							break;
 						case Event::MouseButtonReleased:
-							if (ev.mouseButton.button == Mouse::Button::Left) 
-								mp.CheckClick(ev, wnd, view);
-							
+							//if (ev.mouseButton.button == Mouse::Button::Left) 
+							//	mp.CheckClick(ev, wnd, view);
 							break;
 						}
 						levels[levelNames[currLevel]].checkInteraction(ev, player);
@@ -233,7 +243,7 @@ public:
 				levels[levelNames[currLevel]].Draw(wnd, &player);
 				levels[levelNames[currLevel]].drawHint(wnd, player, pixelFont);
 
-				mp.drawButtons(wnd);
+				//mp.drawButtons(wnd);
 				wnd.draw(songText);
 
 				if (menuState == MenuState::INGAME) {

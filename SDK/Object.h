@@ -3,7 +3,7 @@
 #include "Animation.h"
 
 enum ObjectType {
-	Solid = 1, Platform = 2, Moving = 4, Interactive = 8
+	Solid = 1, Platform = 2, Moving = 4, Interactive = 8, Respawn = 16
 };
 
 class Movable {

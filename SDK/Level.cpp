@@ -49,10 +49,10 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 	
 	_bordered = window != nullptr;
 	if (_bordered) {
-		objects.insert(objects.begin(), new Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, window->getSize().y), Solid)); // Снизу окна
-		objects.insert(objects.begin(), new Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, 0), Solid)); // Сверху
-		objects.insert(objects.begin(), new Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(0, window->getSize().y / 2), Solid)); // Слева
-		objects.insert(objects.begin(), new Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(window->getSize().x + 1, window->getSize().y / 2), Solid)); // Справа
+		objects.insert(objects.begin(), shared_ptr<Object>(new Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, window->getSize().y), Solid))); // Снизу окна
+		objects.insert(objects.begin(), shared_ptr<Object>(new Object(nullptr, Vector2f(window->getSize().x, 1), Vector2f(window->getSize().x / 2, 0), Solid))); // Сверху
+		objects.insert(objects.begin(), shared_ptr<Object>(new Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(0, window->getSize().y / 2), Solid))); // Слева
+		objects.insert(objects.begin(), shared_ptr<Object>(new Object(nullptr, Vector2f(1, window->getSize().y), Vector2f(window->getSize().x + 1, window->getSize().y / 2), Solid))); // Справа
 	}
 #pragma endregion
 
@@ -127,19 +127,24 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 			if (objName == "solid") {
 				float x = atof(object->Attribute("x")), y = atof(object->Attribute("y"));
 				float width = atof(object->Attribute("width")), height = atof(object->Attribute("height"));
-				objects.push_back(new Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType::Solid));
+				objects.push_back(shared_ptr<Object>(new Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType::Solid)));
 			}
 			else if (objName == "platform") {
 				float x = atof(object->Attribute("x")),
 					y = atof(object->Attribute("y"));
 				float width = atof(object->Attribute("width")),
 					height = 140; // Работае только так, нет времени фиксытъ
-				objects.push_back(new Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType(Platform | Solid)));
+				objects.push_back(shared_ptr<Object>(new Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType(Platform | Solid))));
 			}
 			else if (objName == "spawn") {
 				float x = atof(object->Attribute("x")),
 					y = atof(object->Attribute("y"));
 				spawn = Vector2f(x, y);
+			}
+			else if (objName == "respawn") {
+				float x = atof(object->Attribute("x")), y = atof(object->Attribute("y"));
+				float width = atof(object->Attribute("width")), height = atof(object->Attribute("height"));
+				objects.push_back(shared_ptr<Object>(new Object(nullptr, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType::Respawn)));
 			}
 			else {
 				istringstream ss(objName);
@@ -229,7 +234,7 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 					float width = atof(object->Attribute("width")),
 						height = atof(object->Attribute("height"));
 					
-					Object* moveplatform = new MovingPlatform(Object(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType(Moving | Solid)), platformSpeed, platformPlane, platformDistance) ;
+					shared_ptr<Object> moveplatform = shared_ptr<Object>(new MovingPlatform(Object(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), ObjectType(Moving | Solid)), platformSpeed, platformPlane, platformDistance));
 
 					objects.push_back(moveplatform);
 					namedObjects[interactiveName] = moveplatform;
@@ -263,30 +268,36 @@ void Level::checkCollision(Player& player, float deltaTime) {
 	Vector2f direction;
 	Object* groundCollision = nullptr;
 	for (auto& p : objects) {
-		if (p->type & Platform) {
-			if (player.getPos().y + player.getRect().getSize().y < p->getRect().getPosition().y
-				&&
-				player.velocity.y > 0) {
-				p->type = ObjectType(p->type | Solid);
-				if (Keyboard::isKeyPressed(Keyboard::S))
+		if (p->active) {
+			if (p->type & Platform) {
+				if (player.getPos().y + player.getRect().getSize().y < p->getRect().getPosition().y
+					&&
+					player.velocity.y > 0) {
+					p->type = ObjectType(p->type | Solid);
+					if (Keyboard::isKeyPressed(Keyboard::S))
+						p->type = ObjectType(p->type ^ Solid);
+
+				}
+				else if (p->type & Solid)
 					p->type = ObjectType(p->type ^ Solid);
-				
 			}
-			else if (p->type & Solid)
-				p->type = ObjectType(p->type ^ Solid);
-		}
-		
-		if (p->active) 
-			if (p->type & Solid)
+
+			if (p->type & Respawn && player.getCollider().collides(p->getCollider())) {
+				player.respawn(spawn.x, spawn.y);
+				return;
+			}
+
+			if (p->type & Solid) {
 				if (p->getCollider().CheckCollision(player.getCollider(), direction)) {
 					player.onCollision(direction);
 					if (direction.y == -1)
-						groundCollision = p;
-					if ((p->type & Moving) && ((MovingPlatform*)p)->plane == false)
-						player.move(((MovingPlatform*)p)->speed * deltaTime * (((MovingPlatform*)p)->getDirection() ? 1 : -1), 0);
+						groundCollision = p.get();
+					if ((p->type & Moving) && ((MovingPlatform*)p.get())->plane == false)
+						player.move(((MovingPlatform*)p.get())->speed * deltaTime * (((MovingPlatform*)p.get())->getDirection() ? 1 : -1), 0);
 				};
+			}
 		}
-
+	}
 	for (auto& p : interactives)
 		if (p->active)
 			if(p->type & Solid)
