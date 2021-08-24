@@ -3,7 +3,7 @@
 #include <regex>
 #include <map>
 
-Level ConfigManager::loadLevel(const string& name, RenderWindow* wnd) {
+Level ConfigManager::loadLevel(string name, RenderWindow* wnd) {
 	Level level;
 
 	TiXmlDocument document("cfg/config.xml");
@@ -12,13 +12,11 @@ Level ConfigManager::loadLevel(const string& name, RenderWindow* wnd) {
 	TiXmlElement* loader = document.FirstChildElement("Loader");
 	try {
 		for (TiXmlElement* child = loader->FirstChildElement("Level"); child != NULL && string(child->Value()) == "Level"; child = child->NextSiblingElement()) {
-			
-			try {
+			if (name == "") name = child->Attribute("id");
+
+			if (string(child->Attribute("id")) == name)
 				level = Level().load("TileMap/" + string(child->GetText()), wnd, child->Attribute("id"));
-			}
-			catch (const string& err) {
-				cout << err << endl;
-			}
+			else cout << u8"ConfigManager.load(): уровень не загружен\n";
 		}
 	}
 	catch (const string& re) {

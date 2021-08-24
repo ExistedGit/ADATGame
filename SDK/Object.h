@@ -24,7 +24,7 @@ protected:
 class Object : public Movable
 {
 protected:
-	Animation* anim;
+	shared_ptr<Animation> anim;
 public:
 	bool active = true;
 	ObjectType type;

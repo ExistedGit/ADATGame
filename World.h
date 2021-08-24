@@ -26,20 +26,30 @@ private:
 	ContextSettings cs;
 	RenderWindow wnd;
 
-	std::map<string, Level> levels;
-	vector<string> levelNames;
+	Level level;
 	int currLevel = 0;
 
 	Player player;
-
-	map<string, SmartSprite*> sprites;
+	// Карта названий уровней к картам использования
+	map<string, map<string, function<void()>>> useMaps;
+	map<string, shared_ptr<SmartSprite>> sprites;
 	
-	inline void initLevels() {
-		levels["lvl1"].applyUseMap({
-			{"playButton", [this]() mutable {
-				if (!mp.play()) mp.pause();
-			}
-		} });
+	inline void initLevel() {
+		if (useMaps.count(level.getName())) {
+			level.applyUseMap(useMaps[level.getName()]);
+		}
+	}
+	inline void initUseMaps() {
+		useMaps["lvl1"] =
+		{
+		{
+		"playButton", [this]() mutable {
+			if (!mp.play()) mp.pause();
+		}
+		}
+		};
+				
+				
 	}
 
 	enum class MenuState : int {
@@ -51,7 +61,7 @@ public:
 	inline World(const Vector2f& wndSize) :
 		wnd(RenderWindow(sf::VideoMode(wndSize.x, wndSize.y), L"ВЫ — КРЫСА!", Style::Titlebar | Style::Close , cs)),
 		view(View(Vector2f(wndSize.x, wndSize.y), wndSize)),
-		levels(ConfigManager::loadLevels()),
+		level(ConfigManager::loadLevel()),
 		player(new Animation("Models/rat.xml"), Vector2f(191 / 2, 191 / 2), 650, 210,1),
 		mp({
 		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
@@ -60,23 +70,20 @@ public:
 	{
 		cs.antialiasingLevel = 8;
 
-		sprites["menu_bg"] = new SmartSprite("Textures/menu_bg.png"); 
+		sprites["menu_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/menu_bg.png")); 
 		sprites["menu_bg"]->setPosition(Vector2f(wnd.getSize()/2u));
 
-		sprites["ingame_menu_bg"] = new SmartSprite("Textures/ingame_menu_bg.png");
+		sprites["ingame_menu_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/ingame_menu_bg.png"));
 		sprites["ingame_menu_bg"]->setPosition(Vector2f(wnd.getSize() / 2u));
 		
-		sprites["hub_bg"] = new SmartSprite("Textures/hub_bg.jpg");
-		sprites["unfocused_greyscale"] = new SmartSprite();
+		sprites["hub_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/hub_bg.jpg"));
+		sprites["unfocused_greyscale"] = shared_ptr<SmartSprite>(new SmartSprite());
 
-		for (const auto& it : levels) 
-			levelNames.push_back(it.first);
-		
 		player.respawn(
-			levels[levelNames[currLevel]].spawn.x, 
-			levels[levelNames[currLevel]].spawn.y
+			level.spawn.x, 
+			level.spawn.y
 		);
-
+		initLevel();
 	}
 
 	inline void start() {
@@ -91,7 +98,7 @@ public:
 			{
 			"start",
 			[this, &menuState]() mutable { 
-				player.respawn(levels[levelNames[currLevel]].spawn.x, levels[levelNames[currLevel]].spawn.y);
+				player.respawn(level.spawn.x, level.spawn.y);
 				menuState = MenuState::NO_MENU;
 			}
 			},
@@ -169,12 +176,12 @@ public:
 
 					if (view.getCenter().x - wnd.getSize().x / 2 < 0)
 						view.move(-(view.getCenter().x - wnd.getSize().x / 2) - 0.01, 0);
-					else if (view.getCenter().x + wnd.getSize().x / 2 > levels[levelNames[currLevel]].getSize().x)
-						view.move((levels[levelNames[currLevel]].getSize().x - (view.getCenter().x + wnd.getSize().x / 2)) - 0.01, 0);
+					else if (view.getCenter().x + wnd.getSize().x / 2 > level.getSize().x)
+						view.move((level.getSize().x - (view.getCenter().x + wnd.getSize().x / 2)) - 0.01, 0);
 					if (view.getCenter().y - wnd.getSize().y / 2 < 0)
 						view.move(0, -(view.getCenter().y - wnd.getSize().y / 2));
-					else if (view.getCenter().y + wnd.getSize().y / 2 > levels[levelNames[currLevel]].getSize().y)
-						view.move(0, (levels[levelNames[currLevel]].getSize().y - (view.getCenter().y + wnd.getSize().y / 2)));
+					else if (view.getCenter().y + wnd.getSize().y / 2 > level.getSize().y)
+						view.move(0, (level.getSize().y - (view.getCenter().y + wnd.getSize().y / 2)));
 
 					if (viewCentered) wnd.setView(view);
 
@@ -207,7 +214,7 @@ public:
 								Level::debug = !Level::debug;
 								break;
 							case Keyboard::X:
-								levels[levelNames[currLevel]].reload();
+								level.reload();
 								break;
 							case Keyboard::M:
 								mp.setVolume(mp.muted() ? 100 : 0);
@@ -223,25 +230,25 @@ public:
 							//	mp.CheckClick(ev, wnd, view);
 							break;
 						}
-						levels[levelNames[currLevel]].checkInteraction(ev, player);
+						level.checkInteraction(ev, player);
 					}
 
 					player.Update(deltaTime);
-					levels[levelNames[currLevel]].checkCollision(player, deltaTime);
+					level.checkCollision(player, deltaTime);
 
 					//// Отрисовка белых границ окна. Можно откомментировать когда-нибудь
-					//if (levels[switched].bordered()) {
+					//if (level[switched].bordered()) {
 					//	for (int i = 0; i < 4; i++) {
-					//		levels[switched].getObjects()[i].Draw(wnd);
+					//		level[switched].getObjects()[i].Draw(wnd);
 					//	}
 					//}
 
-					levels[levelNames[currLevel]].Update(player);
-					levels[levelNames[currLevel]].Update(deltaTime);
+					level.Update(player);
+					level.Update(deltaTime);
 				}
 
-				levels[levelNames[currLevel]].Draw(wnd, &player);
-				levels[levelNames[currLevel]].drawHint(wnd, player, pixelFont);
+				level.Draw(wnd, &player);
+				level.drawHint(wnd, player, pixelFont);
 
 				//mp.drawButtons(wnd);
 				wnd.draw(songText);

@@ -6,7 +6,7 @@
 class ConfigManager
 {
 public:
-	static Level loadLevels(const string& name, RenderWindow* wnd = nullptr);
+	static Level loadLevel(string name = "", RenderWindow* wnd = nullptr);
 	// TODO: сделать нормально
 	static vector<Achievement> load(const string& xmlDoc)
 	{
@@ -14,7 +14,6 @@ public:
 
 		TiXmlDocument doc(xmlDoc.c_str());
 		if (doc.LoadFile()) {
-			
 			TiXmlElement* achievementsXML = doc.FirstChildElement("Achievements");
 			for (TiXmlElement* achievement = achievementsXML->FirstChildElement("Achievement"); achievement != nullptr && std::string(achievement->Value()) == "Achievement"; achievement = achievement->NextSiblingElement()) {
 				std::string path = string("Textures/") + achievement->Attribute("id") + ".png";

@@ -1,7 +1,7 @@
 #include "Animation.h"
 #include <iostream>
 
-std::map<string, Texture*> Animation::usedTextures = {};
+std::map<string, shared_ptr<Texture>> Animation::usedTextures = {};
 
 Animation::Animation(const string& xmlDoc) :
 	texture(nullptr) {
@@ -18,7 +18,7 @@ Animation::Animation(const string& xmlDoc) :
 		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
 		else {
 			string textPath = "Textures/" + string(doc.FirstChildElement("default")->Attribute("src"));
-			texture = new Texture();		
+			texture = shared_ptr<Texture>(new Texture());
 			texture->loadFromFile(textPath);
 			usedTextures[xmlDoc] = texture;
 		}
@@ -30,7 +30,7 @@ Animation::Animation(const string& xmlDoc) :
 		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
 		else {
 			string textPath = "Textures/" + string(doc.FirstChildElement("frames")->Attribute("src"));
-			texture = new Texture();
+			texture = shared_ptr<Texture>(new Texture());
 			texture->loadFromFile(textPath);
 			usedTextures[xmlDoc] = texture;
 		}
@@ -71,7 +71,7 @@ Animation::Animation(const string& xmlDoc) :
 		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
 		else {
 			string textPath = "Textures/" + string(sprites->Attribute("image"));
-			texture = new Texture();
+			texture = shared_ptr<Texture>(new Texture());
 			texture->loadFromFile(textPath);
 			usedTextures[xmlDoc] = texture;
 		}
@@ -123,7 +123,7 @@ int Animation::getCurrFrame() const noexcept {
 }
 
 const Texture* Animation::getTexture() const noexcept {
-	return texture;
+	return texture.get();
 }
 
 const string& Animation::getCurrAnim() const noexcept {

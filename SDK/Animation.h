@@ -17,8 +17,8 @@ private:
 	map<string, float> switchMap;
 
 	float totalTime = 0;
-	Texture* texture;
-	static std::map<string, Texture*> usedTextures;
+	shared_ptr<Texture> texture;
+	static std::map<string, shared_ptr<Texture>> usedTextures;
 public:
 	IntRect uvRect;
 
