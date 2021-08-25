@@ -66,7 +66,7 @@ public:
 
 class InteractiveDoor : public InteractiveObject {
 private:
-	bool open = true;
+	bool open = false;
 	RectangleShape hitbox;
 public:
 	inline InteractiveDoor(Animation* text, RectangleShape hitbox, Vector2f size, Vector2f pos, string name, bool oneTime) :
@@ -79,6 +79,7 @@ public:
 				body.getPosition().y - body.getSize().y / 2
 			)
 		);
+		Update();
 		// Не спрашивайте, как были выведены коэфициенты 2 и 3
 		// проверено экспериментами — значит работает
 		this->hitbox.move(hitbox.getPosition().x*2, hitbox.getPosition().y * 3);
