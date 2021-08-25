@@ -67,6 +67,10 @@ bool Collider::CheckCollision(Collider other, Vector2f& direction, float push, b
 	return false;
 }
 
+bool Collider::collides(Collider other) const {
+	return FloatRect(getPosition() - getHS(), body.getSize()).intersects(FloatRect(other.getPosition() - other.getHS(), other.body.getSize()));
+}
+
 Vector2f Collider::getPosition() const {
 	return body.getPosition();
 };

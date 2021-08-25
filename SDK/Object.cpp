@@ -1,4 +1,5 @@
 #include "Object.h"
+#include "Level.h"
 
 Object::Object(Animation* text, const Vector2f& size, const Vector2f& pos, const ObjectType& type, bool gravity , float weight, bool push) :
 	anim(text), type(type), gravity(gravity), weight(weight), push(push) 
@@ -50,7 +51,7 @@ void Movable::move(const Vector2f& offset) {
 	body.move(offset);
 }
 void Object::Draw(RenderWindow& wnd) const {
-	if(body.getTexture() != nullptr)
+	if(body.getTexture() != nullptr || Level::debug)
 		wnd.draw(body);
 }
 

@@ -19,8 +19,6 @@ public:
 
 	bool CheckCollision(Collider other, Vector2f& direction, float push = 1, bool pushable = true);;
 
-	bool collides(Collider other) {
-		return FloatRect(getPosition(), body.getSize()).intersects(FloatRect(other.getPosition(), other.body.getSize()));
-	}
+	bool collides(Collider other) const;
 };
 

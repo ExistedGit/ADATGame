@@ -34,6 +34,7 @@ public:
 	virtual bool intersects(const Vector2f& pos) const noexcept =0;
 	virtual void Update() {};
 	virtual void setPosition(const Vector2f& pos) = 0;
+	virtual const Vector2f& getPosition() const noexcept = 0;
 };
 
 class RectButton : public BaseButton
@@ -50,6 +51,7 @@ public:
 	const Vector2f& getSize() const noexcept;
 
 	void setPosition(const Vector2f& pos) override;
+	const Vector2f& getPosition() const noexcept override;
 }; 
 
 class HoverButton : public RectButton {
@@ -114,7 +116,13 @@ public:
 			}
 		}
 	};
-	
+
+	inline void getButtonPos(const string& name) {
+		for (auto& button : buttons) {
+			if (button.getName() == name)
+				return button.getPosition();
+		}
+	}
 };
 
 

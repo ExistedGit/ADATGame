@@ -15,6 +15,7 @@ private:
 	bool centered;
 	MenuGrid grid;
 public:
+	inline Menu() : pos(0, 0), centered(false) {}
 	inline Menu(const Vector2f pos, bool centered = false) : pos(pos), centered(centered) {}
 	
 	inline void load(const string& xmlDoc, const string& modelDoc) {
@@ -24,9 +25,13 @@ public:
 		TiXmlDocument model(modelDoc.c_str());
 		if(!model.LoadFile()) throw runtime_error(u8"Menu.load(): файл модели не найден");
 		
+		string globalAnim;
 		vector<string> list;
 		TiXmlElement* buttonList = model.FirstChildElement("list");
 		{
+			if (buttonList->Attribute("globalAnim") != nullptr)
+				globalAnim = buttonList->Attribute("globalAnim");
+
 			string data = buttonList->GetText();
 			istringstream ss(data);
 			
@@ -59,7 +64,7 @@ public:
 
 				addButton(
 					HoverButton(
-						anim, list[i], list[i], size,
+						anim, globalAnim.empty() ? list[i] : globalAnim, list[i], size,
 
 						Vector2f(currPos.x + bool(x - 1) * grid.indent - centered * size.x/2, currPos.y + bool(y - 1) * grid.indent - centered * size.y / 2)
 					));

@@ -28,6 +28,10 @@ void RectButton::setPosition(const Vector2f& pos) {
 	body.setPosition(pos);
 }
 
+const Vector2f& RectButton::getPosition() const noexcept {
+	return body.getPosition();
+}
+
 RectButton::RectButton(Animation * text, const string& animName, const string& name, const Vector2f& size, const Vector2f& pos, function<void()> use, ClickButtonType type) :
 	BaseButton(text, name, use, ClickButtonType::RectButton), animName(animName){
 

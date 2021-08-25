@@ -282,7 +282,7 @@ void Level::checkCollision(Player& player, float deltaTime) {
 					p->type = ObjectType(p->type ^ Solid);
 			}
 
-			if (p->type & Respawn && player.getCollider().collides(p->getCollider())) {
+			if ((p->type & Respawn) && player.getCollider().collides(p->getCollider())) {
 				player.respawn(spawn.x, spawn.y);
 				return;
 			}
