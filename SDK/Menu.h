@@ -5,7 +5,7 @@
 #include <sstream>
 
 struct MenuGrid {
-	int x = 0, y = 0, indent =0;
+	int x = 0, y = 0, indentX =0, indentY = 0;
 };
 
 class Menu : public IButtonArray<HoverButton>
@@ -20,7 +20,6 @@ public:
 	
 	inline void load(const string& xmlDoc, const string& modelDoc) {
 		
-		Animation* anim = new Animation(xmlDoc);
 		
 		TiXmlDocument model(modelDoc.c_str());
 		if(!model.LoadFile()) throw runtime_error(u8"Menu.load(): файл модели не найден");
@@ -46,6 +45,7 @@ public:
 		Vector2f originPos = pos;
 		int x = 1, y = 1;
 		for (int i = 0; i < list.size(); i++) {
+			Animation* anim = new Animation(xmlDoc);
 			Vector2f size = Vector2f(anim->uvRect.width, anim->uvRect.height);
 			
 			TiXmlElement* gridElem = model.FirstChildElement("grid");
@@ -56,7 +56,11 @@ public:
 					grid.y = atoi(gridElem->Attribute("y"));
 
 				if (gridElem->Attribute("indent") != nullptr)
-					grid.indent = atoi(gridElem->Attribute("indent"));
+					grid.indentY = grid.indentX = atoi(gridElem->Attribute("indent"));
+				else if (gridElem->Attribute("indentVector")) {
+					stringstream gridStream(gridElem->Attribute("indentVector"));
+					gridStream >> grid.indentX >> grid.indentY;
+				}
 
 				if (grid.x != 0 || grid.y != 0)
 					if (list.size() > (grid.x + !grid.x) * (grid.y + !grid.y))
@@ -66,18 +70,18 @@ public:
 					HoverButton(
 						anim, globalAnim.empty() ? list[i] : globalAnim, list[i], size,
 
-						Vector2f(currPos.x + bool(x - 1) * grid.indent - centered * size.x/2, currPos.y + bool(y - 1) * grid.indent - centered * size.y / 2)
+						Vector2f(currPos.x - centered * size.x/2, currPos.y - centered * size.y / 2)
 					));
-				if (grid.x == 0 && grid.y == 0 && grid.indent != 0)
-					currPos.y += size.y + grid.indent;
+				if (grid.x == 0 && grid.y == 0 && grid.indentY != 0)
+					currPos.y += size.y + grid.indentY;
 				else if (grid.x != 0) {
 					if (x++ < grid.x)
-						currPos.x += size.x + grid.indent;
+						currPos.x += size.x + grid.indentX;
 					else if (grid.y != 0) {
 						y++;
 						x = 1;
 						currPos.x = originPos.x;
-						currPos.y += size.y + grid.indent;
+						currPos.y += size.y + grid.indentY;
 					}
 				}
 			}
@@ -118,19 +122,19 @@ public:
 			size = button.getSize();
 
 			button.setPosition(
-				Vector2f(currPos.x + bool(x - 1) * grid.indent - centered * size.x / 2, currPos.y + bool(y - 1) * grid.indent - centered * size.y / 2)
+				Vector2f(currPos.x + bool(x - 1) * grid.indentX - centered * size.x / 2, currPos.y + bool(y - 1) * grid.indentX - centered * size.y / 2)
 			);
 
-			if (grid.x == 0 && grid.y == 0 && grid.indent != 0)
-				currPos.y += size.y + grid.indent;
+			if (grid.x == 0 && grid.y == 0 && grid.indentX != 0)
+				currPos.y += size.y + grid.indentX;
 			else if (grid.x != 0) {
 				if (x++ < grid.x)
-					currPos.x += size.x + grid.indent;
+					currPos.x += size.x + grid.indentX;
 				else if (grid.y != 0) {
 					y++;
 					x = 1;
 					currPos.x = originPos.x;
-					currPos.y += size.y + grid.indent;
+					currPos.y += size.y + grid.indentX;
 				}
 			}
 		}

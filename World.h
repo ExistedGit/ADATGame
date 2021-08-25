@@ -63,7 +63,7 @@ private:
 	{
 	"start",
 	[this]() mutable {
-		menuState = MenuState::NO_MENU;
+		menuState = MenuState::LEVELS;
 	}
 	},
 	{
@@ -97,7 +97,7 @@ private:
 			}
 			});
 
-		menus["levels"] = Menu(Vector2f(30, 30), false);
+		menus["levels"] = Menu(Vector2f(75, 225), false);
 		menus["levels"].load("Models/levelButtons.xml", "Models/Menu/levelMenu.xml");
 		for (int i = 0; i < 8; i++) {
 			menus["levels"].applyUseMap({
@@ -105,6 +105,9 @@ private:
 					string("lvl") + to_string(i),
 					[this, i]() mutable {
 						level = ConfigManager::loadLevel(string("lvl") + to_string(i));
+						initLevel();
+						player.respawn(level.spawn.x, level.spawn.y);
+						menuState = MenuState::NO_MENU;
 					}
 				}
 				});
@@ -119,6 +122,7 @@ private:
 
 		sprites["hub_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/hub_bg.jpg"));
 		sprites["unfocused_greyscale"] = shared_ptr<SmartSprite>(new SmartSprite());
+		sprites["levels_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/levels_bg.png"));
 	}
 
 public:
@@ -292,7 +296,26 @@ public:
 			}
 				break;
 			case MenuState::LEVELS: {
-				
+				Text levelNumber("", pixelFont, 80);
+				levelNumber.setFillColor(Color::Black);
+				levelNumber.setOrigin(80 / 6 - 5, 80 /3);
+
+				view.setCenter(Vector2f(wnd.getSize() / 2u));
+				sprites["levels_bg"]->setPosition(view.getCenter());
+				wnd.draw(*sprites["levels_bg"]);
+				menus["levels"].drawButtons(wnd);
+				for (int i = 0; i < 8; i++) {
+					levelNumber.setString(to_string(i+1));
+					levelNumber.setPosition(menus["levels"].getButtonPos("lvl" + to_string(i+1)) + Vector2f(75, 75));
+					wnd.draw(levelNumber);
+				}
+				while (wnd.pollEvent(ev)) {
+					menus["levels"].CheckClick(ev, wnd, view);
+					if (ev.type == Event::Closed) {
+						wnd.close();
+						exit(0);
+					}
+				}
 			}
 				break;
 			}

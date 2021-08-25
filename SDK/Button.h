@@ -102,7 +102,8 @@ public:
 	};
 
 	inline void drawButtons(RenderWindow& wnd) {
-		for (auto& it : buttons) it.draw(wnd);
+		for (auto& it : buttons) 
+			it.draw(wnd);
 	};
 
 	inline void addButton(const ButtonType& button) {
@@ -117,7 +118,7 @@ public:
 		}
 	};
 
-	inline void getButtonPos(const string& name) {
+	inline const Vector2f& getButtonPos(const string& name) {
 		for (auto& button : buttons) {
 			if (button.getName() == name)
 				return button.getPosition();
