@@ -14,7 +14,7 @@ private:
 	vector<shared_ptr<Object>> objects;
 	Vector2f size;
 	string name;
-
+	
 	string filename;
 
 	void insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, TileMap> tmap);
@@ -32,7 +32,13 @@ public:
 	
 	const Vector2f& getSize() const noexcept;
 	
-	
+	shared_ptr<Object> getIntObject(const string& name) {
+		for (auto& interactive : interactives) {
+			if (interactive->getName() == name)
+				return interactive;
+		}
+		return nullptr;
+	}
 	Level& load(string xmlDoc, const RenderWindow* window = nullptr, const string& name = "LEVEL", map<string, function<void()>> useMap = {});
 	void reload();;
 

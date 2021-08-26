@@ -90,6 +90,9 @@
     <ClInclude Include="SDK\FragShader.h">
       <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="SDK\Clock.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project2.rc">

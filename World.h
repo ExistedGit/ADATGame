@@ -21,7 +21,7 @@ class World
 private:
 	View view;
 	bool viewCentered = true;
-	MusicPlayer mp;
+	MusicPlayer musicPlayer;
 
 	ContextSettings cs;
 	RenderWindow wnd;
@@ -35,7 +35,7 @@ private:
 	map<string, shared_ptr<SmartSprite>> sprites;
 
 	enum class MenuState : int {
-		MAIN, INGAME, LEVELS, NO_MENU
+		MAIN, INGAME, LEVELS, WIN, NO_MENU
 	};
 	map<string, Menu> menus;		
 	MenuState menuState = MenuState::MAIN;
@@ -47,14 +47,33 @@ private:
 		}
 	}
 	inline void initUseMaps() {
-		useMaps["lvl1"] =
+		useMaps["hub"] =
 		{
 		{
-		"playButton", [this]() mutable {
-			if (!mp.play()) mp.pause();
+		"hub_levels", [this]() mutable {
+			menuState = MenuState::LEVELS;
+			view.setCenter(Vector2f(wnd.getSize() / 2u));
+			menus["levels"].setPosition(Vector2f(75, 225));
+			sprites["levels_bg"]->setPosition(view.getCenter());
 		}
 		}
-		};	
+		};
+
+		for (int i = 0; i < 3; i++)
+			useMaps["lvl1"].emplace(std::make_pair("wrong_door" + to_string(i + 1), 
+				[this]() mutable {
+					player.respawn(level.spawn);
+				}));
+		
+		for (int i = 0; i < 3; i++) 
+			useMaps["lvl" + to_string(i+1)].emplace(make_pair(string("door_lvl"),
+				[this]() mutable {
+					menuState = MenuState::WIN;
+				}));
+		
+		useMaps["lvl1"].emplace(make_pair(string("door_opener"), [this]() {
+			((InteractiveDoor*)level.getIntObject("block_door").get())->Update();
+			} ));
 	}
 	inline void initMenus() {
 		menus["main"] = Menu(Vector2f(wnd.getSize().x / 2, wnd.getSize().y / 2 + 100), true);;
@@ -63,13 +82,20 @@ private:
 	{
 	"start",
 	[this]() mutable {
-		menuState = MenuState::LEVELS;
+		menuState = MenuState::NO_MENU;
+		if (level.getName() != "hub") {
+			level = ConfigManager::loadLevel("hub");
+			initLevel();
+			player.respawn(level.spawn);
+		}
+		musicPlayer.setMusic("hub");
+		musicPlayer.play();
 	}
 	},
 	{
 	"exit",
 	[this]()mutable {
-		mp.stop();
+		musicPlayer.stop();
 		wnd.close();
 		exit(0);
 	}
@@ -83,13 +109,13 @@ private:
 			"continue",
 			[this]() mutable {
 				menuState = MenuState::NO_MENU;
-				if (mp.isInterrupted()) mp.play();
+				if (musicPlayer.isInterrupted()) musicPlayer.play();
 			}
 			},
 			{
 			"menu",
 			[this]() mutable {
-				mp.stop();
+				musicPlayer.stop();
 				view.setCenter(Vector2f(wnd.getSize() / 2u));
 				wnd.setView(view);
 				menuState = MenuState::MAIN;
@@ -102,16 +128,33 @@ private:
 		for (int i = 0; i < 8; i++) {
 			menus["levels"].applyUseMap({
 				{
-					string("lvl") + to_string(i),
+					string("lvl") + to_string(i+1),
 					[this, i]() mutable {
-						level = ConfigManager::loadLevel(string("lvl") + to_string(i));
+						level = ConfigManager::loadLevel(string("lvl") + to_string(i+1));
 						initLevel();
 						player.respawn(level.spawn.x, level.spawn.y);
 						menuState = MenuState::NO_MENU;
-					}
+						musicPlayer.setMusic("lvl" + to_string(i + 1));
+						musicPlayer.play();
+				}
 				}
 				});
 		}
+
+		menus["win"] = Menu(Vector2f(wnd.getSize().x / 2, wnd.getSize().y / 2), true);
+		menus["win"].load("Models/menuButtons.xml", "Models/Menu/winMenu.xml");
+		menus["win"].applyUseMap({
+			{
+			"menu",
+			[this]() mutable {
+				menuState = MenuState::NO_MENU;
+				level = ConfigManager::loadLevel("hub");
+				initLevel();
+				player.respawn(level.spawn);
+			}
+			}
+			});
+
 	}
 	inline void initSprites() {
 		sprites["menu_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/menu_bg.png"));
@@ -121,25 +164,22 @@ private:
 		sprites["ingame_menu_bg"]->setPosition(Vector2f(wnd.getSize() / 2u));
 
 		sprites["hub_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/hub_bg.jpg"));
+		sprites["lvl1_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/lvl1_bg.jpg"));;
 		sprites["unfocused_greyscale"] = shared_ptr<SmartSprite>(new SmartSprite());
 		sprites["levels_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/levels_bg.png"));
+		sprites["win_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/win_bg.png"));
 	}
 
 public:
-	
-
 	inline World(const Vector2f& wndSize) :
 		wnd(RenderWindow(sf::VideoMode(wndSize.x, wndSize.y), L"ÂÛ — ÊÐÛÑÀ!", Style::Titlebar | Style::Close , cs)),
 		view(View(Vector2f(wndSize.x, wndSize.y), wndSize)),
 		level(ConfigManager::loadLevel()),
 		player(new Animation("Models/rat.xml"), Vector2f(191 / 2, 191 / 2), 650, 210,1),
-		mp({
-		new Song("Never Gonna Give You Up", "Sounds/rickroll.ogg"),
-		new Song("Gonna Give You Up",		"Sounds/llorkcir.ogg")
-			})
+		musicPlayer("cfg/music.xml")
 	{
 		cs.antialiasingLevel = 8;
-
+		musicPlayer.setVolume(10);
 		player.respawn(
 			level.spawn.x, 
 			level.spawn.y
@@ -166,7 +206,9 @@ public:
 
 		Texture unfocused;
 		unfocused.create(wnd.getSize().x, wnd.getSize().y);
-
+		musicPlayer.setMusic("main_menu");
+		musicPlayer.play();
+		
 		while (wnd.isOpen()) {
 			while (!wnd.hasFocus()) {
 				if (!greyscaled) {
@@ -186,8 +228,8 @@ public:
 					}
 			}
 			wnd.clear();				
-			sprites["hub_bg"]->setPosition(view.getCenter());
-			wnd.draw(*sprites["hub_bg"]);
+			sprites[level.getName() + "_bg"]->setPosition(view.getCenter());
+			wnd.draw(*sprites[level.getName() + "_bg"]);
 
 			if (menuState == MenuState::NO_MENU) {
 				
@@ -205,9 +247,13 @@ public:
 			level.Draw(wnd, &player);
 			level.drawHint(wnd, player, pixelFont);
 
+			wnd.setView(view);
 
 			switch (menuState) {
 			case MenuState::NO_MENU: {
+				musicPlayer.setMusic(level.getName());
+				musicPlayer.play();
+
 				view.setCenter(Vector2f(player.getPos().x - 0.01, player.getPos().y));
 
 				if (view.getCenter().x - wnd.getSize().x / 2 < 0)
@@ -219,12 +265,11 @@ public:
 				else if (view.getCenter().y + wnd.getSize().y / 2 > level.getSize().y)
 					view.move(0, (level.getSize().y - (view.getCenter().y + wnd.getSize().y / 2)));
 
-				if (viewCentered) wnd.setView(view);
 
 				if (Keyboard::isKeyPressed(Keyboard::Dash))
-					mp.setVolume(mp.getVolume() - 1);
+					musicPlayer.setVolume(musicPlayer.getVolume() - 1);
 				if (Keyboard::isKeyPressed((Keyboard::Key)55))
-					mp.setVolume(mp.getVolume() + 1);
+					musicPlayer.setVolume(musicPlayer.getVolume() + 1);
 
 				while (wnd.pollEvent(ev)) {
 					switch (ev.type) {
@@ -237,7 +282,7 @@ public:
 					case Event::KeyReleased: {
 						switch (ev.key.code) {
 						case Keyboard::Escape:
-							mp.interrupt();
+							musicPlayer.interrupt();
 							menuState = MenuState::INGAME;
 							sprites["ingame_menu_bg"]->setPosition(view.getCenter());
 							menus["ingame"].setPosition(Vector2f(view.getCenter().x, view.getCenter().y - 100));
@@ -248,19 +293,17 @@ public:
 							break;
 						case Keyboard::X:
 							level.reload();
+							initLevel();
 							break;
 						case Keyboard::M:
-							mp.setVolume(mp.muted() ? 100 : 0);
-							break;
-						case Keyboard::S:
-							mp.setPosition(0);
+							musicPlayer.setVolume(musicPlayer.muted() ? 100 : 0);
 							break;
 						}
 					}
 										   break;
 					case Event::MouseButtonReleased:
 						//if (ev.mouseButton.button == Mouse::Button::Left) 
-						//	mp.CheckClick(ev, wnd, view);
+						//	musicPlayer.CheckClick(ev, wnd, view);
 						break;
 					}
 					level.checkInteraction(ev, player);
@@ -269,6 +312,9 @@ public:
 			}
 								   break;
 			case MenuState::MAIN: {
+				musicPlayer.setMusic("main_menu");
+				musicPlayer.play();
+
 				view.setCenter(Vector2f(wnd.getSize() / 2u));
 				wnd.draw(*sprites["menu_bg"]);
 				menus["main"].drawButtons(wnd);
@@ -288,20 +334,28 @@ public:
 					if (ev.type == Event::KeyReleased)
 						if (ev.key.code == (Keyboard::Escape)) {
 							menuState = MenuState::NO_MENU;
-							if (mp.isInterrupted()) mp.play();
+							if (musicPlayer.isInterrupted()) musicPlayer.play();
 							continue;
 						}
 					menus["ingame"].CheckClick(ev, wnd, view);
 				}
 			}
 				break;
+			case MenuState::WIN: {
+				sprites["win_bg"]->setPosition(view.getCenter());
+				wnd.draw(*sprites["win_bg"]);
+				menus["win"].setPosition(view.getCenter());
+				menus["win"].drawButtons(wnd);
+				if (wnd.pollEvent(ev)) 
+					menus["win"].CheckClick(ev, wnd, view);
+			}
+								  break;
+
 			case MenuState::LEVELS: {
 				Text levelNumber("", pixelFont, 80);
 				levelNumber.setFillColor(Color::Black);
 				levelNumber.setOrigin(80 / 6 - 5, 80 /3);
 
-				view.setCenter(Vector2f(wnd.getSize() / 2u));
-				sprites["levels_bg"]->setPosition(view.getCenter());
 				wnd.draw(*sprites["levels_bg"]);
 				menus["levels"].drawButtons(wnd);
 				for (int i = 0; i < 8; i++) {
