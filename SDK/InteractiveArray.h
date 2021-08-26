@@ -8,22 +8,20 @@ using namespace std;
 
 typedef unsigned int uint;
 
-enum class IntObjType {
-	Button, Lever
+enum class IntObjType : int {
+	Button, Lever, Field, Door
 };
 
 class InteractiveObject : public Object {
 protected:
 	string name;
-	IntObjType type;
-
-
-	bool active = true;
-
+	IntObjType interactiveType;
+	
 	// На случай, если объект будет одноразовым
 	bool oneTime = false;
 public:
-	InteractiveObject(Animation* text, Vector2f size, Vector2f pos, string name, IntObjType type, function<void()> use = []() {}, bool oneTime = false);
+	InteractiveObject(Animation* text, const Vector2f& size, const Vector2f& pos, const string& name, const IntObjType& interactiveType, function<void()> use = []() {}, bool oneTime = false, 
+		const ObjectType& type = Interactive);
 
 	function<void()> use;
 
@@ -32,12 +30,14 @@ public:
 	const string& getName() const;
 	const IntObjType& getType() const;
 
-	virtual void Update() = 0;
+	virtual void Update() {};
 
 	
 	bool isActive() const;;
 	bool isOneTime() const;
 };
+
+
 
 class InteractiveButton : public InteractiveObject {
 public:	
@@ -57,6 +57,47 @@ public:
 	bool on = false;
 };
 
+class InteractiveField : public InteractiveObject {
+public:
+	inline InteractiveField(Vector2f size, Vector2f pos, string name, function<void()> use = []() {}, bool oneTime = false) :
+		InteractiveObject(nullptr, size, pos, name, IntObjType::Field, use, oneTime)
+	{};
+};
+
+class InteractiveDoor : public InteractiveObject {
+private:
+	bool open = false;
+	RectangleShape hitbox;
+public:
+	inline InteractiveDoor(Animation* text, RectangleShape hitbox, Vector2f size, Vector2f pos, string name, bool oneTime) :
+		InteractiveObject(text, size, pos, name, IntObjType::Door, [this]() {Update(); }, oneTime)
+	{
+		this->hitbox = RectangleShape(hitbox.getSize());
+		this->hitbox.setPosition(
+			Vector2f(
+				body.getPosition().x - body.getSize().x/2,
+				body.getPosition().y - body.getSize().y / 2
+			)
+		);
+		Update();
+		// Не спрашивайте, как были выведены коэфициенты 2 и 3
+		// проверено экспериментами — значит работает
+		this->hitbox.move(hitbox.getPosition().x*2, hitbox.getPosition().y * 3);
+	}
+	inline void Update() override {
+		anim->Update(0, false, "default");
+		body.setTextureRect(anim->uvRect);
+		open = !open; type = ObjectType(type ^ Solid);
+		
+	}
+	inline Collider getHitbox(){
+		return Collider(hitbox);
+	}
+	bool isOpen()const;
+};
+
+
+
 class InteractiveArray
 {
 private:
@@ -71,7 +112,7 @@ public:
 	void checkInteraction(Event& ev, Player& player);
 
 	// Отвечает за отрисовку кнопки над головой игрока при контакте с интерактивным объектом 
-	void drawHint(Player& player, RenderWindow& wnd, Font& font);
+	void drawHint(RenderWindow& wnd, Player& player, Font& font);
 	
 	void addObject(InteractiveObject* obj);
 

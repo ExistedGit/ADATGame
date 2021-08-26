@@ -2,29 +2,143 @@
 #include "Button.h"
 #include "tinyxml.h"
 #include "Animation.h"
+#include <sstream>
 
-class Menu : public IButtonArray
+struct MenuGrid {
+	int x = 0, y = 0, indentX =0, indentY = 0;
+};
+
+class Menu : public IButtonArray<HoverButton>
 {
 private:
-	vector<ComplexAnim> anims;
+	Vector2f pos;
+	bool centered;
+	MenuGrid grid;
 public:
-	void load(const string& xmlDoc) {
-		TiXmlDocument doc(xmlDoc.c_str());
-		doc.LoadFile();
-		TiXmlElement* sprites = doc.FirstChildElement("sprites");
-		string texturePath = sprites->Attribute("image");
+	inline Menu() : pos(0, 0), centered(false) {}
+	inline Menu(const Vector2f pos, bool centered = false) : pos(pos), centered(centered) {}
+	
+	inline void load(const string& xmlDoc, const string& modelDoc) {
+		
+		
+		TiXmlDocument model(modelDoc.c_str());
+		if(!model.LoadFile()) throw runtime_error(u8"Menu.load(): файл модели не найден");
+		
+		string globalAnim;
+		vector<string> list;
+		TiXmlElement* buttonList = model.FirstChildElement("list");
+		{
+			if (buttonList->Attribute("globalAnim") != nullptr)
+				globalAnim = buttonList->Attribute("globalAnim");
 
-		for (TiXmlElement* anim = sprites->FirstChildElement("animation"); anim != NULL && string(anim->Value()) == "animation"; anim = anim->NextSiblingElement()) {
-			vector<IntRect> v;
-			for (TiXmlElement* cut = anim->FirstChildElement("cut"); cut!= NULL && string(cut->Value()) == "cut"; cut = cut->NextSiblingElement()) {
-				int x = atoi(cut->Attribute("x")), 
-					y = atoi(cut->Attribute("y")), 
-					width= atoi(cut->Attribute("width")), 
-					height = atoi(cut->Attribute("height"));
-				v.push_back(IntRect(x, y, width, height));
+			string data = buttonList->GetText();
+			istringstream ss(data);
+			
+			string name;
+			while (ss >> name) {
+				list.push_back(name);
 			}
-			anims.push_back(ComplexAnim(texturePath, v, 0));
+		}
+
+		Vector2f currPos = pos;
+
+		Vector2f originPos = pos;
+		int x = 1, y = 1;
+		for (int i = 0; i < list.size(); i++) {
+			Animation* anim = new Animation(xmlDoc);
+			Vector2f size = Vector2f(anim->uvRect.width, anim->uvRect.height);
+			
+			TiXmlElement* gridElem = model.FirstChildElement("grid");
+			if (gridElem != nullptr) {
+				if (gridElem->Attribute("x") != nullptr)
+					grid.x = atoi(gridElem->Attribute("x"));
+				if (gridElem->Attribute("y") != nullptr)
+					grid.y = atoi(gridElem->Attribute("y"));
+
+				if (gridElem->Attribute("indent") != nullptr)
+					grid.indentY = grid.indentX = atoi(gridElem->Attribute("indent"));
+				else if (gridElem->Attribute("indentVector")) {
+					stringstream gridStream(gridElem->Attribute("indentVector"));
+					gridStream >> grid.indentX >> grid.indentY;
+				}
+
+				if (grid.x != 0 || grid.y != 0)
+					if (list.size() > (grid.x + !grid.x) * (grid.y + !grid.y))
+						throw u8"Menu.load(): кнопок больше заданной сетки, переназначьте значения";
+
+				addButton(
+					HoverButton(
+						anim, globalAnim.empty() ? list[i] : globalAnim, list[i], size,
+
+						Vector2f(currPos.x - centered * size.x/2, currPos.y - centered * size.y / 2)
+					));
+				if (grid.x == 0 && grid.y == 0 && grid.indentY != 0)
+					currPos.y += size.y + grid.indentY;
+				else if (grid.x != 0) {
+					if (x++ < grid.x)
+						currPos.x += size.x + grid.indentX;
+					else if (grid.y != 0) {
+						y++;
+						x = 1;
+						currPos.x = originPos.x;
+						currPos.y += size.y + grid.indentY;
+					}
+				}
+			}
+			else throw u8"Menu.load(): в модели не найдена сетка";
+			
 		}
 	}
+
+	inline void select_vertical(const Event& ev, RenderWindow& wnd, const View& view) {
+		while (!CheckClick(ev, wnd, view)) {
+			wnd.clear();
+			drawButtons(wnd);
+			wnd.display();
+		}
+	}
+
+	inline bool CheckClick(const Event& ev, RenderWindow& wnd, const View& view) override {
+		if (ev.type == Event::MouseMoved)
+			for (int i = 0; i < buttons.size(); i++) {
+				auto& button = buttons[i];
+					
+				button.setHover(button.intersects(Vector2f(ev.mouseMove.x - (wnd.getSize().x - (view.getCenter().x + wnd.getSize().x / 2)),
+								ev.mouseMove.y - (wnd.getSize().y - (view.getCenter().y + wnd.getSize().y / 2)))));
+					
+			}
+		if (IButtonArray::CheckClick(ev, wnd, view)) return true;
+	}
+
+	inline void setPosition(const Vector2f& pos) {
+		Vector2f currPos = pos,
+				 originPos = pos,
+				 size;
+		
+		int	  	 x = 1, 
+				 y = 1;
+		
+		for (auto& button : buttons) {
+			size = button.getSize();
+
+			button.setPosition(
+				Vector2f(currPos.x + bool(x - 1) * grid.indentX - centered * size.x / 2, currPos.y + bool(y - 1) * grid.indentX - centered * size.y / 2)
+			);
+
+			if (grid.x == 0 && grid.y == 0 && grid.indentX != 0)
+				currPos.y += size.y + grid.indentX;
+			else if (grid.x != 0) {
+				if (x++ < grid.x)
+					currPos.x += size.x + grid.indentX;
+				else if (grid.y != 0) {
+					y++;
+					x = 1;
+					currPos.x = originPos.x;
+					currPos.y += size.y + grid.indentX;
+				}
+			}
+		}
+
+	};
 };
 

@@ -1,9 +1,10 @@
 #include "ConfigManager.h"
 #include <iostream>
 #include <regex>
+#include <map>
 
-vector<Level> ConfigManager::loadLevels(RenderWindow* wnd) {
-	vector<Level> vector;
+Level ConfigManager::loadLevel(string name, RenderWindow* wnd) {
+	Level level;
 
 	TiXmlDocument document("cfg/config.xml");
 	document.LoadFile();
@@ -11,20 +12,16 @@ vector<Level> ConfigManager::loadLevels(RenderWindow* wnd) {
 	TiXmlElement* loader = document.FirstChildElement("Loader");
 	try {
 		for (TiXmlElement* child = loader->FirstChildElement("Level"); child != NULL && string(child->Value()) == "Level"; child = child->NextSiblingElement()) {
-			Vector2f offset(atoi(child->Attribute("x")), atoi(child->Attribute("y")));
-			
-			try {
-				vector.push_back(Level().
-					load("TileMap/" + string(child->GetText()), offset, wnd));
-			}
-			catch (const string& err) {
-				cout << err << endl;
-			}
+			if (name == "") name = child->Attribute("id");
+
+			if (string(child->Attribute("id")) == name)
+				level = Level().load("TileMap/" + string(child->GetText()), wnd, child->Attribute("id"));
+			else cout << u8"ConfigManager.load(): уровень не загружен\n";
 		}
 	}
-	catch (runtime_error re) {
-		cout << re.what();
+	catch (const string& re) {
+		cout << re;
 	}
 
-	return vector;
+	return level;
 }

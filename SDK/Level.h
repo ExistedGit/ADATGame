@@ -10,23 +10,41 @@ class Level : public InteractiveArray
 {
 private:
 	vector<pair<int, TileMap>> tileLayers;
-	vector<Object> objects;
+	map<string, shared_ptr<Object>> namedObjects;
+	vector<shared_ptr<Object>> objects;
+	Vector2f size;
+	string name;
+
+	string filename;
 
 	void insertWithPriority(vector<pair<int, TileMap>>& layers, pair<int, TileMap> tmap);
 	bool _bordered = false;
+
+	static Font debugFont;
+
 public:
-	using InteractiveArray::InteractiveArray;
+	Vector2f spawn;
+	static bool debug;
+
+	Level();
 	
 	bool bordered() const;
 	
-	vector<Object>& getObjects();
+	const Vector2f& getSize() const noexcept;
 	
-	Level& load(string xmlDoc, const Vector2f& offset = Vector2f(0, 0), const RenderWindow* window = nullptr, map<string, function<void()>> useMap = {});
 	
+	Level& load(string xmlDoc, const RenderWindow* window = nullptr, const string& name = "LEVEL", map<string, function<void()>> useMap = {});
+	void reload();;
+
+	void checkCollision(Player& player, float deltaTime);
+
+	const string& getName()const;
+
 	void Draw(RenderWindow& wnd, Player* player = nullptr) const;
 	
 	void applyUseMap(map<string, function<void()>> map);
 	
 	void Update(Player& player) override;
+	void Update(float deltaTime);
 };
 

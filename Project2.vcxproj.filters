@@ -36,9 +36,6 @@
     <ClInclude Include="resource.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="SDK\TileMap.h">
       <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
@@ -76,6 +73,21 @@
       <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
     <ClInclude Include="SDK\Menu.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\SmartSprite.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="FragShader.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\Achievement.h">
+      <Filter>Файлы заголовков\SDK\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SDK\FragShader.h">
       <Filter>Файлы заголовков\SDK\Headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,6 +143,15 @@
     </ClCompile>
     <ClCompile Include="SDK\ConfigManager.cpp">
       <Filter>Файлы заголовков\SDK\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Menu.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="SDK\Achievement.cpp">
+      <Filter>Файлы заголовков\SDK\Objects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

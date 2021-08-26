@@ -1,18 +1,56 @@
 #include "Animation.h"
 #include <iostream>
 
+std::map<string, shared_ptr<Texture>> Animation::usedTextures = {};
+
 Animation::Animation(const string& xmlDoc) :
-	texture(new Texture()) {
+	texture(nullptr) {
 	
+
 	TiXmlDocument doc(xmlDoc.c_str());
-	doc.LoadFile();
-	if (doc.FirstChildElement("default") != nullptr) {
-		string textPath = "Textures/" + string(doc.FirstChildElement("default")->Attribute("src"));
-		texture->loadFromFile(textPath);
-		rectMap["default"].push_back(IntRect(Vector2i(0, 0), Vector2i(texture->getSize())));
-		
+	if (!doc.LoadFile() || xmlDoc.empty()) {
+		rectMap["default"].push_back(IntRect(Vector2i(0, 0), Vector2i(0, 0)));
+		uvRect = IntRect(Vector2i(0, 0), Vector2i(0, 0));
 		return;
 	}
+
+	if (doc.FirstChildElement("default") != nullptr) {
+		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
+		else {
+			string textPath = "Textures/" + string(doc.FirstChildElement("default")->Attribute("src"));
+			texture = shared_ptr<Texture>(new Texture());
+			texture->loadFromFile(textPath);
+			usedTextures[xmlDoc] = texture;
+		}
+		rectMap["default"].push_back(IntRect(Vector2i(0, 0), Vector2i(texture->getSize())));
+		uvRect = IntRect(Vector2i(0, 0), Vector2i(texture->getSize()));
+		return;
+	}
+	if (doc.FirstChildElement("frames") != nullptr) {
+		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
+		else {
+			string textPath = "Textures/" + string(doc.FirstChildElement("frames")->Attribute("src"));
+			texture = shared_ptr<Texture>(new Texture());
+			texture->loadFromFile(textPath);
+			usedTextures[xmlDoc] = texture;
+		}
+		int x = atoi(doc.FirstChildElement("frames")->Attribute("x")), 
+			y = atoi(doc.FirstChildElement("frames")->Attribute("y"));
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				rectMap["default"].push_back(
+					IntRect(
+						texture->getSize().x / x * i, 
+						texture->getSize().y / y * j,
+						texture->getSize().x/x, 
+						texture->getSize().y / y)
+				);
+			}
+		}
+		uvRect = rectMap["default"][0];
+		return;
+	}
+
 	
 	TiXmlElement* sprites = doc.FirstChildElement("sprites");
 	for (TiXmlElement* anim = sprites->FirstChildElement("animation"); anim != nullptr; anim = anim->NextSiblingElement()) {
@@ -30,31 +68,37 @@ Animation::Animation(const string& xmlDoc) :
 	}
 
 	{
+		if (usedTextures.count(xmlDoc)) texture = usedTextures[xmlDoc];
+		else {
+			string textPath = "Textures/" + string(sprites->Attribute("image"));
+			texture = shared_ptr<Texture>(new Texture());
+			texture->loadFromFile(textPath);
+			usedTextures[xmlDoc] = texture;
+		}
+
 		string textPath = "Textures/" + string(sprites->Attribute("image"));
 		texture->loadFromFile(textPath);
 	}
 
 	try {
 		if (rectMap.empty()) 
-			throw out_of_range("Анимация(конструктор): был передан пустой массив кадров");
+			throw u8"Animation::Animation(): был передан пустой массив кадров";
 		uvRect = (*rectMap.begin()).second[0];
 		currAnim = (*rectMap.begin()).first;
 	}
-	catch (out_of_range err) {
-		cerr << err.what();
+	catch (const std::string& err) {
+		cerr << err;
 	}
 }
 
-bool Animation::Update(const string& animName, float deltaTime, bool mirrored) {
+bool Animation::Update(float deltaTime, bool mirrored, string animName) {
 	bool success = false;
 
+	if (animName == "") 
+		animName = currAnim;
+	if(setAnim(animName)) return true;
+
 	totalTime += deltaTime;
-	if (animName != currAnim) {
-		currAnim = animName;
-		totalTime = 0;
-		uvRect = rectMap[currAnim][0];
-		success = true;
-	}
 
 	if (totalTime >= switchMap[currAnim]) {
 		totalTime -= switchMap[currAnim];
@@ -79,27 +123,20 @@ int Animation::getCurrFrame() const noexcept {
 }
 
 const Texture* Animation::getTexture() const noexcept {
-	return texture;
+	return texture.get();
 }
 
 const string& Animation::getCurrAnim() const noexcept {
 	return currAnim;
 }
 
-
-
-ComplexAnim::ComplexAnim(const std::string& texturePath, const std::vector<IntRect>& rect, float switchTime) : switchTime(switchTime), rect(rect) {	
-	texture = new Texture();
-	texture->loadFromFile(texturePath);
-}
-
-void ComplexAnim::Update(float deltaTime, bool mirrored) {
-
-	totalTime += deltaTime;
-	if (totalTime - switchTime >= 0) {
-		totalTime -= switchTime;
-
-		currIndex = currIndex == rect.size() - 1 ? 0 : currIndex + 1;
-		uvRect = rect[currIndex];
+bool Animation::setAnim(const string& animName) {
+	if (animName != currAnim) {
+		currAnim = animName;
+		currFrame = 0;
+		totalTime = 0;
+		uvRect = rectMap[currAnim][0];
+		return true;
 	}
+	return false;
 }

@@ -3,10 +3,10 @@
 #include "Animation.h"
 #include "Collider.h"
 #include <map>
-
+#include "Object.h"
 using namespace sf;
 
-class Player
+class Player : public Movable
 {
 public:
 	Player(Animation* animMap, Vector2f size, float speed, float jumpHeight, float weight = 1, Vector2f spawn = Vector2f(0, 0));
@@ -16,21 +16,18 @@ public:
 	void onCollision(const Vector2f& direction);
 
 	void Draw(RenderWindow& wnd) const;
-	Vector2f getPos() const;
-	float getWeight() const;
-	void setWeight(float weight);
-	
-private:
-	std::string currAnim;
-	Animation* anim;
-	RectangleShape body;
-//	Vector2f scale;
+
+	void respawn(float x, float y);
+
 	float weight = 0;
 	float speed;
 	float jumpHeight;
-	bool turned ;
+
+private:
+	std::string currAnim;
+	Animation* anim;
+	bool turned;
 	bool canJump;
 
-	Vector2f velocity;
 };
 

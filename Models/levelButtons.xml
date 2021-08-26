@@ -1,0 +1,7 @@
+<!DOCTYPE SpriteDecomposer>
+<sprites image="levelButtons.png" transparentColor="">
+ <animation title="default" delay="10">
+  <cut w="219" x="0" y="14" h="208" row="1" col="1"/>
+  <cut w="219" x="227" y="14" h="208" row="1" col="1"/>
+ </animation>
+</sprites>
