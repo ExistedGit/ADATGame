@@ -165,6 +165,9 @@ private:
 
 		sprites["hub_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/hub_bg.jpg"));
 		sprites["lvl1_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/lvl1_bg.jpg"));;
+		sprites["lvl2_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/lvl2_bg.jpg"));;
+		sprites["lvl3_bg"] = sprites["lvl1_bg"];
+
 		sprites["unfocused_greyscale"] = shared_ptr<SmartSprite>(new SmartSprite());
 		sprites["levels_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/levels_bg.png"));
 		sprites["win_bg"] = shared_ptr<SmartSprite>(new SmartSprite("Textures/win_bg.png"));
