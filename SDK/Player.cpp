@@ -78,6 +78,10 @@ void Player::Draw(RenderWindow& wnd) const {
 
 
 
+void Player::respawn(const Vector2f& pos) {
+	respawn(pos.x, pos.y);
+}
+
 void Player::respawn(float x, float y) {
 	velocity = Vector2f(0, 0);
 	setPos(x, y);

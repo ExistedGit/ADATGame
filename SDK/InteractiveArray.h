@@ -20,8 +20,9 @@ protected:
 	// На случай, если объект будет одноразовым
 	bool oneTime = false;
 public:
+	bool interactive = true;
 	InteractiveObject(Animation* text, const Vector2f& size, const Vector2f& pos, const string& name, const IntObjType& interactiveType, function<void()> use = []() {}, bool oneTime = false, 
-		const ObjectType& type = Interactive);
+		bool interactive = true, const ObjectType& type = Interactive);
 
 	function<void()> use;
 
@@ -69,8 +70,8 @@ private:
 	bool open = false;
 	RectangleShape hitbox;
 public:
-	inline InteractiveDoor(Animation* text, RectangleShape hitbox, Vector2f size, Vector2f pos, string name, bool oneTime) :
-		InteractiveObject(text, size, pos, name, IntObjType::Door, [this]() {Update(); }, oneTime)
+	inline InteractiveDoor(Animation* text, RectangleShape hitbox, Vector2f size, Vector2f pos, string name, bool oneTime, bool interactive = true) :
+		InteractiveObject(text, size, pos, name, IntObjType::Door, [this]() {Update(); }, oneTime, interactive)
 	{
 		this->hitbox = RectangleShape(hitbox.getSize());
 		this->hitbox.setPosition(
@@ -106,7 +107,7 @@ private:
 	float opacityOffset = 0.4;
 	
 protected:
-	vector<InteractiveObject*> interactives;
+	vector<shared_ptr<InteractiveObject>> interactives;
 public:
 	InteractiveArray();
 	void checkInteraction(Event& ev, Player& player);
@@ -114,7 +115,7 @@ public:
 	// Отвечает за отрисовку кнопки над головой игрока при контакте с интерактивным объектом 
 	void drawHint(RenderWindow& wnd, Player& player, Font& font);
 	
-	void addObject(InteractiveObject* obj);
+	void addObject(shared_ptr<InteractiveObject> obj);
 
 	virtual void Update(Player& player) = 0;
 };

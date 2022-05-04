@@ -154,12 +154,16 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 				if (interactiveName.empty()) 
 					throw u8"Level.load(): интерактивный объект без имени\n";
 				bool oneTime = false;
+				bool inactive = false;
 				if (object->Attribute("type") != nullptr) {
 					string type;
 					istringstream typestream(object->Attribute("type"));
-					typestream >> type;
-
-					oneTime = type == "oneTime";
+					while (typestream >> type) {
+						if (type == "oneTime")
+							oneTime = true;
+						else if (type == "inactive")
+							inactive = true;
+					}
 				}
 
 				std::string modelPath = !modelName.empty() ? 
@@ -174,7 +178,7 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 					float width = atof(object->Attribute("width")),
 						height = atof(object->Attribute("height"));
 
-					interactives.push_back(new InteractiveButton(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
+					interactives.push_back(shared_ptr<InteractiveObject>(new InteractiveButton(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime)));
 				}
 				else if (specifier == "lever") {
 
@@ -183,7 +187,7 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 					float width = atof(object->Attribute("width")),
 						height = atof(object->Attribute("height"));
 
-					interactives.push_back(new InteractiveLever(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime));
+					interactives.push_back(shared_ptr<InteractiveObject>(new InteractiveLever(anim, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, useMap.count(interactiveName) ? useMap[interactiveName] : []() {}, oneTime)));
 				}
 				else if (specifier == "door") {
 					float x = atof(object->Attribute("x")),
@@ -213,7 +217,7 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 						hitbox.move(offset);
 					}
 
-					interactives.push_back(new InteractiveDoor(anim, hitbox, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, oneTime));
+					interactives.push_back(shared_ptr<InteractiveDoor>(new InteractiveDoor(anim, hitbox, Vector2f(width, height), Vector2f(x + width / 2, y + height / 2), interactiveName, oneTime, !inactive)));
 				}
 				else if (specifier == "moveplatform") {
 					bool platformPlane;
@@ -260,7 +264,7 @@ Level& Level::load(string xmlDoc, const RenderWindow* window, const string& name
 }
 
 void Level::reload() {
-	load(filename);
+	load(filename, nullptr, name);
 }
 
 void Level::checkCollision(Player& player, float deltaTime) {
@@ -302,13 +306,13 @@ void Level::checkCollision(Player& player, float deltaTime) {
 		if (p->active)
 			if(p->type & Solid)
 				if (p->getType() == IntObjType::Door) {
-					if (((InteractiveDoor*)(p))->getHitbox().CheckCollision(player.getCollider(), direction))
+					if (((InteractiveDoor*)(p.get()))->getHitbox().CheckCollision(player.getCollider(), direction))
 						player.onCollision(direction);
 				}
 				else if (p->getCollider().CheckCollision(player.getCollider(), direction)) {
 						player.onCollision(direction);
 						if (direction.y == -1) 
-							groundCollision = p;
+							groundCollision = p.get();
 				};
 			
 	if (groundCollision == nullptr) 
@@ -370,7 +374,7 @@ void Level::Update(Player& player) {
 			if (!player.getCollider().collides(obj->getCollider()))
 				if (obj->getType() == IntObjType::Button)
 				{
-					auto& button = *(InteractiveButton*)obj;
+					auto& button = *(InteractiveButton*)obj.get();
 					if (button.getCurrFrame() == 1) button.Update();
 					button.pressed = false;
 				}

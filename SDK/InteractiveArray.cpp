@@ -13,52 +13,53 @@ void InteractiveArray::checkInteraction(Event& ev, Player& player) {
 	if (ev.type == Event::KeyReleased ||
 		ev.type == Event::KeyPressed)
 		for (auto& obj : interactives)
-			switch (obj->getType()) {
-			case IntObjType::Button: {
-				auto* button = (InteractiveButton*)obj;
-				if (button->isActive())
-					if (ev.key.code == InteractiveObject::interactKey)
-						if (player.getCollider().collides(button->getCollider())) {
-							if (ev.type == Event::KeyPressed
-								&& button->getCurrFrame() == 0) {
-								button->Update();
-								button->pressed = true;
-								if (button->isOneTime()) button->use();
-							}
-							else if (ev.type == Event::KeyReleased
-								&& button->getCurrFrame() == 1)
-								button->Update();
-							if (ev.type == Event::KeyReleased)
-								button->use();
-						}
-			}
-								   break;
-			case IntObjType::Lever: {
-				if (ev.type == Event::KeyReleased) {
-					auto* lever = (InteractiveLever*)obj;
-					if (lever->isActive())
+			if(obj->interactive)
+				switch (obj->getType()) {
+				case IntObjType::Button: {
+					auto button = (InteractiveButton*)obj.get();
+					if (button->isActive())
 						if (ev.key.code == InteractiveObject::interactKey)
-							if (player.getCollider().collides(lever->getCollider())) {
-								lever->Update();
-								lever->use();
+							if (player.getCollider().collides(button->getCollider())) {
+								if (ev.type == Event::KeyPressed
+									&& button->getCurrFrame() == 0) {
+									button->Update();
+									button->pressed = true;
+									if (button->isOneTime()) button->use();
+								}
+								else if (ev.type == Event::KeyReleased
+									&& button->getCurrFrame() == 1)
+									button->Update();
+								if (ev.type == Event::KeyReleased)
+									button->use();
 							}
 				}
-			}
-								  break;
-			case IntObjType::Door:
-				if (ev.type == Event::KeyReleased) {
-					auto* door = (InteractiveDoor*)obj;
-					if (door->isActive())
-						if (ev.key.code == InteractiveObject::interactKey)
-							if (player.getCollider().collides(door->getCollider()))
-								door->use();
+									   break;
+				case IntObjType::Lever: {
+					if (ev.type == Event::KeyReleased) {
+						auto lever = (InteractiveLever*)obj.get();
+						if (lever->isActive())
+							if (ev.key.code == InteractiveObject::interactKey)
+								if (player.getCollider().collides(lever->getCollider())) {
+									lever->Update();
+									lever->use();
+								}
+					}
+				}
+									  break;
+				case IntObjType::Door:
+					if (ev.type == Event::KeyReleased) {
+						auto door = (InteractiveDoor*)obj.get();
+						if (door->isActive())
+							if (ev.key.code == InteractiveObject::interactKey)
+								if (player.getCollider().collides(door->getCollider()))
+									door->use();
 							
+					}
+					break;
 				}
-				break;
-			}
 }
 
-void InteractiveArray::addObject(InteractiveObject* obj) {
+void InteractiveArray::addObject(shared_ptr<InteractiveObject> obj) {
 	interactives.push_back(obj);
 }
 
@@ -69,12 +70,13 @@ void InteractiveArray::drawHint(RenderWindow& wnd, Player& player, Font& font) {
 
 	bool collides = false;
 	for (auto& it : interactives)
-		if (it->isActive())
-			if (it->getCollider().collides(player.getCollider())) {
-				collides = true;
-				if (hintOpacity + opacityOffset < 255)
-					hintOpacity += opacityOffset;
-			}
+		if(it->interactive)
+			if (it->isActive())
+				if (it->getCollider().collides(player.getCollider())) {
+					collides = true;
+					if (hintOpacity + opacityOffset < 255)
+						hintOpacity += opacityOffset;
+				}
 	if (!collides)
 		if (hintOpacity - opacityOffset > 0)
 			hintOpacity -= opacityOffset;
@@ -90,13 +92,14 @@ void InteractiveArray::drawHint(RenderWindow& wnd, Player& player, Font& font) {
 		hintOpacity));
 }
 
-InteractiveObject::InteractiveObject(Animation* text, const Vector2f& size, const Vector2f& pos, const string& name, const IntObjType& interactiveType, function<void()> use, bool oneTime, 
+InteractiveObject::InteractiveObject(Animation* text, const Vector2f& size, const Vector2f& pos, const string& name, const IntObjType& interactiveType, function<void()> use, bool oneTime, bool interactive,
 	const ObjectType& type) :
 	Object(text, size, pos, ObjectType(type | Interactive)),
 	name(name),
 	interactiveType(interactiveType),
 	use(use),
-	oneTime(oneTime)
+	oneTime(oneTime),
+	interactive(interactive)
 {
 	body.setTextureRect(anim->uvRect);
 }

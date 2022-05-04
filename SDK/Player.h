@@ -17,6 +17,7 @@ public:
 
 	void Draw(RenderWindow& wnd) const;
 
+	void respawn(const Vector2f& pos);
 	void respawn(float x, float y);
 
 	float weight = 0;

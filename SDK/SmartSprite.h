@@ -19,5 +19,14 @@ public:
 		setOrigin(Vector2f(getTexture()->getSize() / 2u));
 	}
 
+	inline bool loadTexture(const std::string& texturePath) {
+		Texture* texture = new Texture();
+		if (!texture->loadFromFile(texturePath))
+			return false;
+		setTexture(*texture);
+		setOrigin(Vector2f(getTexture()->getSize() / 2u));
+		return true;
+	}
+
 };
 

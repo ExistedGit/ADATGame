@@ -11,13 +11,18 @@ Level ConfigManager::loadLevel(string name, RenderWindow* wnd) {
 
 	TiXmlElement* loader = document.FirstChildElement("Loader");
 	try {
+		bool levelLoaded = false;
 		for (TiXmlElement* child = loader->FirstChildElement("Level"); child != NULL && string(child->Value()) == "Level"; child = child->NextSiblingElement()) {
-			if (name == "") name = child->Attribute("id");
-
-			if (string(child->Attribute("id")) == name)
+			if (name == "")
+				name = child->Attribute("id");
+			if (string(child->Attribute("id")) == name) {
 				level = Level().load("TileMap/" + string(child->GetText()), wnd, child->Attribute("id"));
-			else cout << u8"ConfigManager.load(): уровень не загружен\n";
+				levelLoaded = true;
+				break;
+			}
 		}
+		if(!levelLoaded)
+			cerr << u8"ConfigManager.load(): уровень не загружен\n";
 	}
 	catch (const string& re) {
 		cout << re;

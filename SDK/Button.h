@@ -136,17 +136,18 @@ public:
 	const string& getName() const noexcept;
 };
 
-class MusicPlayer : public IButtonArray<RectButton> {
+class MusicPlayer {
 private:  
-	std::vector<Song*> songs;
-	int currentIndex = 0;
+	std::map<string, shared_ptr<Song>> songs;
+	string currentSong;
 
 	float lastSwitchTime =0;
 	bool interrupted = false;
+	float volume = 100;
 public:
 	
 
-	MusicPlayer(const std::vector<Song*>& src = {});
+	MusicPlayer(const string& xmlDoc);
 	void setPosition(float pos) noexcept;;
 	void setVolume(float volume) noexcept;
 	float getVolume() const noexcept;
@@ -155,11 +156,6 @@ public:
 	void unmute() noexcept;
 
 	bool muted() const noexcept;
-
-	void next() noexcept;;
-
-	void prev() noexcept;;
-
 	void restart() noexcept;
 	// Возвращает правду, если музыка ещё играет
 	bool pause() noexcept;
@@ -176,5 +172,7 @@ public:
 	Music::Status getStatus() const noexcept;
 
 	const string& getSongName() const noexcept;
-	bool setMusic(unsigned int index);
+	bool setMusic(const string& name);
+	
+	void load(const string& xmlDoc);
 };

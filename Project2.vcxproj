@@ -163,6 +163,7 @@
     <ClInclude Include="SDK\AnimatedSprite.h" />
     <ClInclude Include="SDK\Animation.h" />
     <ClInclude Include="SDK\Button.h" />
+    <ClInclude Include="SDK\Clock.h" />
     <ClInclude Include="SDK\Collider.h" />
     <ClInclude Include="SDK\ConfigManager.h" />
     <ClInclude Include="SDK\FragShader.h" />

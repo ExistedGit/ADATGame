@@ -62,56 +62,39 @@ void HoverButton::setHover(bool hover) {
 
 bool HoverButton::getHover() const noexcept { return hover; }
 
-MusicPlayer::MusicPlayer(const std::vector<Song*>& src) : songs(src) {
-	
-	vector<Animation*> buttonTextures = {new Animation("Models/button.xml")};
-	
-	addButton(RectButton(buttonTextures[0], "default", "playButton", Vector2f(64, 64), Vector2f(400, 700),
-		[this]() {
-			if (!this->play()) this->pause();
-		}));
+MusicPlayer::MusicPlayer(const string& xmlDoc) {
+	load(xmlDoc);
+	currentSong = (*songs.begin()).first;
 }
+
 void MusicPlayer::setPosition(float pos) noexcept {
-	songs[currentIndex]->setPlayingOffset(seconds(0));
+	songs[currentSong]->setPlayingOffset(seconds(pos));
+}
+
+void MusicPlayer::load(const string& xmlDoc) {
+	TiXmlDocument doc(xmlDoc.c_str());
+	doc.LoadFile();
+	for (TiXmlElement* child = doc.FirstChildElement("song"); child != nullptr && string(child->Value()) == "song"; child = child->NextSiblingElement()) {
+		songs[child->Attribute("name")] = shared_ptr<Song>(new Song(child->Attribute("name"), "Music/" + string(child->Attribute("name")) + ".wav"));
+	}
 }
 
 void MusicPlayer::setVolume(float volume) noexcept {
 	if (volume >= 0) {
+		this->volume;
 		if (cl.getElapsedTime().asSeconds() - lastSwitchTime >= 0.02) {
-			songs[currentIndex]->setVolume(volume);
+			for(auto& song : songs) 
+				song.second->setVolume(volume);
 			lastSwitchTime = cl.getElapsedTime().asSeconds();
 		}
 	}
 }
 
-void MusicPlayer::mute() noexcept { if (!songs.empty()) songs[currentIndex]->setVolume(0); }
+void MusicPlayer::mute() noexcept { if (!songs.empty()) songs[currentSong]->setVolume(0); }
 
-void MusicPlayer::unmute() noexcept { if(!songs.empty()) songs[currentIndex]->setVolume(100);}
+void MusicPlayer::unmute() noexcept { if(!songs.empty()) songs[currentSong]->setVolume(100);}
 
-bool MusicPlayer::muted() const noexcept { return !songs.empty() && songs[currentIndex]->getVolume() == 0; }
-
-void MusicPlayer::next()noexcept {
-	if (songs.empty()) return;
-
-	songs[currentIndex]->pause();
-	if (currentIndex + 1 >= songs.size())
-		currentIndex = 0;
-	else
-		currentIndex++;
-
-}
-
-void MusicPlayer::prev()noexcept {
-
-	if (songs.empty()) return;
-
-	songs[currentIndex]->pause();
-	if (currentIndex - 1 < 0)
-		currentIndex = songs.size();
-	else
-		currentIndex--;
-
-}
+bool MusicPlayer::muted() const noexcept { return !songs.empty() && songs.at(currentSong)->getVolume() == 0; }
 
 void MusicPlayer::restart()noexcept {
 	setPosition(0);
@@ -122,8 +105,8 @@ void MusicPlayer::restart()noexcept {
 bool MusicPlayer::pause()noexcept {
 	if (songs.empty()) return false;
 
-	if (songs[currentIndex]->getStatus() == Music::Status::Playing) {
-		songs[currentIndex]->pause();
+	if (songs[currentSong]->getStatus() == Music::Status::Playing) {
+		songs[currentSong]->pause();
 		return true;
 	}
 	else return false;
@@ -134,10 +117,11 @@ bool MusicPlayer::pause()noexcept {
 bool MusicPlayer::play() noexcept {
 	if (songs.empty()) return false;
 	
-	if (interrupted) interrupted = false;
+	if (interrupted)
+		interrupted = false;
 
-	if (songs[currentIndex]->getStatus() != Music::Status::Playing) {
-		songs[currentIndex]->play();
+	if (songs[currentSong]->getStatus() != Music::Status::Playing) {
+		songs[currentSong]->play();
 		return true;
 	}
 	else return false;
@@ -145,26 +129,28 @@ bool MusicPlayer::play() noexcept {
 
 Music::Status MusicPlayer::getStatus() const noexcept  {
 	if (songs.empty()) return Music::Status::Stopped;
-	return songs[currentIndex]->getStatus();
+	return songs.at(currentSong)->getStatus();
 }
 
 float MusicPlayer::getVolume() const noexcept  {
 	if (songs.empty()) return 0;
-	return songs[currentIndex]->getVolume();
+	return songs.at(currentSong)->getVolume();
 }
 
 const string& MusicPlayer::getSongName() const noexcept {
 	if (songs.empty()) return "undefinedSong";
-	return songs[currentIndex]->getName();
+	return songs.at(currentSong)->getName();
 }
 
-bool MusicPlayer::setMusic(unsigned int index) {
+bool MusicPlayer::setMusic(const string& name) {
 
-	if (songs.empty()) return false;
+	if (songs.empty()) 
+		return false;
+	if (name == currentSong)
+		return false;
 
-	if (index > songs.size()) return false;
-	songs[currentIndex]->pause();
-	currentIndex = index;
+	songs[currentSong]->stop();
+	currentSong = name;
 	return true;
 }
 
@@ -172,7 +158,7 @@ bool MusicPlayer::isInterrupted() const noexcept {
 	return interrupted;
 }
 
-void MusicPlayer::stop() noexcept { songs[currentIndex]->stop(); }
+void MusicPlayer::stop() noexcept { songs[currentSong]->stop(); }
 
 Song::Song(const string& songname, const string& filename) :
 	name(songname) {

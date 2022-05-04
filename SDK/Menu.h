@@ -122,11 +122,11 @@ public:
 			size = button.getSize();
 
 			button.setPosition(
-				Vector2f(currPos.x + bool(x - 1) * grid.indentX - centered * size.x / 2, currPos.y + bool(y - 1) * grid.indentX - centered * size.y / 2)
+				Vector2f(currPos.x - centered * size.x / 2, currPos.y - centered * size.y / 2)
 			);
 
-			if (grid.x == 0 && grid.y == 0 && grid.indentX != 0)
-				currPos.y += size.y + grid.indentX;
+			if (grid.x == 0 && grid.y == 0 && grid.indentY != 0)
+				currPos.y += size.y + grid.indentY;
 			else if (grid.x != 0) {
 				if (x++ < grid.x)
 					currPos.x += size.x + grid.indentX;
@@ -134,7 +134,7 @@ public:
 					y++;
 					x = 1;
 					currPos.x = originPos.x;
-					currPos.y += size.y + grid.indentX;
+					currPos.y += size.y + grid.indentY;
 				}
 			}
 		}

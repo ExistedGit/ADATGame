@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Loader>
-	<Level id="lvl1">Danko70.tmx</Level>
-	
+	<Level id="hub">hub.tmx</Level>
+	<Level id="lvl1">lvl1.tmx</Level>
+	<Level id="lvl2">lvl2.tmx</Level>
+	<Level id="lvl3">lvl3.tmx</Level>
 </Loader>
